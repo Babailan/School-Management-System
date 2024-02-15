@@ -11,7 +11,7 @@ import {
 } from "@radix-ui/themes";
 import DarkLogo from "../../assets/yasc_logo_black.jpg";
 import Image from "next/image";
-import { CaretSortIcon, ExitIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 
@@ -51,7 +51,7 @@ export default function Sidebar() {
   const enrollmentOption = [
     {
       title: "Assessment",
-      href: "/registrar/assessment",
+      href: "/assessment",
       location: [],
     },
     {
@@ -67,12 +67,30 @@ export default function Sidebar() {
       location: [],
     },
   ];
+  const dataManagement = [
+    {
+      title: "Section",
+      href: "/section",
+      location: [],
+    },
+    {
+      title: "Curriculum",
+      href: "/curriculum",
+      location: [],
+    },
+    {
+      title: "Subjects",
+      href: "/subjects",
+      location: [],
+    },
+  ];
 
   const logoutUser = () => {
     setUserToken("");
   };
+  if (userToken == "") return null;
   return (
-    <ScrollArea className="max-h-screen">
+    <ScrollArea className="max-h-screen max-w-60">
       <Flex className="border min-h-screen" direction={"column"}>
         <Box className="flex-1">
           <Box className="border px-5">
@@ -83,6 +101,7 @@ export default function Sidebar() {
             <Options option={userControlOption} header={"User Control"} />
             <Options option={enrollmentOption} header={"Enrollment"} />
             <Options option={tuitionOption} header={"Fees"} />
+            <Options option={dataManagement} header={"Data Management"} />
           </Box>
         </Box>
         <Box p={"5"}>

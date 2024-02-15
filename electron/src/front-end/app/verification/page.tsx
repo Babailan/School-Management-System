@@ -9,112 +9,186 @@ import {
   Strong,
   Table,
   Text,
-  TextField,
 } from "@radix-ui/themes";
 import SearchInput from "../../components/input/search";
-import { useEffect, useState } from "react";
-import { CheckIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import { CheckIcon, Pencil1Icon } from "@radix-ui/react-icons";
+import Pagination from "../../components/pagination/pagination";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { SelectLimit, SelectYear } from "../../components/select";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function Page() {
   const [searchInput, setSearchInput] = useState("");
-  const [student, setStudent] = useState<any[]>([]);
   const [page, setPage] = useState(1);
+  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [limit, setLimit] = useState("10");
+  const queryClient = useQueryClient();
 
-  const handleSearch = async () => {
-    const result = await fetch(
-      "http://localhost:3001/api/search-verification",
+  const { data, isPending, refetch } = useQuery({
+    queryKey: ["search-verification", searchInput, page, year, limit],
+    queryFn: async () =>
+      (
+        await axios.get(
+          "http://localhost:3001/api/student-verification/search",
+          {
+            params: {
+              query: searchInput,
+              page,
+              limit,
+              year,
+            },
+          }
+        )
+      ).data,
+  });
+
+  function handleSearch(e) {
+    setSearchInput(e.target.value);
+  }
+
+  async function handleApprove(_id) {
+    // Verify the student by _id
+    const result = await toast.promise(
+      axios.put("http://localhost:3001/api/student-verification", { _id }),
       {
-        body: JSON.stringify({ query: searchInput, page }),
-        method: "POST",
+        loading: "Saving...",
+        success: <b>Settings saved!</b>,
+        error: <b>Could not save.</b>,
       }
     );
-    const data = await result.json();
-    return data;
-  };
-  useEffect(() => {
-    handleSearch().then((data) => setStudent(data));
-  }, [searchInput]);
+    queryClient.clear();
+    refetch();
+  }
+
   return (
-    <Box className="space-y-3">
+    <Box className="space-y-3" p="6">
       <Heading>Student Verification</Heading>
+      <Text size={"2"} color="gray">
+        Comprehensive List of Students Scheduled for Assessment
+      </Text>
+      <Flex direction="column" gap={"2"}>
+        <SelectYear onValueChange={(v) => setYear(v)} value={year} />
+        <SelectLimit onValueChange={(v) => setLimit(v)} value={limit} />
+      </Flex>
       <SearchInput
-        onChange={(e) => setSearchInput(e.target.value)}
+        onChange={handleSearch}
         size={"3"}
         placeholder="Search for verification"
       />
-      <Table.Root variant="surface">
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Reference Number</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Strand</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
+      {isPending ? (
+        <Box
+          width={"100%"}
+          className="h-96 bg-gray-200 animate-pulse rounded-md"
+        ></Box>
+      ) : (
+        <Table.Root variant="surface">
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Reference Number</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell>Strand</Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+            </Table.Row>
+          </Table.Header>
 
-        <Table.Body>
-          {student.map((student) => {
-            return (
-              <Table.Row key={student._id}>
-                <Table.RowHeaderCell>{student.fullname}</Table.RowHeaderCell>
-                <Table.Cell>{student.referenceNumber}</Table.Cell>
-                <Table.Cell>{student.gradeLevel}</Table.Cell>
-                <Table.Cell>{student.strand}</Table.Cell>
-                <Table.Cell>
-                  <Dialog.Root>
-                    <Dialog.Trigger>
-                      <Box>
-                        <Button
-                          color="green"
-                          className="hover:cursor-pointer"
-                          size={"1"}
-                        >
-                          <CheckIcon />
-                          Approve
-                        </Button>
-                      </Box>
-                    </Dialog.Trigger>
+          <Table.Body className="uppercase">
+            {data?.results.length ? (
+              data?.results.map((student) => {
+                return (
+                  <Table.Row key={student._id} align={"center"}>
+                    <Table.RowHeaderCell>
+                      {student.fullname}
+                    </Table.RowHeaderCell>
+                    <Table.Cell>{student.referenceNumber}</Table.Cell>
+                    <Table.Cell>{student.gradeLevel}</Table.Cell>
+                    <Table.Cell>{student.strand}</Table.Cell>
+                    <Table.Cell>
+                      <Flex gap={"2"} justify={"end"}>
+                        <Link href={`/verification/${student._id}`}>
+                          <Button className="hover:cursor-pointer">
+                            <Pencil1Icon />
+                            Edit
+                          </Button>
+                        </Link>
+                        <Dialog.Root>
+                          <Dialog.Trigger>
+                            <Box>
+                              <Button
+                                color="grass"
+                                className="hover:cursor-pointer"
+                              >
+                                <CheckIcon />
+                                Approve
+                              </Button>
+                            </Box>
+                          </Dialog.Trigger>
 
-                    <Dialog.Content style={{ maxWidth: 450 }}>
-                      <Dialog.Title>Approve Verification</Dialog.Title>
-                      <Dialog.Description size="2" mb="4">
-                        Make changes to student.
-                      </Dialog.Description>
-                      <Flex direction={"column"}>
-                        <Text size={"2"}>
-                          <Strong>Full Name : {student.fullname} </Strong>
-                        </Text>
-                        <Text size={"2"}>
-                          <Strong>Grade Level : {student.gradeLevel} </Strong>
-                        </Text>
-                        <Text size={"2"}>
-                          <Strong>Strand : {student.strand} </Strong>
-                        </Text>
+                          <Dialog.Content style={{ maxWidth: 450 }}>
+                            <Dialog.Title>Approve Verification</Dialog.Title>
+                            <Dialog.Description size="2" mb="4">
+                              Make changes to student.
+                            </Dialog.Description>
+                            <Flex direction={"column"}>
+                              <Text size={"2"}>
+                                <Strong>Full Name : {student.fullname} </Strong>
+                              </Text>
+                              <Text size={"2"}>
+                                <Strong>
+                                  Grade Level : {student.gradeLevel}{" "}
+                                </Strong>
+                              </Text>
+                              <Text size={"2"}>
+                                <Strong>Strand : {student.strand} </Strong>
+                              </Text>
+                            </Flex>
+
+                            <Flex gap="3" mt="4" justify="end">
+                              <Dialog.Close>
+                                <Button
+                                  variant="soft"
+                                  color="gray"
+                                  className="hover:cursor-pointer"
+                                >
+                                  Cancel
+                                </Button>
+                              </Dialog.Close>
+                              <Dialog.Close>
+                                <Button
+                                  className="hover:cursor-pointer"
+                                  onClick={() => handleApprove(student._id)}
+                                >
+                                  Confirm Approval
+                                </Button>
+                              </Dialog.Close>
+                            </Flex>
+                          </Dialog.Content>
+                        </Dialog.Root>
                       </Flex>
-
-                      <Flex gap="3" mt="4" justify="end">
-                        <Dialog.Close>
-                          <Box>
-                            <Button variant="soft" color="gray">
-                              Cancel
-                            </Button>
-                          </Box>
-                        </Dialog.Close>
-                        <Dialog.Close>
-                          <Box>
-                            <Button>Confirm Approval</Button>
-                          </Box>
-                        </Dialog.Close>
-                      </Flex>
-                    </Dialog.Content>
-                  </Dialog.Root>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              })
+            ) : (
+              <Table.Row>
+                <Table.Cell
+                  colSpan={5}
+                  className="font-medium"
+                  align="center"
+                  justify={"center"}
+                >
+                  No student verification found
                 </Table.Cell>
               </Table.Row>
-            );
-          })}
-        </Table.Body>
-      </Table.Root>
+            )}
+          </Table.Body>
+        </Table.Root>
+      )}
+
+      <Pagination maxPage={data?.maxPage} page={page} setPage={setPage} />
     </Box>
   );
 }

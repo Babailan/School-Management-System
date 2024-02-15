@@ -11,7 +11,6 @@ export default function Page() {
   return (
     <Box className="space-y-4">
       <Heading>Tuition Fee</Heading>
-
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
@@ -19,7 +18,6 @@ export default function Page() {
             <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
-
         <Table.Body>
           {gradeLevels.map((gradelevel, idx) => (
             <Table.Row align={"center"} key={idx}>

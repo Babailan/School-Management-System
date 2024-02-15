@@ -1,19 +1,21 @@
 import { Connect } from "../../../mongodb/connect";
 
-const headers = { "Access-Control-Allow-Origin": "*" };
-
 export const POST = async (req: Request) => {
   try {
     const { page, query } = await req.json();
     const student_verificationCollection = (await Connect())
       .db("yasc")
-      .collection("assessment");
+      .collection("subjects");
+
+    const documentCounted =
+      await student_verificationCollection.countDocuments();
+    const maxPage = Math.ceil(documentCounted / 10);
 
     const latestDocuments = await student_verificationCollection
       .find({
         $or: [
           {
-            referenceNumber: new RegExp(
+            subjectCode: new RegExp(
               query
                 .split(/\s+/)
                 .map((word) => `(?=.*\\b${word}.*\\b)`)
@@ -22,7 +24,7 @@ export const POST = async (req: Request) => {
             ),
           },
           {
-            fullname: new RegExp(
+            subjectName: new RegExp(
               query
                 .split(/\s+/)
                 .map((word) => `(?=.*\\b${word}.*\\b)`)
@@ -37,15 +39,17 @@ export const POST = async (req: Request) => {
       .limit(10)
       .toArray();
 
-    return Response.json(latestDocuments, { headers });
+    return Response.json({
+      success: true,
+      message: "Successful",
+      data: { documents: latestDocuments, maxPage },
+    });
   } catch (error) {
-    return Response.json(
-      {
-        success: false,
-        message: "Internal Server Error",
-        data: {},
-      },
-      { headers }
-    );
+    return Response.json({}, { status: 500 });
   }
+};
+
+// For preflight options
+export const OPTIONS = async (req: Request) => {
+  return Response.json({}, { status: 200 });
 };

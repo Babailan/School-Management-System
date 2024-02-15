@@ -1,43 +1,40 @@
-"use client";
-
-import { useLocalStorage } from "usehooks-ts";
 import "@radix-ui/themes/styles.css";
 import "./global.css";
-import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import "handsontable/dist/handsontable.full.min.css";
+import { registerAllModules } from "handsontable/registry";
 import { Box, Flex, ScrollArea, Theme } from "@radix-ui/themes";
+import { Toaster } from "react-hot-toast";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import UserRedirection from "./user-redirect";
+import ReactClientProvider from "./react-query-provider";
 import Sidebar from "../components/sidebar";
+
+registerAllModules();
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [userToken] = useLocalStorage("userToken", "");
-  const router = useRouter();
-  const pathname = usePathname();
-  useEffect(() => {
-    if (userToken == "") {
-      router.push("/login");
-    }
-  }, [userToken]);
   return (
     <html lang="en">
       <body>
-        <Box className="overflow-hidden">
-          <Theme>
-            <Flex>
-              <Box width={"max-content"}>
-                {pathname == "/login" || <Sidebar />}
-              </Box>
-              <ScrollArea className="max-h-screen">
-                <Box p={pathname == "/login" ? "0" : "9"} className="h-screen">
-                  {children}
-                </Box>
-              </ScrollArea>
-            </Flex>
-          </Theme>
-        </Box>
+        <UserRedirection>
+          <ReactClientProvider>
+            <ReactQueryDevtools initialIsOpen={true} />
+            <Toaster position="top-right" reverseOrder={false} />
+            <Box>
+              <Theme>
+                <Flex>
+                  <Sidebar />
+                  <ScrollArea>
+                    <Box className="max-h-screen">{children}</Box>
+                  </ScrollArea>
+                </Flex>
+              </Theme>
+            </Box>
+          </ReactClientProvider>
+        </UserRedirection>
       </body>
     </html>
   );

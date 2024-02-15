@@ -17,23 +17,80 @@ import PesoSign from "../../../icon/peso";
 import numeral from "numeral";
 import { CheckIcon, PlusIcon } from "@radix-ui/react-icons";
 import PesoInput from "../../../components/input/pesoinput";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Page() {
-  const params = useParams();
+  const { edit: GradeLevel } = useParams();
   const [tuition, setTuition] = useState("");
   const [miscellaneous, setMiscellaneous] = useState<any[]>([]);
 
+  const { data, isSuccess, isPending, isError, refetch } = useQuery({
+    queryKey: [GradeLevel, "tuition-fee"],
+    queryFn: async () =>
+      (
+        await axios.get(
+          `http://localhost:3001/api/tuition?gradeLevel=${GradeLevel}`
+        )
+      ).data,
+    gcTime: 0,
+    staleTime: 0,
+  });
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  // For popup miscellenous
   const [newMiscellenous, setNewMiscellenous] = useState({
     name: "",
     fee: "",
   });
 
-  useEffect(() => {}, []);
+  const submit = async () => {
+    toast.promise(
+      axios.post("http://localhost:3001/api/tuition", {
+        data: {
+          miscellaneous,
+          tuition,
+        },
+        gradeLevel: GradeLevel,
+      }),
+      {
+        loading: "Saving...",
+        success: <b>Settings saved!</b>,
+        error: <b>Could not save.</b>,
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(data);
+      setTuition(data.tuition);
+      setMiscellaneous(data.miscellaneous);
+    }
+  }, [isSuccess]);
+
+  if (isPending) {
+    return (
+      <Box>
+        <Text>Fetching...</Text>
+      </Box>
+    );
+  }
+  if (isError) {
+    return (
+      <Box>
+        <Text>Error...</Text>
+      </Box>
+    );
+  }
 
   return (
     <Box className="space-y-5">
       <Heading>Edit Tuition Page</Heading>
-      <Text>Adjust the tuition fee for Grade {params.edit}</Text>
+      <Text>Adjust the tuition fee for Grade {GradeLevel}</Text>
       <Box>
         <Text size={"3"} weight={"medium"}>
           Tuition Fee
@@ -173,7 +230,7 @@ export default function Page() {
         </Text>
       </Box>
       <Box>
-        <Button color="green" className="hover:cursor-pointer">
+        <Button onClick={submit} color="green" className="hover:cursor-pointer">
           <CheckIcon width={"20"} height={"20"} />
           Update Tuition Fee
         </Button>

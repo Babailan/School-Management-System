@@ -2,7 +2,15 @@ import { Heading, Text, Flex, Box } from "@radix-ui/themes";
 
 export default function NotFound() {
   return (
-    <Flex align={"center"} justify={"center"} className="h-full">
+    <Flex
+      align={"center"}
+      justify={"center"}
+      p={{
+        initial: "4",
+        md: "6",
+      }}
+      className="h-screen"
+    >
       <Box>
         <Heading size={"8"} className="text-center">
           Page not found
