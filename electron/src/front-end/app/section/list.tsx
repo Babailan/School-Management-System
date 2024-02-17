@@ -3,9 +3,10 @@ import { Box, Button, Table, Text } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Link from "next/link";
+import Skeleton from "react-loading-skeleton";
 
 export default function SectionList() {
-  const { data } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["section-list-page"],
     queryFn: async () =>
       (
@@ -16,6 +17,15 @@ export default function SectionList() {
         })
       ).data,
   });
+  if (isPending) {
+    return (
+      <Box>
+        <Skeleton height={30}></Skeleton>
+        <Skeleton height={500}></Skeleton>
+        <Skeleton height={50}></Skeleton>
+      </Box>
+    );
+  }
 
   return (
     <Box className="space-y-4">

@@ -1,24 +1,27 @@
 "use client";
 
-import { Box, Button, Heading, Table, Text } from "@radix-ui/themes";
+import { Box, Button, Table, Text } from "@radix-ui/themes";
 import SelectYear from "../../components/select/year";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import Skeleton from "react-loading-skeleton";
 
 export default function CurriculumList() {
   const [year, setYear] = useState(new Date().getFullYear().toString());
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["curriculum-list"],
     queryFn: () => axios.get("http://localhost:3001/api/curriculum"),
   });
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <Box>
-        <Heading>Loading...</Heading>
+        <Skeleton height={40}></Skeleton>
+        <Skeleton height={500}></Skeleton>
+        <Skeleton height={40} width={350}></Skeleton>
       </Box>
     );
   }

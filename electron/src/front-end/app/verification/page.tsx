@@ -11,7 +11,7 @@ import {
   Text,
 } from "@radix-ui/themes";
 import SearchInput from "../../components/input/search";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import Pagination from "../../components/pagination/pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -45,13 +45,13 @@ export default function Page() {
       ).data,
   });
 
-  function handleSearch(e) {
-    setSearchInput(e.target.value);
-  }
+  useEffect(() => {
+    setPage(1);
+  }, [searchInput, year, limit]);
 
   async function handleApprove(_id) {
     // Verify the student by _id
-    const result = await toast.promise(
+    await toast.promise(
       axios.put("http://localhost:3001/api/student-verification", { _id }),
       {
         loading: "Saving...",
@@ -74,7 +74,7 @@ export default function Page() {
         <SelectLimit onValueChange={(v) => setLimit(v)} value={limit} />
       </Flex>
       <SearchInput
-        onChange={handleSearch}
+        onChange={(e) => setSearchInput(e.target.value)}
         size={"3"}
         placeholder="Search for verification"
       />
@@ -84,9 +84,10 @@ export default function Page() {
           className="h-96 bg-gray-200 animate-pulse rounded-md"
         ></Box>
       ) : (
-        <Table.Root variant="surface">
+        <Table.Root>
           <Table.Header>
             <Table.Row>
+              <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell>Reference Number</Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
@@ -95,14 +96,15 @@ export default function Page() {
             </Table.Row>
           </Table.Header>
 
-          <Table.Body className="uppercase">
+          <Table.Body>
             {data?.results.length ? (
               data?.results.map((student) => {
                 return (
                   <Table.Row key={student._id} align={"center"}>
-                    <Table.RowHeaderCell>
-                      {student.fullname}
-                    </Table.RowHeaderCell>
+                    <Table.Cell>
+                      <Text color="blue">For Verification</Text>
+                    </Table.Cell>
+                    <Table.Cell>{student.fullname}</Table.Cell>
                     <Table.Cell>{student.referenceNumber}</Table.Cell>
                     <Table.Cell>{student.gradeLevel}</Table.Cell>
                     <Table.Cell>{student.strand}</Table.Cell>

@@ -1,14 +1,18 @@
 import "@radix-ui/themes/styles.css";
 import "./global.css";
 import "handsontable/dist/handsontable.full.min.css";
+import "react-loading-skeleton/dist/skeleton.css";
 import { registerAllModules } from "handsontable/registry";
-import { Box, Flex, ScrollArea, Theme } from "@radix-ui/themes";
+import { Box, Flex, ScrollArea, Text, Theme } from "@radix-ui/themes";
 import { Toaster } from "react-hot-toast";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import UserRedirection from "./user-redirect";
 import ReactClientProvider from "./react-query-provider";
-import Sidebar from "../components/sidebar";
+import dynamic from "next/dynamic";
+import AuthenticatorComponent from "./authToken";
 
+const DynamicSideBar = dynamic(() => import("../components/sidebar"), {
+  ssr: false,
+});
 registerAllModules();
 
 export default function RootLayout({
@@ -19,14 +23,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <UserRedirection>
+        <AuthenticatorComponent>
           <ReactClientProvider>
             <ReactQueryDevtools initialIsOpen={true} />
             <Toaster position="top-right" reverseOrder={false} />
             <Box>
               <Theme>
                 <Flex>
-                  <Sidebar />
+                  <DynamicSideBar />
                   <ScrollArea>
                     <Box className="max-h-screen">{children}</Box>
                   </ScrollArea>
@@ -34,7 +38,7 @@ export default function RootLayout({
               </Theme>
             </Box>
           </ReactClientProvider>
-        </UserRedirection>
+        </AuthenticatorComponent>
       </body>
     </html>
   );

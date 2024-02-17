@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Avatar,
   Box,
@@ -42,6 +43,7 @@ function Options({ option, header }) {
 
 export default function Sidebar() {
   const [userToken, setUserToken] = useLocalStorage("userToken", "");
+
   const userControlOption = [
     { title: "Access Control", href: "/access-control", location: [] },
   ];
@@ -88,7 +90,10 @@ export default function Sidebar() {
   const logoutUser = () => {
     setUserToken("");
   };
-  if (userToken == "") return null;
+
+  if (userToken == "") {
+    return <></>;
+  }
   return (
     <ScrollArea className="max-h-screen max-w-60">
       <Flex className="border min-h-screen" direction={"column"}>

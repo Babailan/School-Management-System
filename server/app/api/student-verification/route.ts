@@ -1,13 +1,13 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../mongodb/connect";
-import { ZodCustomIssue, ZodError, z } from "zod";
-import {
-  $StudentRecord,
-  $StudentVerification,
-  $_id,
-} from "../../../types/global";
+import { ZodError } from "zod";
+
+import { $StudentRecord } from "../../../types/$StudentRecord";
+import { $StudentVerification } from "../../../types/$StudentVerification";
+import { $Tuition } from "../../../types/$Tuition";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
+import { $_id } from "../../../types";
 
 export const PUT = async (req: NextRequest) => {
   try {
@@ -21,13 +21,7 @@ export const PUT = async (req: NextRequest) => {
     const assessmentCollection = dbConnection.collection("assessment");
     const studentRecordCollection = dbConnection.collection("student-record");
 
-    const $VerificationSchema = $StudentVerification.extend({
-      _id: $_id,
-    });
-
-    const result = await studentVerificationCollection.findOne<
-      z.infer<typeof $VerificationSchema>
-    >({
+    const result = await studentVerificationCollection.findOne({
       _id: new ObjectId($_id.parse(_id)),
     });
 
@@ -38,23 +32,21 @@ export const PUT = async (req: NextRequest) => {
       .sort({ studentId: -1 })
       .limit(1)
       .toArray();
-    const studentRecord = $StudentRecord.parse({
-      ...result,
-      studentId: getTheLatestStudentID[0]?.studentId + 2 || 5000,
-    });
 
     const tuitionResult = await tuitionCollection.findOne({
       gradeLevel: result?.gradeLevel,
     });
 
-    const tuitionSchema = z.object({
-      miscellaneous: z
-        .array(z.object({ name: z.string(), fee: z.string() }))
-        .default([]),
-      tuition: z.string().default(""),
-      gradeLevel: z.string().default(""),
+    const studentRecord = $StudentRecord.partial().parse({
+      ...result,
+      studentId: getTheLatestStudentID[0]?.studentId + 2 || 5000,
     });
-    const tuition = tuitionSchema.safeParse(tuitionResult);
+    const studentVerification = $StudentVerification.parse(result);
+
+    const tuition = $Tuition.partial().parse(tuitionResult);
+    const assessment = _.merge(tuition, studentRecord, {
+      year: studentVerification.year,
+    });
 
     const deletedVerification = await studentVerificationCollection.deleteOne({
       _id: new ObjectId($_id.parse(_id)),
@@ -66,10 +58,6 @@ export const PUT = async (req: NextRequest) => {
       );
 
       if (insertedRecord.acknowledged) {
-        const assessment = {
-          ...studentRecord,
-          tuition: _.get(tuition, "data", {}),
-        };
         const insertedAssessment = await assessmentCollection.insertOne(
           assessment
         );

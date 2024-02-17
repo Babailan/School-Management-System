@@ -1,29 +1,25 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../../mongodb/connect";
 import { ZodError, z } from "zod";
+import { ObjectId } from "mongodb";
 import { $_id } from "../../../../types/$_id";
 import { $StudentVerification } from "../../../../types/$StudentVerification";
-import { ObjectId } from "mongodb";
+import { $Assessment, $Pagination } from "../../../../types";
 
 export const GET = async (req: NextRequest, { params }) => {
   try {
-    const studentVerificationCollection = (await Connect())
+    const assessmentCollection = (await Connect())
       .db("yasc")
-      .collection("student-verification");
+      .collection("assessment");
     const { slug } = params;
     if (slug == "search") {
-      const { query, page, limit, year } = Object.fromEntries(
-        req.nextUrl.searchParams
-      );
-      const $SearchParams = z.object({
-        query: z.string().default(""),
-        page: z.coerce.number().default(1),
-        limit: z.coerce.number().default(10),
-        year: z.coerce.string().optional(),
+      const paramsObject = Object.fromEntries(req.nextUrl.searchParams);
+
+      const params = $Pagination.parse(paramsObject);
+
+      const $FilterParams = z.object({
+        year: z.string(),
       });
-
-      const params = $SearchParams.parse({ query, page, limit, year });
-
       const regexQuery = params.query
         .split(/\s+/)
         .map((word) => `(?=.*\\b${word}.*\\b)`)
@@ -38,21 +34,16 @@ export const GET = async (req: NextRequest, { params }) => {
         },
       ];
 
-      if (params.year) {
-        filterOR = filterOR.map((v) => {
-          return { ...v, year: params.year };
-        });
-      }
-
-      const results = await studentVerificationCollection
+      const results = await assessmentCollection
         .find({
           $or: filterOR,
+          $and: [$FilterParams.partial().parse(paramsObject)],
         })
         .skip((params.page - 1) * params.limit)
         .limit(params.limit)
         .toArray();
 
-      const totalCount = await studentVerificationCollection
+      const totalCount = await assessmentCollection
         .find({
           $or: filterOR,
         })
@@ -62,11 +53,11 @@ export const GET = async (req: NextRequest, { params }) => {
 
       return Response.json({ results, currentPage: params.page, maxPage });
     } else {
-      const result = await studentVerificationCollection.findOne({
+      const result = await assessmentCollection.findOne({
         _id: new ObjectId($_id.parse(slug)),
       });
 
-      const parsedResult = $StudentVerification.nullable().parse(result);
+      const parsedResult = $Assessment.partial().nullable().parse(result);
       return Response.json(parsedResult);
     }
   } catch (error) {

@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../../mongodb/connect";
 import { ZodError, z } from "zod";
-import { $Section, $_id } from "../../../../types/global";
+import { $_id } from "../../../../types/$_id";
+import { $Section } from "../../../../types/$Section";
 import { ObjectId } from "mongodb";
 
 export const GET = async (req: NextRequest, { params }) => {

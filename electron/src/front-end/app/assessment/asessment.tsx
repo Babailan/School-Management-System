@@ -1,35 +1,13 @@
-import { Box, Heading, Table, Text } from "@radix-ui/themes";
+"use client";
 
-export default function AssessmentList() {
-  return (
-    <Box className="space-y-2">
-      <Box>
-        <Text size={"3"} weight={"bold"} as="div">
-          Assessment List
-        </Text>
-        <Text size={"2"} color="gray">
-          List of available of student to be assess
-        </Text>
-      </Box>
-      <Box py={"2"}>
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
-            </Table.Row>
-          </Table.Header>
+import { Box, Button, Flex, Table, Text } from "@radix-ui/themes";
+import { SelectLimit, SelectYear } from "../../components/select";
+import SearchInput from "../../components/input/search";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import Link from "next/link";
+import { Pencil1Icon } from "@radix-ui/react-icons";
+import Skeleton from "react-loading-skeleton";
 
-          <Table.Body>
-            <Table.Row>
-              <Table.RowHeaderCell>Danilo Sousa</Table.RowHeaderCell>
-              <Table.Cell>danilo@example.com</Table.Cell>
-              <Table.Cell>Developer</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table.Root>
-      </Box>
-    </Box>
-  );
-}
+export default function AssessmentList() {}

@@ -1,25 +1,120 @@
 "use client";
 
-import { Box, Tabs } from "@radix-ui/themes";
-import AssessmentList from "./asessment";
+import { Box, Button, Flex, Link, Table, Tabs, Text } from "@radix-ui/themes";
+import { Pencil1Icon } from "@radix-ui/react-icons";
+import Skeleton from "react-loading-skeleton";
+import SearchInput from "../../components/input/search";
+import { SelectLimit, SelectYear } from "../../components/select";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function Page() {
+  const [page, setPage] = useState(1);
+  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [limit, setLimit] = useState("10");
+  const [searchInput, setSearchInput] = useState("");
+
+  const { data, isPending, refetch } = useQuery({
+    queryKey: ["assessment-page", searchInput, page, year, limit],
+    queryFn: async () =>
+      (
+        await axios.get("http://localhost:3001/api/assessment/search", {
+          params: {
+            query: searchInput,
+            page,
+            limit,
+            year,
+          },
+        })
+      ).data,
+  });
+
+  console.log(data);
+
   return (
-    <Box p="6">
-      <Tabs.Root defaultValue="assessment-list">
-        <Tabs.List>
-          <Tabs.Trigger value="assessment-list">Assessment</Tabs.Trigger>
-          <Tabs.Trigger value="enroll">Enroll</Tabs.Trigger>
-        </Tabs.List>
+    <Box className="space-y-2" p="6">
+      <Box>
+        <Text size={"3"} weight={"bold"} as="div">
+          Assessment List
+        </Text>
+        <Text size={"2"} color="gray">
+          Comprehensive List of Students Scheduled to be assess
+        </Text>
+      </Box>
+      <Flex direction="column" gap={"2"}>
+        <SelectYear onValueChange={(v) => setYear(v)} value={year} />
+        <SelectLimit onValueChange={(v) => setLimit(v)} value={limit} />
+      </Flex>
+      <SearchInput
+        onChange={(e) => setSearchInput(e.target.value)}
+        size={"3"}
+        placeholder="Search for verification"
+      />
+      <Box py={"2"}>
+        {isPending ? (
+          <Box>
+            <Skeleton height={30}></Skeleton>
+            <Skeleton height={400}></Skeleton>
+          </Box>
+        ) : (
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>
+                  Reference Number
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Strand</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
 
-        <Box px="4" pt="3" pb="2">
-          <Tabs.Content value="assessment-list">
-            <AssessmentList></AssessmentList>
-          </Tabs.Content>
-
-          <Tabs.Content value="enroll"></Tabs.Content>
-        </Box>
-      </Tabs.Root>
+            <Table.Body className="capitalize">
+              {data?.results.length ? (
+                data?.results.map((student) => {
+                  return (
+                    <Table.Row key={student._id} align={"center"}>
+                      <Table.Cell>
+                        <Text color={student?.status == "paid" ? "sky" : "red"}>
+                          {student?.status || "Not Paid"}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell>{student.fullname}</Table.Cell>
+                      <Table.Cell>{student.referenceNumber}</Table.Cell>
+                      <Table.Cell>{student.gradeLevel}</Table.Cell>
+                      <Table.Cell>{student.strand}</Table.Cell>
+                      <Table.Cell>
+                        <Flex gap={"2"} justify={"end"}>
+                          <Link href={`/assessment/assess?_id=${student._id}`}>
+                            <Button className="hover:cursor-pointer">
+                              <Pencil1Icon />
+                              Assess
+                            </Button>
+                          </Link>
+                        </Flex>
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })
+              ) : (
+                <Table.Row>
+                  <Table.Cell
+                    colSpan={5}
+                    className="font-medium"
+                    align="center"
+                    justify={"center"}
+                  >
+                    No student verification found
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            </Table.Body>
+          </Table.Root>
+        )}
+      </Box>
     </Box>
   );
 }

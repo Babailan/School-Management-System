@@ -39,10 +39,10 @@ export default function Page() {
   return (
     <Box p={"9"}>
       <Box className="max-w-sm mx-auto">
-        <div className="text-center pb-8">
+        <Box className="text-center pb-8">
           <Image src={Logo} className="mx-auto max-w-52" alt={""} />
           <Heading>Log in to your account</Heading>
-        </div>
+        </Box>
         <Box className="space-y-5">
           <Box>
             <Text className="font-medium">Email</Text>
