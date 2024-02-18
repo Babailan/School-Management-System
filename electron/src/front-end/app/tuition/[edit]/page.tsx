@@ -88,7 +88,7 @@ export default function Page() {
   }
 
   return (
-    <Box className="space-y-5">
+    <Box className="space-y-5" p="6">
       <Heading>Edit Tuition Page</Heading>
       <Text>Adjust the tuition fee for Grade {GradeLevel}</Text>
       <Box>

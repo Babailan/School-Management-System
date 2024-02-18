@@ -9,7 +9,9 @@ export default function PesoInput({ onChange, ...props }: TextFieldInput) {
     if (isNaN(Number(e.target.value))) {
       return;
     }
-    onChange(e);
+    if (onChange) {
+      onChange(e);
+    }
   };
   return (
     <TextField.Root>

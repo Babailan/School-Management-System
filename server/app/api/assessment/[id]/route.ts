@@ -1,31 +1,30 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../../mongodb/connect";
 import { ZodError, z } from "zod";
-import { $_id } from "yasci-types";
-import { $Section } from "yasci-types";
 import { ObjectId } from "mongodb";
+import { $Assessment, $Pagination, $_id } from "yasci-types";
 
 export const GET = async (req: NextRequest, { params }) => {
   try {
-    const { id } = params;
-    const parsedID = $_id.parse(id);
-    const section = (await Connect()).db("yasc").collection("section");
-
-    const result = await section.findOne({
-      _id: new ObjectId(parsedID),
+    const assessmentCollection = (await Connect())
+      .db("yasc")
+      .collection("assessment");
+    let { id } = params;
+    id = $_id.parse(id);
+    const result = await assessmentCollection.findOne({
+      _id: new ObjectId($_id.parse(id)),
     });
 
-    const safeParseResult = $Section.nullable().parse(result);
-
-    return Response.json(safeParseResult);
+    const parsedResult = $Assessment.partial().nullable().parse(result);
+    return Response.json(parsedResult);
   } catch (error) {
     if (error instanceof ZodError) {
-      return Response.json(error.issues, { status: 409 });
+      return Response.json(error.issues, { status: 400 });
     }
     if (error instanceof Error) {
       return Response.json(error.message, { status: 500 });
     }
-    return Response.json("Internal Server Error", { status: 500 });
+    return Response.json(error, { status: 500 });
   }
 };
 

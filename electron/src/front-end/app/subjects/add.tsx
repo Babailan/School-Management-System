@@ -32,30 +32,33 @@ export default function AddSubjectPage() {
   return (
     <Box className="space-y-5" p={"3"}>
       <Box>
-        <Text size="3" weight="bold">
+        <Text size="3" weight="bold" as="div">
           Subject Information
         </Text>
-        <Box className="space-y-2">
-          <Box>
-            <Text size="2" color="gray">
-              Subject Code
-            </Text>
-            <TextField.Input
-              required
-              className="uppercase"
-              onChange={(e) => setSubjectCode(e.target.value)}
-            ></TextField.Input>
-          </Box>
-          <Box>
-            <Text size="2" color="gray">
-              Subject Name
-            </Text>
-            <TextField.Input
-              required
-              className="uppercase"
-              onChange={(e) => setSubjectName(e.target.value)}
-            ></TextField.Input>
-          </Box>
+        <Text size="2" color="gray" as="div">
+          Make sure all the information provided are correct.
+        </Text>
+      </Box>
+      <Box className="space-y-2">
+        <Box>
+          <Text size="2" color="gray">
+            Subject Code
+          </Text>
+          <TextField.Input
+            required
+            className="uppercase"
+            onChange={(e) => setSubjectCode(e.target.value)}
+          ></TextField.Input>
+        </Box>
+        <Box>
+          <Text size="2" color="gray">
+            Subject Name
+          </Text>
+          <TextField.Input
+            required
+            className="uppercase"
+            onChange={(e) => setSubjectName(e.target.value)}
+          ></TextField.Input>
         </Box>
       </Box>
       <AlertDialog.Root>

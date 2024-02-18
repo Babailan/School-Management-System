@@ -10,7 +10,6 @@ const $StudentRecord = z.object({
   fullname: z.coerce.string(),
   strand: z.coerce.string(),
   gradeLevel: z.coerce.string(),
-  referenceNumber: z.coerce.string(),
   sex: z.coerce.string(),
   age: z.coerce.number(),
   phoneNumber: z.coerce.string(),

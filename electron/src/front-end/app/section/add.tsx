@@ -14,42 +14,31 @@ import {
   SelectYear,
 } from "../../components/select";
 import { Label } from "@radix-ui/react-label";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import _ from "lodash";
 import { CheckIcon } from "@radix-ui/react-icons";
 import toast from "react-hot-toast";
 
 export default function SectionAdd() {
-  const { data, isSuccess } = useQuery({
+  const { data } = useQuery({
     queryKey: ["curriculum-list"],
     queryFn: async () =>
       (await axios.get("http://localhost:3001/api/curriculum")).data,
   });
 
-  const [subject, setSubject] = useState<any[]>([]);
   const [strand, setStrand] = useState("");
   const [semester, setSemester] = useState("");
   const [year, setYear] = useState("");
   const [gradeLevel, setGradeLevel] = useState("");
   const [sectionName, setSectionName] = useState("");
 
-  useEffect(() => {
-    if (isSuccess) {
-      if (year && strand && semester && gradeLevel) {
-        const index = _.findIndex(data, { gradeLevel, year });
-        if (index <= 0) {
-          setSubject(
-            _.get(data[index], `semester['1'][${strand}].subjects`, [])
-          );
-        } else {
-          setSubject([]);
-        }
-      } else {
-      }
-    }
-  }, [isSuccess, year, strand, semester, gradeLevel]);
+  const subjects = _.get(
+    _.find(data, (o) => o.year == year && o.gradeLevel == gradeLevel),
+    `semester.${semester}.${strand}.subjects`,
+    []
+  );
 
   return (
     <Box className="space-y-5">
@@ -75,7 +64,7 @@ export default function SectionAdd() {
         <Text mt={"2"} as="div" weight={"bold"} size={"3"}>
           Subject List
         </Text>
-        <Table.Root variant="surface">
+        <Table.Root>
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeaderCell>Subject Code</Table.ColumnHeaderCell>
@@ -84,13 +73,13 @@ export default function SectionAdd() {
           </Table.Header>
 
           <Table.Body>
-            {subject.map((sub) => (
+            {subjects.map((sub) => (
               <Table.Row className="uppercase" key={sub._id}>
                 <Table.RowHeaderCell>{sub.subjectCode}</Table.RowHeaderCell>
                 <Table.Cell>{sub.subjectName}</Table.Cell>
               </Table.Row>
             ))}
-            {!!subject.length || (
+            {!!subjects.length || (
               <Table.Row className="uppercase text-center">
                 <Table.RowHeaderCell colSpan={2}>
                   Subjects is empty
@@ -106,7 +95,7 @@ export default function SectionAdd() {
             toast.promise(
               axios.post("http://localhost:3001/api/section", {
                 data: {
-                  subjects: subject,
+                  subjects: subjects,
                   gradeLevel,
                   year,
                   sectionName,

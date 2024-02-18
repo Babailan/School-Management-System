@@ -13,7 +13,8 @@ export default function CurriculumList() {
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const { data, isPending } = useQuery({
     queryKey: ["curriculum-list"],
-    queryFn: () => axios.get("http://localhost:3001/api/curriculum"),
+    queryFn: async () =>
+      (await axios.get("http://localhost:3001/api/curriculum")).data,
   });
 
   if (isPending) {
@@ -26,10 +27,13 @@ export default function CurriculumList() {
     );
   }
   return (
-    <Box>
+    <Box className="space-y-5">
       <Box>
         <Text size={"3"} weight={"bold"}>
           List of Curriculum
+        </Text>
+        <Text size="2" color="gray" as="div">
+          List of available of curriculums
         </Text>
       </Box>
       <Box>
@@ -46,8 +50,8 @@ export default function CurriculumList() {
           </Table.Header>
 
           <Table.Body>
-            {data.data
-              .filter((p) => p.year == year)
+            {data
+              ?.filter((p) => p.year == year)
               .map(({ _id, gradeLevel }) => {
                 return (
                   <Table.Row key={_id} align={"center"}>

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../mongodb/connect";
 import { ZodError, z } from "zod";
+import { $Filter } from "yasci-types";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -58,24 +59,16 @@ export const GET = async (req: NextRequest) => {
   try {
     const section = (await Connect()).db("yasc").collection("section");
     const searchParams = req.nextUrl.searchParams;
-    const { page, limit } = Object.fromEntries(searchParams.entries());
+    const requestFilter = Object.fromEntries(searchParams.entries());
 
-    const $SearchParams = z.object({
-      page: z.coerce.number().default(1),
-      limit: z.coerce.number().default(10),
-    });
-    const parsedParams = $SearchParams.parse({ page, limit });
+    const parsedParams = $Filter
+      .pick({ year: true, strand: true, gradeLevel: true })
+      .partial()
+      .parse(requestFilter);
 
-    const results = await section
-      .find({})
-      .skip((parsedParams.page - 1) * parsedParams.limit)
-      .limit(parsedParams.limit)
-      .toArray();
+    const results = await section.find(parsedParams).toArray();
 
-    const totalDocuments = await section.countDocuments({});
-    const maxPage = Math.ceil(totalDocuments / parsedParams.limit);
-
-    return Response.json({ results, currentPage: parsedParams.page, maxPage });
+    return Response.json(results);
   } catch (error) {
     if (error instanceof ZodError) {
       return Response.json(error.issues, { status: 409 });

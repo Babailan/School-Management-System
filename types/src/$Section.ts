@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { $Assessment } from "./$Assessment";
+import { $Grade } from "./$Grade";
 
 const $Section = z.object({
   subjects: z.array(
@@ -15,6 +17,20 @@ const $Section = z.object({
   sectionName: z.string(),
   strand: z.string(),
   semester: z.string(),
+  students: z
+    .array(
+      $Assessment
+        .omit({
+          age: true,
+          firstName: true,
+          lastName: true,
+          middleName: true,
+        })
+        .extend({
+          grade: $Grade.partial(),
+        })
+    )
+    .optional(),
 });
 
 export { $Section };

@@ -1,13 +1,15 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../mongodb/connect";
 import { ZodError } from "zod";
-
-import { $StudentRecord } from "../../../types/$StudentRecord";
-import { $StudentVerification } from "../../../types/$StudentVerification";
-import { $Tuition } from "../../../types/$Tuition";
+import {
+  $Tuition,
+  $Assessment,
+  $StudentRecord,
+  $StudentVerification,
+  $_id,
+} from "yasci-types";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
-import { $_id } from "../../../types";
 
 export const PUT = async (req: NextRequest) => {
   try {
@@ -44,9 +46,11 @@ export const PUT = async (req: NextRequest) => {
     const studentVerification = $StudentVerification.parse(result);
 
     const tuition = $Tuition.partial().parse(tuitionResult);
-    const assessment = _.merge(tuition, studentRecord, {
-      year: studentVerification.year,
-    });
+    const assessment = $Assessment.partial().parse(
+      _.merge(tuition, studentRecord, {
+        year: studentVerification.year,
+      })
+    );
 
     const deletedVerification = await studentVerificationCollection.deleteOne({
       _id: new ObjectId($_id.parse(_id)),
@@ -63,13 +67,11 @@ export const PUT = async (req: NextRequest) => {
         );
 
         if (insertedAssessment.acknowledged) {
-          // Successfully inserted student record and assessment
           return Response.json(
             { message: "Record and Assessment inserted successfully" },
             { status: 200 }
           );
         } else {
-          // Failed to insert assessment
           return Response.json(
             { message: "Failed to insert assessment" },
             { status: 500 }
@@ -82,7 +84,6 @@ export const PUT = async (req: NextRequest) => {
         );
       }
     } else {
-      // Failed to delete student verification
       return Response.json(
         { message: "Failed to delete student verification" },
         { status: 500 }

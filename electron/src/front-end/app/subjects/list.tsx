@@ -36,10 +36,15 @@ export default function ListSubjectPage() {
   }
   return (
     <Flex direction={"column"} gap={"2"} p={"3"}>
-      <Text size="3" weight={"bold"}>
-        List of Subject
-      </Text>
-      <Table.Root variant="surface">
+      <Box>
+        <Text size="3" weight={"bold"} as="div">
+          List of Subject
+        </Text>
+        <Text size="2" color="gray" as="div">
+          List of available of subjects
+        </Text>
+      </Box>
+      <Table.Root>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeaderCell>Subject Code</Table.ColumnHeaderCell>

@@ -9,9 +9,9 @@ export default function Page() {
     { title: "Grade 12 - Senior High School", value: "12" },
   ];
   return (
-    <Box className="space-y-4">
+    <Box className="space-y-5" p="6">
       <Heading>Tuition Fee</Heading>
-      <Table.Root variant="surface">
+      <Table.Root>
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>

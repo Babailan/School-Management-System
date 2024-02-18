@@ -6,7 +6,6 @@ import { Box, Button, ScrollArea, Text } from "@radix-ui/themes";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-
 export default function Page() {
   const mutation = useMutation({
     mutationFn: () => {
