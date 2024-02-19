@@ -1,6 +1,4 @@
-# next.js build output
 .next
-
 node_modules
 package.lock.json
 dist

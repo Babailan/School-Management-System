@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusCircledIcon, SectionIcon } from "@radix-ui/react-icons";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import {
   Avatar,
   Badge,
@@ -12,6 +12,11 @@ import {
   Select,
   Table,
   Text,
+  Separator,
+  Link as RadixLink,
+  Dialog,
+  Inset,
+  TableBody,
 } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -22,6 +27,7 @@ import toast from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import { $Assessment, $Section } from "@repo/types";
 import { z } from "zod";
+import Link from "next/link";
 
 export default function Page() {
   const params = useSearchParams();
@@ -35,7 +41,7 @@ export default function Page() {
       (await axios.get(`http://localhost:3001/api/assessment/${_id}`)).data,
   });
 
-  const assessment = $Assessment.nullish().parse(AssessmentData);
+  const assessment = $Assessment.optional().parse(AssessmentData);
 
   const { data: SectionData, isPending: SectionPending } = useQuery({
     queryKey: ["/assessment/enrollment", _id, "for-section"],
@@ -53,11 +59,16 @@ export default function Page() {
   });
 
   const sections = z
-    .array(
-      $Section.extend({ _id: z.string() }).partial().required({ _id: true })
-    )
+    .array($Section.extend({ _id: z.string() }))
     .default([])
     .parse(SectionData);
+
+  const enrolledSection = sections.filter((sections) =>
+    sections.students?.some(
+      (student) => student.studentId == assessment?.studentId
+    )
+  );
+  console.log(sections);
 
   const selectedSubjects = _.get(
     _.find(sections, { _id: selectedSectionID }),
@@ -100,20 +111,80 @@ export default function Page() {
           </Box>
         </Flex>
       </Card>
+      <Flex
+        gap={"2"}
+        className="uppercase"
+        justify={"between"}
+        align={"center"}
+      >
+        <Box className="space-x-2">
+          <Badge color={assessment?.status == "paid" ? "indigo" : "red"}>
+            Status : {assessment?.status || "not paid"}
+          </Badge>
+          <Badge color={assessment?.enroll == "enrolled" ? "indigo" : "red"}>
+            Status : {assessment?.enroll || "not enroll"}
+          </Badge>
+          <Badge color="gray">
+            YEAR : {`${assessment?.year} - ${Number(assessment?.year) + 1}`}
+          </Badge>
+          <Badge color="gray">STRAND : {assessment?.strand}</Badge>
+          <Badge color="gray">Grade Level : {assessment?.gradeLevel}</Badge>
+        </Box>
+        <Box>
+          <Dialog.Root>
+            <Dialog.Trigger>
+              <RadixLink>View Section</RadixLink>
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <Dialog.Title>Section List</Dialog.Title>
+              <Dialog.Description>
+                The student is currently registered in the following section.
+              </Dialog.Description>
+              <Inset side="x" my="5">
+                <Table.Root>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeaderCell>
+                        Section Name
+                      </Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                    </Table.Row>
+                  </Table.Header>
 
-      <Flex gap={"2"} className="uppercase" wrap="wrap">
-        <Badge color={assessment?.status == "paid" ? "indigo" : "red"}>
-          Status : {assessment?.status || "not paid"}
-        </Badge>
-        <Badge color={assessment?.enroll == "enrolled" ? "indigo" : "red"}>
-          Status : {assessment?.enroll || "not enroll"}
-        </Badge>
-        <Badge color="gray">
-          YEAR : {`${assessment?.year} - ${Number(assessment?.year) + 1}`}
-        </Badge>
-        <Badge color="gray">STRAND : {assessment?.strand}</Badge>
-        <Badge color="gray">Grade Level : {assessment?.gradeLevel}</Badge>
+                  <TableBody>
+                    {enrolledSection.map((section) => (
+                      <Table.Row key={section._id} align={"center"}>
+                        <Table.Cell>{section.sectionName}</Table.Cell>
+                        <Table.Cell justify={"end"}>
+                          <Link href={"#"}>
+                            <Button className="hover:cursor-pointer">
+                              View Section
+                            </Button>
+                          </Link>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </TableBody>
+                </Table.Root>
+              </Inset>
+
+              <Flex gap="3" justify="end">
+                <Dialog.Close>
+                  <Button
+                    variant="soft"
+                    color="gray"
+                    className="hover:cursor-pointer"
+                  >
+                    Close
+                  </Button>
+                </Dialog.Close>
+              </Flex>
+            </Dialog.Content>
+          </Dialog.Root>
+        </Box>
       </Flex>
+      <Separator orientation="horizontal" size={"4"} />
+
       <Select.Root onValueChange={(_id) => setSelectedSectionID(_id)}>
         <Select.Trigger placeholder="Pick a section" />
         <Select.Content position="popper">

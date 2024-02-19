@@ -18,9 +18,10 @@ export const PUT = async (req: NextRequest) => {
 
     const { _id, section_id } = $Filter
       .extend({
-        section_id: z.string().min(0),
+        section_id: $_id,
       })
       .pick({ _id: true, section_id: true })
+      .required()
       .parse(body);
 
     const targetAssessment = await assessmentCollection.findOne({
@@ -54,7 +55,6 @@ export const PUT = async (req: NextRequest) => {
       throw error;
     }
 
-    return Response.json("");
     const sectionAdded = await sectionCollection.updateOne(
       { _id: new ObjectId(sectionResult._id) },
       {
@@ -65,7 +65,6 @@ export const PUT = async (req: NextRequest) => {
     );
     if (sectionAdded.acknowledged) {
       const enroll: typeof $Assessment._type.enroll = "enrolled";
-
       assessmentCollection.updateOne(
         {
           _id: new ObjectId(assessmentResult._id),

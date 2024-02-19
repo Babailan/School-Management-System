@@ -12,10 +12,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "mongodb": "^6.3.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "tsup": "^8.0.2"
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
   }
 }
