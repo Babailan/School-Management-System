@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../mongodb/connect";
-import { $Assessment, $Filter, $_id } from "@repo/types";
 import { ObjectId } from "mongodb";
 import { ZodError } from "zod";
 

@@ -1,6 +1,7 @@
 import "@radix-ui/themes/styles.css";
 import "./global.css";
 import "react-loading-skeleton/dist/skeleton.css";
+import "handsontable/dist/handsontable.full.min.css";
 import { Box, Flex, ScrollArea, Theme } from "@radix-ui/themes";
 import { Toaster } from "react-hot-toast";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -29,7 +30,7 @@ export default function RootLayout({
                 <Flex>
                   <DynamicSideBar />
                   <ScrollArea>
-                    <Box className="max-h-screen">{children}</Box>
+                    <Box className="max-h-screen min-h-screen">{children}</Box>
                   </ScrollArea>
                 </Flex>
               </Theme>

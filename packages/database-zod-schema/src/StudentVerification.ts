@@ -1,6 +1,8 @@
 import { z } from "zod";
+import { _id } from "../helper/_id";
 
-const $StudentRecord = z.object({
+const StudentVerificationSchema = z.object({
+  _id: _id,
   firstName: z.coerce.string(),
   lastName: z.coerce.string(),
   middleName: z.coerce.string(),
@@ -10,10 +12,11 @@ const $StudentRecord = z.object({
   fullname: z.coerce.string(),
   strand: z.coerce.string(),
   gradeLevel: z.coerce.string(),
+  referenceNumber: z.coerce.string(),
   sex: z.coerce.string(),
   age: z.coerce.number(),
   phoneNumber: z.coerce.string(),
-  studentId: z.coerce.number(),
+  year: z.coerce.string(),
 });
 
-export { $StudentRecord };
+export { StudentVerificationSchema };

@@ -140,7 +140,7 @@ export default function Page() {
                               </Text>
                               <Text size={"2"}>
                                 <Strong>
-                                  Grade Level : {student.gradeLevel}{" "}
+                                  Grade Level : {student.gradeLevel}
                                 </Strong>
                               </Text>
                               <Text size={"2"}>

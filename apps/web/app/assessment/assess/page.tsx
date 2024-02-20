@@ -85,11 +85,11 @@ export default function Page() {
       </Card>
       <Flex justify="between" align={"center"}>
         <Flex gap={"2"} className="uppercase">
-          <Badge color={data?.status == "paid" ? "indigo" : "red"}>
-            Status : {data?.status || "not paid"}
+          <Badge color={data?.assessment_status ? "indigo" : "red"}>
+            Status : {data?.assessment_status ? "paid" : "not paid"}
           </Badge>
-          <Badge color={data?.enroll == "enrolled" ? "indigo" : "red"}>
-            Status : {data?.enroll || "not enroll"}
+          <Badge color={data?.enrollment_status ? "indigo" : "red"}>
+            Status : {data?.enrollment_status ? "enrolled" : "not enroll"}
           </Badge>
           <Badge color="gray">
             YEAR : {`${data?.year} - ${Number(data?.year) + 1}`}
@@ -135,7 +135,7 @@ export default function Page() {
   );
 }
 const History: React.FC<{
-  history: z.infer<typeof $Assessment.shape.history>;
+  history: z.infer<typeof $Assessment.shape.history> | undefined;
 }> = ({ history }) => {
   return (
     <Dialog.Root>

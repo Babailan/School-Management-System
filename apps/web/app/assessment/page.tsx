@@ -22,7 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Link from "next/link";
 import z from "zod";
-import { $Assessment } from "@repo/types";
+import { AssessmentSchema } from "@repo/database-zod-schema";
 
 export default function Page() {
   const [page, setPage] = useState(1);
@@ -44,20 +44,6 @@ export default function Page() {
         })
       ).data,
   });
-
-  const assessmentList = z
-    .array(
-      $Assessment.extend({ _id: z.string() }).pick({
-        _id: true,
-        status: true,
-        fullname: true,
-        gradeLevel: true,
-        strand: true,
-        enroll: true,
-      })
-    )
-    .nullish()
-    .parse(data?.results);
 
   return (
     <Box className="space-y-2" p="6">
@@ -101,20 +87,18 @@ export default function Page() {
             </Table.Header>
 
             <Table.Body className="capitalize">
-              {assessmentList?.length ? (
-                assessmentList?.map((student) => {
+              {data?.length ? (
+                data?.map((student) => {
                   return (
-                    <Table.Row key={student?._id} align={"center"}>
+                    <Table.Row key={student._id} align={"center"}>
                       <Table.Cell>
-                        <Text color={student?.status == "paid" ? "sky" : "red"}>
-                          {student?.status || "Not Paid"}
+                        <Text color={student.assessment_status ? "sky" : "red"}>
+                          {student.assessment_status ? "Paid" : "Not Paid"}
                         </Text>
                       </Table.Cell>
                       <Table.Cell>
-                        <Text
-                          color={student?.enroll == "enrolled" ? "sky" : "red"}
-                        >
-                          {student.enroll || "Not Enrolled"}
+                        <Text color={student.enrollment_status ? "sky" : "red"}>
+                          {student.enrollment_status || "Not Enrolled"}
                         </Text>
                       </Table.Cell>
                       <Table.Cell>{student?.fullname}</Table.Cell>

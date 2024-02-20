@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../../mongodb/connect";
-import { ObjectId } from "mongodb";
-import { $Assessment, $Filter, $_id } from "@repo/types";
+import { Document, ObjectId, WithId } from "mongodb";
+import { $Assessment, $Filter, $StudentRecord, $_id } from "@repo/types";
 import z from "zod";
 import { $Section } from "@repo/types";
 import _ from "lodash";
@@ -11,7 +11,7 @@ export const PUT = async (req: NextRequest) => {
     const body = await req.json();
     const assessmentCollection = (await Connect())
       .db("yasc")
-      .collection("assessment");
+      .collection<WithId<typeof $Assessment._type>>("assessment");
     const sectionCollection = (await Connect())
       .db("yasc")
       .collection("section");
@@ -27,14 +27,17 @@ export const PUT = async (req: NextRequest) => {
     const targetAssessment = await assessmentCollection.findOne({
       _id: new ObjectId(_id),
     });
+
     const targetSection = await sectionCollection.findOne({
       _id: new ObjectId(section_id),
     });
 
     const assessmentResult = $Assessment
-      .extend({ _id: z.string() })
+      .extend({ _id: $_id })
       .partial()
       .parse(JSON.parse(JSON.stringify(targetAssessment)));
+
+    const studentRecord = $StudentRecord.parse(assessmentResult);
 
     const sectionResult = $Section
       .extend({ _id: z.string() })
@@ -64,14 +67,13 @@ export const PUT = async (req: NextRequest) => {
       }
     );
     if (sectionAdded.acknowledged) {
-      const enroll: typeof $Assessment._type.enroll = "enrolled";
       assessmentCollection.updateOne(
         {
           _id: new ObjectId(assessmentResult._id),
         },
         {
           $set: {
-            enroll,
+            enrollment_status: true,
           },
         }
       );

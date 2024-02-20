@@ -32,7 +32,6 @@ import Link from "next/link";
 export default function Page() {
   const params = useSearchParams();
   const _id = params.get("_id");
-  // ID OF section
   const [selectedSectionID, setSelectedSectionID] = useState("");
 
   const { data: AssessmentData, isPending: AssessmentPending } = useQuery({
@@ -68,7 +67,6 @@ export default function Page() {
       (student) => student.studentId == assessment?.studentId
     )
   );
-  console.log(sections);
 
   const selectedSubjects = _.get(
     _.find(sections, { _id: selectedSectionID }),
@@ -76,6 +74,21 @@ export default function Page() {
     []
   );
 
+  const enroll = () => {
+    return () => {
+      toast.promise(
+        axios.put("http://localhost:3001/api/assessment/enroll", {
+          _id: _id,
+          section_id: selectedSectionID,
+        }),
+        {
+          loading: "Saving...",
+          success: <b>Settings saved!</b>,
+          error: <b>Could not save.</b>,
+        }
+      );
+    };
+  };
   if (AssessmentPending || SectionPending) {
     return (
       <Box p={"6"}>
@@ -118,11 +131,11 @@ export default function Page() {
         align={"center"}
       >
         <Box className="space-x-2">
-          <Badge color={assessment?.status == "paid" ? "indigo" : "red"}>
-            Status : {assessment?.status || "not paid"}
+          <Badge color={assessment?.assessment_status ? "indigo" : "red"}>
+            Status : {assessment?.assessment_status ? "Paid" : "Not Paid"}
           </Badge>
-          <Badge color={assessment?.enroll == "enrolled" ? "indigo" : "red"}>
-            Status : {assessment?.enroll || "not enroll"}
+          <Badge color={assessment?.enrollment_status ? "indigo" : "red"}>
+            Status : {assessment?.enrollment_status ? "Enrolled" : "Not Enroll"}
           </Badge>
           <Badge color="gray">
             YEAR : {`${assessment?.year} - ${Number(assessment?.year) + 1}`}
@@ -131,56 +144,58 @@ export default function Page() {
           <Badge color="gray">Grade Level : {assessment?.gradeLevel}</Badge>
         </Box>
         <Box>
-          <Dialog.Root>
-            <Dialog.Trigger>
-              <RadixLink>View Section</RadixLink>
-            </Dialog.Trigger>
-            <Dialog.Content>
-              <Dialog.Title>Section List</Dialog.Title>
-              <Dialog.Description>
-                The student is currently registered in the following section.
-              </Dialog.Description>
-              <Inset side="x" my="5">
-                <Table.Root>
-                  <Table.Header>
-                    <Table.Row>
-                      <Table.ColumnHeaderCell>
-                        Section Name
-                      </Table.ColumnHeaderCell>
-                      <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-                    </Table.Row>
-                  </Table.Header>
-
-                  <TableBody>
-                    {enrolledSection.map((section) => (
-                      <Table.Row key={section._id} align={"center"}>
-                        <Table.Cell>{section.sectionName}</Table.Cell>
-                        <Table.Cell justify={"end"}>
-                          <Link href={"#"}>
-                            <Button className="hover:cursor-pointer">
-                              View Section
-                            </Button>
-                          </Link>
-                        </Table.Cell>
+          {!enrolledSection.length || (
+            <Dialog.Root>
+              <Dialog.Trigger>
+                <RadixLink size="2">View Section</RadixLink>
+              </Dialog.Trigger>
+              <Dialog.Content>
+                <Dialog.Title>Section List</Dialog.Title>
+                <Dialog.Description>
+                  The student is currently registered in the following section.
+                </Dialog.Description>
+                <Inset side="x" my="5">
+                  <Table.Root>
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.ColumnHeaderCell>
+                          Section Name
+                        </Table.ColumnHeaderCell>
+                        <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                       </Table.Row>
-                    ))}
-                  </TableBody>
-                </Table.Root>
-              </Inset>
+                    </Table.Header>
 
-              <Flex gap="3" justify="end">
-                <Dialog.Close>
-                  <Button
-                    variant="soft"
-                    color="gray"
-                    className="hover:cursor-pointer"
-                  >
-                    Close
-                  </Button>
-                </Dialog.Close>
-              </Flex>
-            </Dialog.Content>
-          </Dialog.Root>
+                    <TableBody>
+                      {enrolledSection.map((section) => (
+                        <Table.Row key={section._id} align={"center"}>
+                          <Table.Cell>{section.sectionName}</Table.Cell>
+                          <Table.Cell justify={"end"}>
+                            <Link href={"#"}>
+                              <Button className="hover:cursor-pointer">
+                                View Section
+                              </Button>
+                            </Link>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </TableBody>
+                  </Table.Root>
+                </Inset>
+
+                <Flex gap="3" justify="end">
+                  <Dialog.Close>
+                    <Button
+                      variant="soft"
+                      color="gray"
+                      className="hover:cursor-pointer"
+                    >
+                      Close
+                    </Button>
+                  </Dialog.Close>
+                </Flex>
+              </Dialog.Content>
+            </Dialog.Root>
+          )}
         </Box>
       </Flex>
       <Separator orientation="horizontal" size={"4"} />
@@ -227,22 +242,7 @@ export default function Page() {
         ) : null}
       </Box>
       <Box>
-        <Button
-          className="hover:cursor-pointer"
-          onClick={() => {
-            toast.promise(
-              axios.put("http://localhost:3001/api/assessment/enroll", {
-                _id: _id,
-                section_id: selectedSectionID,
-              }),
-              {
-                loading: "Saving...",
-                success: <b>Settings saved!</b>,
-                error: <b>Could not save.</b>,
-              }
-            );
-          }}
-        >
+        <Button className="hover:cursor-pointer" onClick={enroll}>
           <PlusCircledIcon />
           Enroll
         </Button>

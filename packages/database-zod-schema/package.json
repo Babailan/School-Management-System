@@ -1,22 +1,21 @@
 {
-  "name": "@repo/types",
+  "name": "@repo/database-zod-schema",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
+  "main": "index.js",
   "types": "./dist/index.d.ts",
   "module": "./dist/index.mjs",
   "private": true,
   "scripts": {
-    "dev": "tsup --config ./tsup.config.ts --watch",
-    "type-check": "tsc"
+    "dev": "tsup --watch"
   },
+  "keywords": [],
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
+    "tsup": "^8.0.2"
   }
 }

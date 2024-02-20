@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "turbo run dev"
+    "dev": "turbo run dev --filter=!@repo/types --filter=!@repo/electron",
+    "type-check": "turbo run type-check"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +17,9 @@
   ],
   "dependencies": {
     "turbo": "^1.12.4"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
   }
 }

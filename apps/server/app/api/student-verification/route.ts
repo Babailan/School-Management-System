@@ -2,15 +2,18 @@ import { NextRequest } from "next/server";
 import { Connect } from "../../../mongodb/connect";
 import { ZodError } from "zod";
 import {
-  $Tuition,
-  $Assessment,
-  $StudentRecord,
-  $StudentVerification,
-  $_id,
-} from "@repo/types";
+  AssessmentSchema,
+  StudentRecordSchema,
+  StudentVerificationSchema,
+  TuitionSchema,
+} from "@repo/database-zod-schema";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
 
+/**
+ * @remarks
+ *  PUT METHOD deletes the user and append him into as official students.
+ */
 export const PUT = async (req: NextRequest) => {
   try {
     const dbConnection = (await Connect()).db("yasc");
@@ -24,7 +27,7 @@ export const PUT = async (req: NextRequest) => {
     const studentRecordCollection = dbConnection.collection("student-record");
 
     const result = await studentVerificationCollection.findOne({
-      _id: new ObjectId($_id.parse(_id)),
+      _id: new ObjectId(_id),
     });
 
     if (result == null) throw new Error("ID not found");
@@ -39,21 +42,24 @@ export const PUT = async (req: NextRequest) => {
       gradeLevel: result?.gradeLevel,
     });
 
-    const studentRecord = $StudentRecord.partial().parse({
+    const studentRecord = StudentRecordSchema.omit({ _id: true }).parse({
       ...result,
       studentId: getTheLatestStudentID[0]?.studentId + 2 || 5000,
     });
-    const studentVerification = $StudentVerification.parse(result);
 
-    const tuition = $Tuition.partial().parse(tuitionResult);
-    const assessment = $Assessment.partial().parse(
+    const studentVerification = StudentVerificationSchema.omit({
+      _id: true,
+    }).parse(result);
+
+    const tuition = TuitionSchema.omit({ _id: true }).parse(tuitionResult);
+    const assessment = AssessmentSchema.omit({ _id: true }).parse(
       _.merge(tuition, studentRecord, {
         year: studentVerification.year,
       })
     );
 
     const deletedVerification = await studentVerificationCollection.deleteOne({
-      _id: new ObjectId($_id.parse(_id)),
+      _id: new ObjectId(_id),
     });
 
     if (deletedVerification.acknowledged) {
@@ -90,16 +96,11 @@ export const PUT = async (req: NextRequest) => {
       );
     }
   } catch (error) {
+    console.log(error);
     if (error instanceof ZodError) {
-      return Response.json(error.issues, { status: 403 });
+      return Response.json(error.issues, { status: 400 });
     }
-    return Response.json(
-      {
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
-      },
-      { status: 500 }
-    );
+    return Response.json("Internal Server Error", { status: 500 });
   }
 };
 

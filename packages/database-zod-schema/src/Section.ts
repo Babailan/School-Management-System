@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { $Assessment } from "./$Assessment";
-import { $Grade } from "./$Grade";
+import { AssessmentSchema } from "./Assessment";
+import { _id } from "../helper/_id";
 
-const $Section = z.object({
+const SectionSchema = z.object({
   subjects: z.array(
     z.object({
       _id: z.string(),
@@ -17,7 +17,8 @@ const $Section = z.object({
   sectionName: z.string(),
   strand: z.string(),
   semester: z.string(),
-  students: z.array($Assessment).optional(),
+  students: z.array(AssessmentSchema).default([]),
+  _id: _id,
 });
 
-export { $Section };
+export { SectionSchema };

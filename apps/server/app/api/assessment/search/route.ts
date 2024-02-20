@@ -1,39 +1,49 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../../mongodb/connect";
 import { ZodError, z } from "zod";
-import { ObjectId } from "mongodb";
-import { $Assessment, $Pagination, $_id } from "@repo/types";
+import {
+  AssessmentSchema,
+  StudentRecordSchema,
+} from "@repo/database-zod-schema";
 
-export const GET = async (req: NextRequest, { params }) => {
+export const GET = async (req: NextRequest) => {
+  const filter = z.object({
+    query: z.string().default(""),
+    page: z.number().default(1),
+    limit: z.number().default(10),
+  });
+
   try {
-    const assessmentCollection = (await Connect())
-      .db("yasc")
-      .collection("assessment");
+    const db = (await Connect()).db("yasc");
+    const assessmentCollection =
+      db.collection<typeof AssessmentSchema._type>("assessment");
+    const studentRecordCollection =
+      db.collection<typeof StudentRecordSchema._type>("student-record");
 
     const paramsObject = Object.fromEntries(req.nextUrl.searchParams);
 
-    const params = $Pagination.parse(paramsObject);
+    const params = filter.parse(paramsObject);
 
     const $FilterParams = z.object({
       year: z.string(),
     });
+
     const regexQuery = params.query
       .split(/\s+/)
       .map((word) => `(?=.*\\b${word}.*\\b)`)
       .join("");
 
-    let filterOR = [
-      {
-        referenceNumber: new RegExp(regexQuery, "ig"),
-      },
-      {
+    const studentRecordResult = await studentRecordCollection
+      .find({
         fullname: new RegExp(regexQuery, "ig"),
-      },
-    ];
+      })
+      .toArray();
 
     const results = await assessmentCollection
       .find({
-        $or: filterOR,
+        $or: studentRecordResult.map(({ studentId }) => ({
+          studentId: studentId,
+        })),
         $and: [$FilterParams.partial().parse(paramsObject)],
       })
       .skip((params.page - 1) * params.limit)
@@ -42,7 +52,7 @@ export const GET = async (req: NextRequest, { params }) => {
 
     const totalCount = await assessmentCollection
       .find({
-        $or: filterOR,
+        $or: [{ fullname: new RegExp(regexQuery, "ig") }],
       })
       .count();
 
@@ -50,6 +60,7 @@ export const GET = async (req: NextRequest, { params }) => {
 
     return Response.json({ results, currentPage: params.page, maxPage });
   } catch (error) {
+    console.log(error);
     if (error instanceof ZodError) {
       return Response.json(error.issues, { status: 400 });
     }

@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server";
 import { Connect } from "../../../../mongodb/connect";
 import { ZodError, z } from "zod";
-import { $_id } from "@repo/types";
-import { $StudentVerification } from "@repo/types";
+import { StudentVerificationSchema } from "@repo/database-zod-schema";
 import { ObjectId } from "mongodb";
 
 export const GET = async (req: NextRequest, { params }) => {
@@ -11,6 +10,7 @@ export const GET = async (req: NextRequest, { params }) => {
       .db("yasc")
       .collection("student-verification");
     const { slug } = params;
+
     if (slug == "search") {
       const { query, page, limit, year } = Object.fromEntries(
         req.nextUrl.searchParams
@@ -63,10 +63,10 @@ export const GET = async (req: NextRequest, { params }) => {
       return Response.json({ results, currentPage: params.page, maxPage });
     } else {
       const result = await studentVerificationCollection.findOne({
-        _id: new ObjectId($_id.parse(slug)),
+        _id: new ObjectId(slug),
       });
 
-      const parsedResult = $StudentVerification.nullable().parse(result);
+      const parsedResult = StudentVerificationSchema.nullable().parse(result);
       return Response.json(parsedResult);
     }
   } catch (error) {
