@@ -7,7 +7,8 @@
   "module": "./dist/index.mjs",
   "private": true,
   "scripts": {
-    "dev": "tsup --config ./tsup.config.ts --watch"
+    "dev": "tsup --config ./tsup.config.ts --watch",
+    "package:build": "tsup --config ./tsup.config.ts"
   },
   "author": "",
   "license": "MIT",

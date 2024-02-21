@@ -4,6 +4,14 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "package:build": {},
+    "build": {
+      "cache": false,
+      "dependsOn": ["package:build"]
+    },
+    "start": {
+      "dependsOn": ["build"]
     }
   }
 }

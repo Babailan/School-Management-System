@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "turbo run dev"
+    "dev": "turbo run dev",
+    "build": "turbo run build --filter=!@repo/electron",
+    "start": "turbo run start --filter=!@repo/electron"
   },
   "keywords": [],
   "author": "",
