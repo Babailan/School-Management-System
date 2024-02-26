@@ -3,7 +3,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Flex,
   Heading,
   Popover,
@@ -13,7 +12,6 @@ import {
 import DarkLogo from "../../assets/black_yasc_logo.png";
 import Image from "next/image";
 import { CaretSortIcon } from "@radix-ui/react-icons";
-import { useLocalStorage } from "usehooks-ts";
 import Link from "next/link";
 
 function Options({ option, header }) {
@@ -42,8 +40,6 @@ function Options({ option, header }) {
 }
 
 export default function Sidebar() {
-  const [userToken, setUserToken] = useLocalStorage("userToken", "");
-
   const userControlOption = [
     { title: "Access Control", href: "/access-control", location: [] },
   ];
@@ -87,18 +83,13 @@ export default function Sidebar() {
     },
   ];
 
-  const logoutUser = () => {
-    setUserToken("");
-  };
+  return <></>;
 
-  if (!userToken) {
-    return <></>;
-  }
   return (
     <ScrollArea className="max-h-screen max-w-60">
-      <Flex className="border min-h-screen" direction={"column"}>
+      <Flex className=" min-h-screen" direction={"column"}>
         <Box className="flex-1">
-          <Box className="border px-5">
+          <Box className=" px-5">
             <Image src={DarkLogo} alt="A house in a forest" className="w-52" />
           </Box>
           <Box p={"5"} className="space-y-5">
@@ -137,7 +128,6 @@ export default function Sidebar() {
                     className="w-full hover:cursor-pointer"
                     as="div"
                     size={"2"}
-                    onClick={logoutUser}
                   >
                     Log Out
                   </Text>

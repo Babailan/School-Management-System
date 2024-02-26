@@ -21,8 +21,6 @@ import numeral from "numeral";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
-import { $Assessment } from "@repo/types";
-import { z } from "zod";
 import dateFormat from "dateformat";
 
 export default function Page() {
@@ -32,9 +30,7 @@ export default function Page() {
   const { data, isPending, refetch } = useQuery({
     queryKey: ["assessment/assess", _id],
     queryFn: async () =>
-      $Assessment.parse(
-        (await axios.get(`http://localhost:3001/api/assessment/${_id}`)).data
-      ),
+      (await axios.get(`http://localhost:3001/api/assessment/${_id}`)).data,
   });
 
   if (isPending) {
@@ -134,9 +130,7 @@ export default function Page() {
     </Box>
   );
 }
-const History: React.FC<{
-  history: z.infer<typeof $Assessment.shape.history> | undefined;
-}> = ({ history }) => {
+const History = ({ history }) => {
   return (
     <Dialog.Root>
       <Dialog.Trigger>

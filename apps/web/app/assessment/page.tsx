@@ -87,8 +87,8 @@ export default function Page() {
             </Table.Header>
 
             <Table.Body className="capitalize">
-              {data?.length ? (
-                data?.map((student) => {
+              {data?.results.length ? (
+                data?.results.map((student) => {
                   return (
                     <Table.Row key={student._id} align={"center"}>
                       <Table.Cell>

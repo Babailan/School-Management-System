@@ -8,9 +8,9 @@ import {
 
 export const GET = async (req: NextRequest) => {
   const filter = z.object({
-    query: z.string().default(""),
-    page: z.number().default(1),
-    limit: z.number().default(10),
+    query: z.coerce.string().default(""),
+    page: z.coerce.number().default(1),
+    limit: z.coerce.number().default(10),
   });
 
   try {
