@@ -59,10 +59,12 @@ export default function Page() {
   ];
 
   const login = async (formData: FormData) => {
-    console.log("HE");
-    signIn("credentials", {
+    const test = await signIn("credentials", {
       redirect: false,
+      email: formData.get("email"),
+      password: formData.get("password"),
     });
+    console.log(test);
   };
 
   return (
