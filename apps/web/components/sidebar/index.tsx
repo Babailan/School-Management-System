@@ -1,18 +1,24 @@
-"use client";
-
 import {
   Avatar,
   Box,
   Flex,
   Heading,
-  Popover,
+  PopoverContent,
+  PopoverRoot,
   ScrollArea,
   Text,
+  PopoverTrigger,
+  Button,
+  Inset,
+  Card,
 } from "@radix-ui/themes";
 import DarkLogo from "../../assets/black_yasc_logo.png";
 import Image from "next/image";
-import { CaretSortIcon } from "@radix-ui/react-icons";
+import { CaretSortIcon, ExitIcon, GearIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { signOut } from "next-auth/react";
+import LogoutButton from "./LogOutButton";
 
 function Options({ option, header }) {
   return (
@@ -39,7 +45,11 @@ function Options({ option, header }) {
   );
 }
 
-export default function Sidebar() {
+export default async function Sidebar() {
+  const session = await getServerSession();
+  if (!session) {
+    return <></>;
+  }
   const userControlOption = [
     { title: "Access Control", href: "/access-control", location: [] },
   ];
@@ -83,14 +93,20 @@ export default function Sidebar() {
     },
   ];
 
-  return <></>;
-
   return (
     <ScrollArea className="max-h-screen max-w-60">
       <Flex className=" min-h-screen" direction={"column"}>
         <Box className="flex-1">
-          <Box className=" px-5">
-            <Image src={DarkLogo} alt="A house in a forest" className="w-52" />
+          <Box className="px-5">
+            <Box className="relative h-32">
+              <Image
+                src={DarkLogo}
+                fill={true}
+                quality={75}
+                alt="Logo"
+                className="object-contain"
+              />
+            </Box>
           </Box>
           <Box p={"5"} className="space-y-5">
             <Options option={subjectTeacherOption} header={"Subject Teacher"} />
@@ -119,20 +135,14 @@ export default function Sidebar() {
               </Box>
             </Flex>
             <Box>
-              <Popover.Root>
-                <Popover.Trigger>
+              <PopoverRoot>
+                <PopoverTrigger>
                   <CaretSortIcon className="cursor-pointer" />
-                </Popover.Trigger>
-                <Popover.Content className="w-60">
-                  <Text
-                    className="w-full hover:cursor-pointer"
-                    as="div"
-                    size={"2"}
-                  >
-                    Log Out
-                  </Text>
-                </Popover.Content>
-              </Popover.Root>
+                </PopoverTrigger>
+                <PopoverContent className="w-60">
+                  <LogoutButton />
+                </PopoverContent>
+              </PopoverRoot>
             </Box>
           </Flex>
         </Box>

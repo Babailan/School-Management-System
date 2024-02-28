@@ -1,10 +1,8 @@
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import type { ComponentPropsWithoutRef } from "react";
 import React from "react";
 
-type SvgProps = ComponentPropsWithoutRef<"svg">;
-
-export default function PesoSign({ ...props }: SvgProps) {
+export default function PesoSign({
+  ...props
+}: React.JSX.IntrinsicElements["svg"]) {
   return (
     <svg
       width="15"

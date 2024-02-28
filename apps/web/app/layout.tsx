@@ -7,21 +7,25 @@ import { Box, Flex, ScrollArea, Theme } from "@radix-ui/themes";
 import { Toaster } from "react-hot-toast";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ReactClientProvider from "./react-query-provider";
-import dynamic from "next/dynamic";
 import { ToastContainer } from "react-toastify";
-import { SessionProvider } from "next-auth/react";
+import Sidebar from "@/components/sidebar";
 
-const DynamicSideBar = dynamic(() => import("../components/sidebar"), {
-  ssr: false,
-});
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="icon"
+          href="/icon?<generated>"
+          type="image/<generated>"
+          sizes="<generated>"
+        />
+        <link rel="icon" href="/icon.png" sizes="any" />
+      </head>
       <body>
         <ReactClientProvider>
           <ReactQueryDevtools initialIsOpen={true} />
@@ -30,7 +34,7 @@ export default function RootLayout({
           <Box>
             <Theme>
               <Flex>
-                <DynamicSideBar />
+                <Sidebar />
                 <ScrollArea>
                   <Box className="max-h-screen min-h-screen">{children}</Box>
                 </ScrollArea>

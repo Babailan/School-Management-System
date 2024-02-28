@@ -1,71 +1,24 @@
-"use client";
-
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Link as RadixLink,
-  Quote,
-  Text,
-  TextFieldRoot,
-  TextFieldInput,
-  TextFieldSlot,
-} from "@radix-ui/themes";
+import { Box, Flex, Heading, Quote, Text, Separator } from "@radix-ui/themes";
 import React from "react";
 import WhiteYascLogo from "../../assets/white_yasc_logo.png";
 import BlackYascLogo from "../../assets/black_yasc_logo.png";
 import Image from "next/image";
-import Link from "next/link";
-import { EnvelopeClosedIcon, LockClosedIcon } from "@radix-ui/react-icons";
-import { signIn } from "next-auth/react";
+import Facebook from "@/icon/facebook";
+import CredientialLogin from "./CredentialLogin";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { Metadata } from "next";
 
-export default function Page() {
-  const quotes = [
-    {
-      quote:
-        "The greatest glory in living lies not in never falling, but in rising every time we fall.",
-      author: "Nelson Mandela",
-    },
-    {
-      quote: "The way to get started is to quit talking and begin doing.",
-      author: "Walt Disney",
-    },
-    {
-      quote:
-        "Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma – which is living with the results of other people's thinking.",
-      author: "Steve Jobs",
-    },
-    {
-      quote:
-        "The future belongs to those who believe in the beauty of their dreams.",
-      author: "Eleanor Roosevelt",
-    },
-    {
-      quote:
-        "If you look at what you have in life, you'll always have more. If you look at what you don't have in life, you'll never have enough.",
-      author: "Oprah Winfrey",
-    },
-    {
-      quote:
-        "If you set your goals ridiculously high and it's a failure, you will fail above everyone else's success.",
-      author: "James Cameron",
-    },
-    {
-      quote:
-        "You may say I'm a dreamer, but I'm not the only one. I hope someday you'll join us. And the world will live as one.",
-      author: "John Lennon",
-    },
-  ];
+export const metadata: Metadata = {
+  title: "YASCI - Login Page",
+};
 
-  const login = async (formData: FormData) => {
-    const test = await signIn("credentials", {
-      redirect: false,
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
-    console.log(test);
-  };
+export default async function Page() {
+  const session = await getServerSession();
+
+  if (session) {
+    redirect("/");
+  }
 
   return (
     <Flex className="w-full flex">
@@ -74,12 +27,17 @@ export default function Page() {
           <Image src={WhiteYascLogo} width={150} alt={"Logo"} quality={2} />
           <Box className="space-y-5">
             <Heading className="text-white">
-              Start your journey at Young Achievers School Of Caloocan
+              Young Achiever's School of Caloocan INC
             </Heading>
             <Box>
               <Text size="3">
-                <Quote className="!text-white"></Quote>
-                <Text className="text-white whitespace-nowrap"></Text>
+                <Quote className="!text-white">
+                  I trust people to act according to their nature. Anything more
+                  is sentimentality.
+                </Quote>
+                <Text className="text-white whitespace-nowrap">
+                  – Dread Empress Malicia the First
+                </Text>
               </Text>
             </Box>
 
@@ -121,54 +79,32 @@ export default function Page() {
       </Box>
       <Box className="flex-1 flex items-center justify-center h-screen">
         <Box className="w-full max-w-md space-y-8 px-4 bg-white text-gray-600 sm:px-0">
-          <Box className="">
-            <Image src={BlackYascLogo} width={150} alt={"Logo"} quality={2} />
-            <Box mt="5" className="space-y-2">
-              <Heading>Log in</Heading>
-              <Text as="p">Fill all the requirements to continue.</Text>
-            </Box>
-          </Box>
-          <form action={login} className="space-y-5">
-            <Flex direction="column" gap="5">
-              <Box>
-                <Text weight={"medium"}>Email</Text>
-                <TextFieldRoot>
-                  <TextFieldSlot pl="3">
-                    <EnvelopeClosedIcon />
-                  </TextFieldSlot>
-                  <TextFieldInput
-                    size={"3"}
-                    color="indigo"
-                    name="email"
-                    placeholder="Enter your email"
-                  ></TextFieldInput>
-                </TextFieldRoot>
-              </Box>
-              <Box>
-                <Text weight={"medium"}>Password</Text>
-                <TextFieldRoot>
-                  <TextFieldSlot pl="3">
-                    <LockClosedIcon />
-                  </TextFieldSlot>
-                  <TextFieldInput
-                    type="password"
-                    size={"3"}
-                    color="indigo"
-                    name="password"
-                    placeholder="Enter your password"
-                  ></TextFieldInput>
-                </TextFieldRoot>
-              </Box>
-              <Flex justify="end">
-                <Link href={"#"} legacyBehavior passHref>
-                  <RadixLink>Forget Password?</RadixLink>
-                </Link>
+          <Box>
+            <Image
+              src={BlackYascLogo}
+              className="lg:hidden"
+              width={150}
+              alt={"Logo"}
+              quality={2}
+            />
+            <Flex justify="center" gap="5" align="center" direction="column">
+              <Heading>Log in to your account</Heading>
+              <Flex justify="center" align="center" gap="2" width="100%">
+                <Separator size="4" orientation="horizontal" />
+                <Text className="whitespace-nowrap">Or continue with</Text>
+                <Separator size="4" orientation="horizontal" />
               </Flex>
-              <Button size="3" className="hover:cursor-pointer">
-                Log in
-              </Button>
+              <button className="w-full border p-3 rounded-md shadow-sm">
+                <Flex align="center" gap="2" justify="center">
+                  <Facebook width={25} height={25} className="fill-blue-700" />
+                  <Text size="2" weight="medium">
+                    Continue with facebook
+                  </Text>
+                </Flex>
+              </button>
+              <CredientialLogin />
             </Flex>
-          </form>
+          </Box>
         </Box>
       </Box>
     </Flex>
