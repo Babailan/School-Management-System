@@ -9,44 +9,17 @@ import {
   Text,
   PopoverTrigger,
   Button,
-  Inset,
-  Card,
+  Badge,
 } from "@radix-ui/themes";
 import DarkLogo from "../../assets/black_yasc_logo.png";
 import Image from "next/image";
-import { CaretSortIcon, ExitIcon, GearIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { signOut } from "next-auth/react";
-import LogoutButton from "./LogOutButton";
-
-function Options({ option, header }) {
-  return (
-    <Box>
-      <Box>
-        <Heading size={"2"} mb={"2"}>
-          {header}
-        </Heading>
-        {option.map((option, idx) => {
-          return (
-            <Link href={option.href} key={idx}>
-              <Text
-                className="py-2 hover:border-indigo-500 border-l border-indigo-200 hover:border-l px-5 cursor-pointer"
-                as="div"
-                size={"2"}
-              >
-                {option.title}
-              </Text>
-            </Link>
-          );
-        })}
-      </Box>
-    </Box>
-  );
-}
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import LogoutButton from "./log-out-button";
+import Options from "./options";
+import { getAuth } from "@/middleware";
 
 export default async function Sidebar() {
-  const session = await getServerSession();
+  const session = await getAuth();
   if (!session) {
     return <></>;
   }
@@ -65,6 +38,11 @@ export default async function Sidebar() {
     {
       title: "Verification",
       href: "/verification",
+      location: [],
+    },
+    {
+      title: "Student Fee",
+      href: "/student-fee",
       location: [],
     },
   ];
@@ -122,17 +100,21 @@ export default async function Sidebar() {
               <Avatar
                 src="https://randomuser.me/api/portraits/women/79.jpg"
                 radius="full"
-                fallback={"P"}
+                fallback={"f"}
                 mr={"2"}
               ></Avatar>
-              <Box display={"inline"}>
-                <Text as="div" weight={"bold"} size={"2"}>
-                  Jennifer
+              <Flex direction="column">
+                <Text weight={"bold"} size={"2"}>
+                  {session.firstName}
                 </Text>
-                <Text as="div" size={"1"}>
-                  Faculty
-                </Text>
-              </Box>
+                {session.roles.map((role, idx) => {
+                  return (
+                    <Badge key={idx} className="capitalize">
+                      {role}
+                    </Badge>
+                  );
+                })}
+              </Flex>
             </Flex>
             <Box>
               <PopoverRoot>

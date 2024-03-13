@@ -9,14 +9,18 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ReactClientProvider from "./react-query-provider";
 import { ToastContainer } from "react-toastify";
 import Sidebar from "@/components/sidebar";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "YASCI",
+};
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link
           rel="icon"
@@ -29,15 +33,13 @@ export default async function RootLayout({
       <body>
         <ReactClientProvider>
           <ReactQueryDevtools initialIsOpen={true} />
-          <ToastContainer />
+          <ToastContainer stacked />
           <Toaster position="top-right" reverseOrder={false} />
           <Box>
             <Theme>
               <Flex>
                 <Sidebar />
-                <ScrollArea>
-                  <Box className="max-h-screen min-h-screen">{children}</Box>
-                </ScrollArea>
+                <ScrollArea className="max-h-screen">{children}</ScrollArea>
               </Flex>
             </Theme>
           </Box>

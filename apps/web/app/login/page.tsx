@@ -5,8 +5,6 @@ import BlackYascLogo from "../../assets/black_yasc_logo.png";
 import Image from "next/image";
 import Facebook from "@/icon/facebook";
 import CredientialLogin from "./CredentialLogin";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -14,12 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const session = await getServerSession();
-
-  if (session) {
-    redirect("/");
-  }
-
   return (
     <Flex className="w-full flex">
       <Box className="relative flex-1 hidden items-center justify-center h-screen bg-gray-900 lg:flex">

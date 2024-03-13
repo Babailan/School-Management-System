@@ -1,36 +1,66 @@
 "use client";
+import { getTuitionAction } from "@/actions/tuition/get-tuition";
 import { Pencil1Icon } from "@radix-ui/react-icons";
-import { Box, Button, Heading, Table, TextField } from "@radix-ui/themes";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Table,
+  Text,
+  TextField,
+} from "@radix-ui/themes";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import Loading from "../loading";
 
 export default function Page() {
-  const gradeLevels = [
-    { title: "Grade 11 - Senior High School", value: "11" },
-    { title: "Grade 12 - Senior High School", value: "12" },
-  ];
+  const { data, isPending } = useQuery({
+    queryKey: ["tuitionlist"],
+    queryFn: async () => await getTuitionAction(),
+  });
+  if (isPending) {
+    return <Loading p="6" />;
+  }
+  console.log(data);
   return (
     <Box className="space-y-5" p="6">
-      <Heading>Tuition Fee</Heading>
+      <Flex justify="between" align="center">
+        <Flex direction="column">
+          <Heading>Tuition Fee</Heading>
+          <Text color="gray">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          </Text>
+        </Flex>
+        <Link href={"/tuition/add"}>
+          <Button variant="ghost">Add Tuition</Button>
+        </Link>
+      </Flex>
+
       <Table.Root>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Tuition Title</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>Amount</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {gradeLevels.map((gradelevel, idx) => (
-            <Table.Row align={"center"} key={idx}>
-              <Table.RowHeaderCell>{gradelevel.title}</Table.RowHeaderCell>
-              <Table.Cell justify={"end"}>
-                <Link href={`/tuition/${gradelevel.value}`}>
-                  <Button className="hover:cursor-pointer">
-                    <Pencil1Icon /> Edit
-                  </Button>
-                </Link>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {data?.map((tuition, idx) => {
+            return (
+              <Table.Row key={idx} align={"center"}>
+                <Table.Cell>{tuition.tuition_title}</Table.Cell>
+                <Table.Cell>₱{tuition.amount}</Table.Cell>
+                <Table.Cell justify={"end"}>
+                  <Link href={`/tuition/`}>
+                    <Button className="hover:cursor-pointer">
+                      <Pencil1Icon /> Edit
+                    </Button>
+                  </Link>
+                </Table.Cell>
+              </Table.Row>
+            );
+          })}
         </Table.Body>
       </Table.Root>
     </Box>

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "turbo run dev --filter=!@repo/types --filter=!@repo/electron",
+    "build": "turbo run build --filter=!@repo/types --filter=!@repo/electron",
     "type-check": "turbo run type-check"
   },
   "keywords": [],

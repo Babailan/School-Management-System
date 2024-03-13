@@ -1,14 +1,38 @@
-import { withAuth } from "next-auth/middleware";
-import { PagesOptions } from "./config/AuthOptions";
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getIronSession, unsealData } from "iron-session";
 
-export default withAuth({
-  pages: PagesOptions,
-  callbacks: {
-    authorized: ({ token }) => {
-      if (token) return true;
-      return false;
-    },
-  },
-});
+export const getAuth = async () => {
+  if (process.env.iron_key === undefined) {
+    throw new Error("Missing iron_key environment variable");
+  }
+  const token = cookies().get("user_token")?.value;
+  if (!token) return null;
 
-export const config = { matcher: ["/"] };
+  return await unsealData<any>(token as string, {
+    password: process.env.iron_key,
+  });
+};
+
+// This function can be marked `async` if using `await` inside
+export async function middleware(request: NextRequest) {
+  const token = await getAuth();
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/about/:path*",
+    "/",
+    "/curriculum/:path*",
+    "/assessment/:path*",
+    "/section/:path*",
+    "/verification/:path*",
+    "/student-fee/:path*",
+    "/subject/:path*",
+    "/tuition/:path*",
+  ],
+};

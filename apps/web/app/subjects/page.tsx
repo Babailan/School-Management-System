@@ -1,43 +1,19 @@
-"use client";
-
-import {
-  AlertDialog,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Table,
-  Tabs,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
-import AddSubjectPage from "./add";
+import { Box } from "@radix-ui/themes";
 import ListSubjectPage from "./list";
-import { TabsTrigger, TabsList } from "@radix-ui/react-tabs";
+import { Suspense } from "react";
+import Loading from "../loading";
+import { Metadata } from "next";
 
-export default function Page() {
+export const metadata: Metadata = {
+  title: "YASCI - Subject List",
+};
+
+export default async function Page() {
   return (
-    <Box p={"6"}>
-      <Tabs.Root defaultValue="subjects-list">
-        <Tabs.List>
-          <Tabs.Trigger value="subjects-list" className="hover:cursor-pointer">
-            Subjects
-          </Tabs.Trigger>
-          <Tabs.Trigger value="add" className="hover:cursor-pointer">
-            Add Subjects
-          </Tabs.Trigger>
-        </Tabs.List>
-
-        <Box>
-          <Tabs.Content value="subjects-list">
-            <ListSubjectPage></ListSubjectPage>
-          </Tabs.Content>
-
-          <Tabs.Content value="add">
-            <AddSubjectPage />
-          </Tabs.Content>
-        </Box>
-      </Tabs.Root>
-    </Box>
+    <Suspense fallback={<Loading p="6" />}>
+      <Box p={"6"}>
+        <ListSubjectPage></ListSubjectPage>
+      </Box>
+    </Suspense>
   );
 }

@@ -9,7 +9,7 @@ export default function SearchInput({ ...props }: InputFieldProps) {
   return (
     <TextField.Root>
       <TextField.Slot>
-        <MagnifyingGlassIcon width={"20"} height={"20"} />
+        <MagnifyingGlassIcon />
       </TextField.Slot>
       <TextField.Input {...props}></TextField.Input>
     </TextField.Root>

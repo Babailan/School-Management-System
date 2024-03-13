@@ -1,3 +1,4 @@
+"use client";
 import { TextField } from "@radix-ui/themes";
 import PesoSign from "../../icon/peso";
 import { ChangeEvent, ComponentPropsWithoutRef } from "react";

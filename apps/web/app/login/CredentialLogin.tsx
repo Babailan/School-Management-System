@@ -1,4 +1,5 @@
 "use client";
+import { LoginAccountAction } from "@/actions/account/login-account";
 import { EnvelopeClosedIcon, LockClosedIcon } from "@radix-ui/react-icons";
 import {
   Box,
@@ -8,32 +9,43 @@ import {
   Link as RadixLink,
   Button,
 } from "@radix-ui/themes";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormStatus } from "react-dom";
+import { FieldValues, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  email: z
+    .string()
+    .min(1, "Please enter a email address.")
+    .email("Please enter a valid email address."),
+  password: z.string().min(1, "Please enter a password."),
+});
 
 export default function CredientialLogin() {
+  const { handleSubmit, register, formState } = useForm({
+    resolver: zodResolver(schema),
+    mode: "onSubmit",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    reValidateMode: "onSubmit",
+  });
   const router = useRouter();
 
-  const login = async (formData: FormData) => {
-    const test = await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      callbackUrl: "/",
-      redirect: false,
-    });
-    if (test?.ok) {
-      router.refresh();
-    }
-    if (test?.error) {
-      toast.error(test.error);
+  const login = async (values: z.infer<typeof schema>) => {
+    const result = await LoginAccountAction(values.email, values.password);
+    if (result?.success == false) {
+      toast.error(result.message);
     }
   };
   return (
-    <form action={login} className="space-y-5 w-full">
-      <Flex direction="column" gap="5">
+    <form onSubmit={handleSubmit(login)} className="space-y-5 w-full">
+      <Flex direction="column" gap="2">
         <Box>
           <Text weight={"medium"}>Email</Text>
           <TextField.Root>
@@ -43,10 +55,13 @@ export default function CredientialLogin() {
             <TextField.Input
               size={"3"}
               color="indigo"
-              name="email"
+              {...register("email")}
               placeholder="Enter your email"
             ></TextField.Input>
           </TextField.Root>
+          <Text size="2" color="red">
+            {formState.errors.email?.message}
+          </Text>
         </Box>
         <Box>
           <Text weight={"medium"}>Password</Text>
@@ -57,26 +72,28 @@ export default function CredientialLogin() {
             <TextField.Input
               type="password"
               size={"3"}
-              color="indigo"
-              name="password"
+              color={formState.errors.password?.message ? "red" : "indigo"}
+              {...register("password")}
               placeholder="Enter your password"
+              // variant="soft"
             ></TextField.Input>
           </TextField.Root>
+          <Text size="2" color="red">
+            {formState.errors.password?.message}
+          </Text>
         </Box>
         <Flex justify="end">
           <Link href={"#"} legacyBehavior passHref>
             <RadixLink>Forget Password?</RadixLink>
           </Link>
         </Flex>
-        <LoginButton />
+        <LoginButton pending={formState.isLoading} />
       </Flex>
     </form>
   );
 }
 
-function LoginButton() {
-  const { pending } = useFormStatus();
-
+function LoginButton({ pending }) {
   return (
     <Button
       size="3"
