@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getIronSession, unsealData } from "iron-session";
 
+/**
+ * Retrieves the authenticated user's data from the token stored in the cookies.
+ * @returns {Promise<any> | null} The unsealed data from the token, or null if the token is missing or invalid.
+ * @throws {Error} If the iron_key environment variable is missing.
+ */
 export const getAuth = async () => {
   if (process.env.iron_key === undefined) {
     throw new Error("Missing iron_key environment variable");
@@ -9,14 +14,21 @@ export const getAuth = async () => {
   const token = cookies().get("user_token")?.value;
   if (!token) return null;
 
-  return await unsealData<any>(token as string, {
+  const unsealed = await unsealData<any>(token as string, {
     password: process.env.iron_key,
   });
+  if (unsealed === null || Object.keys(unsealed).length === 0) {
+    return null;
+  }
+
+  return unsealed;
 };
 
-// This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   const token = await getAuth();
+
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -34,5 +46,6 @@ export const config = {
     "/student-fee/:path*",
     "/subject/:path*",
     "/tuition/:path*",
+    "/access-control/:path*",
   ],
 };

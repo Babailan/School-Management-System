@@ -1,31 +1,41 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Callout,
-  Dialog,
-  Flex,
-  Heading,
-  Strong,
-  Table,
-  Text,
-} from "@radix-ui/themes";
-import SearchInput from "../../components/input/search";
-import {
-  CheckIcon,
-  ExclamationTriangleIcon,
-  InfoCircledIcon,
-  Pencil1Icon,
-} from "@radix-ui/react-icons";
-import Pagination from "../../components/pagination/pagination";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { SelectLimit, SelectYear } from "../../components/select";
+import { Button, Flex } from "@radix-ui/themes";
+import { CheckIcon } from "@radix-ui/react-icons";
+import { useQuery } from "@tanstack/react-query";
 import { GetVerificationSearchAction } from "@/actions/verification/get-verification";
 import { useEffect, useState } from "react";
-
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import Loading from "../loading";
 import Link from "next/link";
+import { TypographyH3 } from "@/components/typography/h3";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Check, Edit2, Ellipsis } from "lucide-react";
 
 export default function Page() {
   const [searchInput, setSearchInput] = useState("");
@@ -42,96 +52,105 @@ export default function Page() {
   }, [searchInput]);
 
   return (
-    <Box p="6" className="space-y-5">
-      <Flex direction="column">
-        <Heading>Verification</Heading>
-        <Text color="gray">
-          All students that for verification are listed in the table
-        </Text>
-      </Flex>
-      <Box>
-        <SearchInput
-          size="2"
-          onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Search for student"
-        />
-      </Box>
-      <Box>
-        <Callout.Root color="amber">
-          <Callout.Icon>
-            <ExclamationTriangleIcon />
-          </Callout.Icon>
-          <Callout.Text>
-            <Strong>Notice:</Strong> This page is for verification of students
-            that are not yet verified once you verified the student it will be
-            assessed
-          </Callout.Text>
-        </Callout.Root>
-      </Box>
-      <Box>
+    <div className="space-y-5 p-10">
+      <TypographyH3>Verification</TypographyH3>
+      <Input
+        onChange={(e) => setSearchInput(e.target.value)}
+        placeholder="Search for student"
+      />
+      <div>
         {isPending ? (
-          <Loading />
+          <Loading disablePadding />
         ) : (
-          <Table.Root>
-            <Table.Header>
-              <Table.Row align="center">
-                <Table.ColumnHeaderCell>First Name</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Last Name</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Middle Name</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Strand</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Year</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>
-                  Reference Number
-                </Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
+          <Table>
+            <TableCaption>List of verification</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>First Name</TableHead>
+                <TableHead>Last Name</TableHead>
+                <TableHead>Middle Name</TableHead>
+                <TableHead>Grade Level</TableHead>
+                <TableHead>Strand</TableHead>
+                <TableHead>Year</TableHead>
+                <TableHead>Reference Number</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
 
-            <Table.Body>
+            <TableBody>
               {data?.results.map((student, idx) => {
+                console.log(student);
                 return (
-                  <Table.Row key={idx} align="center">
-                    <Table.RowHeaderCell>
-                      {student.firstName}
-                    </Table.RowHeaderCell>
-                    <Table.Cell>{student.lastName}</Table.Cell>
-                    <Table.Cell>{student.middleName}</Table.Cell>
-                    <Table.Cell>{student.gradeLevel}</Table.Cell>
-                    <Table.Cell>{student.strand}</Table.Cell>
-                    <Table.Cell>{student.year}</Table.Cell>
-                    <Table.Cell>{student.referenceNumber}</Table.Cell>
-                    <Table.Cell>
-                      <Flex align="center" justify="end" gap="2">
-                        <Link href={`/verification/accept/${student._id}`}>
-                          <Button color="grass" variant="surface">
-                            <CheckIcon />
+                  <TableRow className="capitalize" key={idx}>
+                    <TableCell>{student.firstName}</TableCell>
+                    <TableCell>{student.lastName}</TableCell>
+                    <TableCell>{student.middleName}</TableCell>
+                    <TableCell>{student.gradeLevel}</TableCell>
+                    <TableCell className="uppercase">
+                      {student.strand}
+                    </TableCell>
+                    <TableCell>{student.year}</TableCell>
+                    <TableCell className="uppercase">
+                      {student.referenceNumber}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <Ellipsis className="w-4 h-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-60 m-4">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <Link href={`/verification/accept/${student._id}`}>
+                            <DropdownMenuItem>
+                              <Edit2 className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuItem>
+                            <Check className="w-4 h-4 mr-2" />
                             Verify
-                          </Button>
-                        </Link>
-                      </Flex>
-                    </Table.Cell>
-                  </Table.Row>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
               {data?.results.length === 0 && (
-                <Table.Row>
-                  <Table.Cell colSpan={6} justify="center">
-                    <Text color="gray">No data found</Text>
-                  </Table.Cell>
-                </Table.Row>
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center">
+                    No available verification
+                  </TableCell>
+                </TableRow>
               )}
-            </Table.Body>
-          </Table.Root>
+            </TableBody>
+          </Table>
         )}
-      </Box>
-      <Box>
-        <Pagination
-          maxPage={data?.totalPages || 1}
-          page={page}
-          setPage={setPage}
-        ></Pagination>
-      </Box>
-    </Box>
+      </div>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem onClick={() => setPage(page - 1)}>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          {page > 1 && (
+            <PaginationItem>
+              <PaginationLink href="#">{page - 1}</PaginationLink>
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">{page + 1}</PaginationLink>
+          </PaginationItem>
+          <PaginationItem onClick={() => setPage(page + 1)}>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 }

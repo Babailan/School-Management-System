@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 import Joi from "joi";
 
 export async function addTuitionAction(formData: FormData) {

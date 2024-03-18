@@ -1,39 +1,37 @@
 "use client";
 
-import { Box, Button, Flex, Text } from "@radix-ui/themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { pathToRegexp } from "path-to-regexp";
+import { Button } from "@/components/ui/button";
+import { Separator } from "../ui/separator";
 
-const CustomLink = ({ href, label }) => {
+const CustomLink = ({ href, children }) => {
   const pathname = usePathname();
 
   const match = pathToRegexp(href + "/:path*").test(pathname);
   return (
     <Link href={href}>
-      <button
-        className={`text-black text-sm px-4 py-2 w-full text-left hover:bg-blue-200 rounded-full ${
-          match ? "bg-blue-200" : ""
-        }`}
+      <Button
+        variant={match ? "default" : "ghost"}
+        className="w-full my-1 justify-start"
       >
-        {label}
-      </button>
+        {children}
+      </Button>
     </Link>
   );
 };
-export default function ({ option, header }) {
+export default function ({ option }) {
   return (
-    <Flex direction="column" gap="2">
-      <Text size="2" weight="bold" className="px-4 py-2">
-        {header}
-      </Text>
-      <Flex direction="column" gap="1">
-        {option.map((option, idx) => {
-          return (
-            <CustomLink href={option.href} label={option.title} key={idx} />
-          );
-        })}
-      </Flex>
-    </Flex>
+    <div className="flex flex-col px-4">
+      {option.map((option, idx) => {
+        return (
+          <CustomLink href={option.href} key={idx}>
+            {option.icon}
+            {option.title}
+          </CustomLink>
+        );
+      })}
+    </div>
   );
 }

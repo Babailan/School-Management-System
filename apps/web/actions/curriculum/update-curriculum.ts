@@ -1,7 +1,7 @@
 "use server";
-import { arrayOfIdToDocument } from "@/libs/helpers/arrayOfIdToDocument";
-import connectDB from "@/libs/helpers/connectDb";
-import { Strand } from "@/libs/helpers/strand";
+import { arrayOfIdToDocument } from "@/lib/helpers/arrayOfIdToDocument";
+import connectDB from "@/lib/helpers/connectDb";
+import { Strand } from "@/lib/helpers/strand";
 import Joi from "joi";
 import { ObjectId } from "mongodb";
 

@@ -2,17 +2,9 @@
 
 import { GetCurriculumByIdAction } from "@/actions/curriculum/get-curriculum";
 import Loading from "@/app/loading";
-import { Strand } from "@/libs/helpers/strand";
+import { Strand } from "@/lib/helpers/strand";
 import { Pencil1Icon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Button,
-  Code,
-  Flex,
-  Heading,
-  Table,
-  Text,
-} from "@radix-ui/themes";
+import { Box, Button, Flex, Heading, Table, Text } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -25,7 +17,7 @@ export default function Page() {
   });
 
   if (isPending) {
-    return <Loading p="6" />;
+    return <Loading />;
   }
   if (error) {
     return <Box>Error: {error.message}</Box>;

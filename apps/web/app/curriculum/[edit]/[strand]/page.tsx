@@ -3,7 +3,7 @@ import { GetCurriculumByIdAction } from "@/actions/curriculum/get-curriculum";
 import { Box, Flex, Heading, Text } from "@radix-ui/themes";
 import EditCurriculumStrand from "./edit";
 import Loading from "@/app/loading";
-import { Strand } from "@/libs/helpers/strand";
+import { Strand } from "@/lib/helpers/strand";
 import { Metadata } from "next";
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,7 +14,7 @@ export default function Page({ params: { edit, strand } }) {
   });
 
   if (isPending) {
-    return <Loading p="6" />;
+    return <Loading />;
   }
   return (
     <Box p="6">

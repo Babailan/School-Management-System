@@ -1,7 +1,6 @@
 "use client";
 
 import { UpdateStrandSubjectAction } from "@/actions/curriculum/update-curriculum";
-import { SelectSubject } from "@/components/select";
 import { InfoCircledIcon, TrashIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { Button, Callout, Flex, Table, Text } from "@radix-ui/themes";
 import { useQueryClient } from "@tanstack/react-query";
@@ -123,11 +122,11 @@ export default function EditCurriculumStrand({ subjects, isPending }) {
           })}
           <Table.Row align="center">
             <Table.Cell colSpan={3} justify="end">
-              <SelectSubject
+              {/* <SelectSubject
                 onClick={(object) => {
                   addSubjectHandler(object);
                 }}
-              />
+              /> */}
             </Table.Cell>
           </Table.Row>
         </Table.Body>

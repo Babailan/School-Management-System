@@ -1,86 +1,114 @@
 "use client";
-import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Heading,
-  Text,
-  Button,
-  Flex,
-  Table,
-  Link as RadixLink,
-} from "@radix-ui/themes";
 import { useState } from "react";
-import Pagination from "../../components/pagination/pagination";
 import { useQuery } from "@tanstack/react-query";
-import SearchSubjectActions from "@/actions/subject/search-subject";
+import { getSubjectSearchAction } from "@/actions/subject/get-subject";
 import Link from "next/link";
 import Loading from "@/app/loading";
+import { TypographyH3 } from "@/components/typography/h3";
+import { Button } from "@/components/ui/button";
+import { Ellipsis, Pencil, Plus, Trash } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function ListSubjectPage() {
-  const [page, setPage] = useState(1);
   const { isPending, data, isError } = useQuery({
-    queryKey: ["subject", page],
-    queryFn: async () => await SearchSubjectActions(page, "", 10),
+    queryKey: ["subject", 1],
+    queryFn: async () => await getSubjectSearchAction(1, "", 10),
   });
 
   if (isPending) {
-    return <Loading p="6" />;
-  }
-  if (isError) {
-    return <Heading>Something went wrong</Heading>;
+    return <Loading disablePadding />;
   }
   return (
-    <Flex direction={"column"} gap={"5"}>
-      <Flex justify="between" align="center">
-        <Box>
-          <Heading>Subject List</Heading>
-          <Text color="gray" size="2">
-            Available subject list in minutes
-          </Text>
-        </Box>
-        <Box>
-          <Link href={"/subjects/add"} legacyBehavior>
-            <RadixLink size="2">Add Subject</RadixLink>
-          </Link>
-        </Box>
-      </Flex>
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeaderCell>Subject Name</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Subject Code</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <TypographyH3>Subject List</TypographyH3>
+        <Link href={"/subjects/add"} legacyBehavior>
+          <Button>
+            <Plus className="w-5 h-5 mr-2" />
+            Add Subject
+          </Button>
+        </Link>
+      </div>
+      <Table>
+        <TableCaption>Available Subjects</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Subject Name</TableHead>
+            <TableHead>Subject Code</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <Table.Body>
-          {data?.results.map(({ subjectCode, subjectName }, idx) => {
+        <TableBody>
+          {data?.results.map(({ subjectCode, subjectName, _id }, idx) => {
             return (
-              <Table.Row key={idx} align={"center"} className="font-medium">
-                <Table.Cell className="whitespace-nowrap uppercase">
-                  {subjectName}
-                </Table.Cell>
-                <Table.Cell className="uppercase">{subjectCode}</Table.Cell>
-                <Table.Cell justify={"end"}>
-                  <Box className="space-x-2 whitespace-nowrap">
-                    <Button className="hover:cursor-pointer" variant="surface">
-                      <Pencil1Icon /> Edit
-                    </Button>
-                    <Button
-                      color="red"
-                      className="hover:cursor-pointer"
-                      variant="surface"
-                    >
-                      <TrashIcon /> Delete
-                    </Button>
-                  </Box>
-                </Table.Cell>
-              </Table.Row>
+              <TableRow key={idx}>
+                <TableCell className="capitalize">{subjectName}</TableCell>
+                <TableCell className="uppercase">{subjectCode}</TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-7">
+                        <Ellipsis className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56 m-2">
+                      <Link href={`/subjects/edit/${_id}`}>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </Table.Body>
-      </Table.Root>
-      <Pagination maxPage={data.maxPage} page={page} setPage={setPage} />
-    </Flex>
+        </TableBody>
+      </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink>1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 }

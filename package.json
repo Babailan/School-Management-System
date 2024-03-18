@@ -1,26 +1,23 @@
 {
   "name": "@repo/root",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "turbo run dev --filter=!@repo/types --filter=!@repo/electron",
-    "build": "turbo run build --filter=!@repo/types --filter=!@repo/electron",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "electron": "turbo run start-electron",
     "type-check": "turbo run type-check"
   },
   "keywords": [],
   "author": "",
-  "license": "",
+  "license": "ISC",
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "types/*"
   ],
   "dependencies": {
     "turbo": "^1.12.4"
   },
-  "devDependencies": {
-    "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
-  }
+  "description": ""
 }

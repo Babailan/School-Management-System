@@ -1,13 +1,11 @@
-import { Box } from "@radix-ui/themes";
-import Skeleton from "react-loading-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
-type BoxProps = React.ComponentProps<typeof Box>;
-
-export default function Loading({ ...props }: BoxProps) {
+export default function Loading({ disablePadding = false }) {
   return (
-    <Box {...props}>
-      <Skeleton width={300} height={30}></Skeleton>
-      <Skeleton height={300} count={10}></Skeleton>
-    </Box>
+    <div className={cn("space-y-2", disablePadding ? "" : "p-10")}>
+      <Skeleton className="h-20"></Skeleton>
+      <Skeleton className="h-screen"></Skeleton>
+    </div>
   );
 }

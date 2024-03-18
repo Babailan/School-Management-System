@@ -1,41 +1,43 @@
-import { Heading, Box, Flex, Text, AspectRatio } from "@radix-ui/themes";
+import { TypographyH1 } from "@/components/typography/h1";
+import { TypographyH3 } from "@/components/typography/h3";
+import { TypographyP } from "@/components/typography/p";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Page() {
   return (
-    <Box p="6" className="space-y-5">
-      <Flex direction="column">
-        <Heading size="7">Young Achievers School of Caloocan</Heading>
-        <Text size="3" ml="1" weight="medium">
-          Welcome to the Young Achievers School of Caloocan
-        </Text>
-      </Flex>
-      <Box>
-        <Text>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis
-          facere repudiandae magni distinctio. Corrupti neque reprehenderit
-          error totam? Atque dolorum ipsa tempora quos similique sapiente
-          quibusdam sint enim nobis magnam! Provident minima dolore tempora,
-          voluptatibus accusantium aut esse aliquam est, laudantium illum et
-          adipisci fugit rerum totam quaerat harum! Ullam animi ipsum, incidunt
-          veritatis repellat unde aperiam possimus quos accusamus. Maiores rem
-          dolores ipsum atque quaerat libero non sapiente expedita error. Nihil
-          facere necessitatibus omnis, suscipit quibusdam deserunt dolorem
-          iusto. Dolorem porro dignissimos est provident. Numquam quasi illum
-          soluta quisquam?
-        </Text>
-        <AspectRatio ratio={16 / 8}>
-          <img
-            src="/raizel.jpg"
-            alt="A house in a forest"
-            style={{
-              objectFit: "cover",
-              width: "100%",
-              height: "100%",
-              borderRadius: "var(--radius-2)",
-            }}
-          />
-        </AspectRatio>
-      </Box>
-    </Box>
+    <div className="space-y-5 p-10">
+      <div className="flex justify-between">
+        <div className="text-3xl font-bold">Dashboard</div>
+        <Button>
+          <Download className="h-4 w-4 mr-2" />
+          Download
+        </Button>
+      </div>
+      <div>
+        <div className="flex gap-2 *:w-full">
+          <Card className="p-5">
+            <CardTitle className="font-medium text-sm">Total Revenue</CardTitle>
+            <strong className="text-2xl">$45,231.89</strong>
+            <span className="text-sm block">+20.1% from last month</span>
+          </Card>
+          <Card className="p-5">
+            <CardTitle className="font-medium text-sm">
+              Enrolled Student
+            </CardTitle>
+            <strong className="text-2xl">5,231</strong>
+            <span className="text-sm block">today</span>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 }

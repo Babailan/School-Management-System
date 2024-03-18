@@ -1,4 +1,4 @@
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 
 /**
  * Retrieves all faculty members from the "user_account" collection in the "yasc" database.

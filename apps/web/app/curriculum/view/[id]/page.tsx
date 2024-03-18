@@ -1,6 +1,6 @@
 import { GetCurriculumByIdAction } from "@/actions/curriculum/get-curriculum";
 import Loading from "@/app/loading";
-import { Strand } from "@/libs/helpers/strand";
+import { Strand } from "@/lib/helpers/strand";
 import {
   Box,
   Code,

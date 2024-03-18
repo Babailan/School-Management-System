@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 import { sealData } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -19,7 +19,7 @@ export async function LoginAccountAction(email: string, password: string) {
 
   const account_collection = (await connectDB())
     .db("yasc")
-    .collection("user_account");
+    .collection("user-account");
   const result = await account_collection.findOne({ email });
   if (!result) {
     return { success: false, message: "Email not found" };

@@ -1,5 +1,6 @@
 "use server";
-import connectDB from "@/libs/helpers/connectDb";
+import { deepLowerCase } from "@/lib/helpers";
+import connectDB from "@/lib/helpers/connectDb";
 import Joi from "joi";
 
 export default async function AddSubjectAction(formData: FormData) {
@@ -9,7 +10,7 @@ export default async function AddSubjectAction(formData: FormData) {
     const subjectCollection = db.db("yasc").collection("subjects");
 
     // Validate form data
-    const { error, value } = Joi.object({
+    let { error, value } = Joi.object({
       subjectCode: Joi.string().required().messages({
         "string.empty": "Subject Code is required",
       }),
@@ -20,6 +21,7 @@ export default async function AddSubjectAction(formData: FormData) {
       subjectCode: formData.get("subjectCode"),
       subjectName: formData.get("subjectName"),
     });
+    value = deepLowerCase(value);
 
     if (error) {
       return {

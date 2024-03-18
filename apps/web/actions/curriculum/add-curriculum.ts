@@ -1,41 +1,14 @@
 "use server";
-import connectDB from "@/libs/helpers/connectDb";
-import Joi from "joi";
+import connectDB from "@/lib/helpers/connectDb";
 
-export async function AddCurriculumAction(formData: FormData) {
-  const db = (await connectDB()).db("yasc");
-  const curriculum = db.collection("curriculum");
-
-  const requestValidation = Joi.object({
-    year: Joi.string().messages({
-      "string.empty": "Year is required",
-    }),
-    gradeLevel: Joi.string().messages({
-      "string.empty": "Grade Level is required",
-    }),
-    semester: Joi.string().messages({
-      "string.empty": "Semester is required",
-    }),
-  });
-
-  const { error, value } = requestValidation.validate({
-    year: formData.get("year"),
-    gradeLevel: formData.get("gradeLevel"),
-    semester: formData.get("semester"),
-  });
-
-  if (error) {
-    return {
-      success: false,
-      message: error.message,
-    };
-  }
+export async function AddCurriculumAction(data) {
+  const collection = (await connectDB()).db("yasc").collection("curriculum");
 
   try {
-    const existingCurriculum = await curriculum.findOne({
-      year: value.year,
-      gradeLevel: value.gradeLevel,
-      semester: value.semester,
+    const existingCurriculum = await collection.findOne({
+      year: data.year,
+      gradeLevel: data.gradeLevel,
+      semester: data.semester,
     });
 
     if (existingCurriculum) {
@@ -46,7 +19,7 @@ export async function AddCurriculumAction(formData: FormData) {
     }
 
     // Insert the validated data into the 'curriculum' collection
-    await curriculum.insertOne(value);
+    await collection.insertOne(data);
 
     return {
       success: true,

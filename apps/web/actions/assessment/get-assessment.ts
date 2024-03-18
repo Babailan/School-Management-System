@@ -1,5 +1,5 @@
 "use server";
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 import { Filter, Document } from "mongodb";
 
 export async function getAssessmentSearchAction(

@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 import { Document, Filter, ObjectId } from "mongodb";
 
 export async function getStudentFeeSearchAction(

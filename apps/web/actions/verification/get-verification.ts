@@ -1,10 +1,8 @@
 "use server";
 
-import connectDB from "@/libs/helpers/connectDb";
-import stringToRegexSearch from "@/libs/helpers/stringToRegexSearch";
+import connectDB from "@/lib/helpers/connectDb";
+import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
 import { Document, Filter, ObjectId } from "mongodb";
-
-import { validate as validateV4 } from "uuid";
 
 export async function GetVerificationSearchAction(
   query: string,
@@ -15,23 +13,19 @@ export async function GetVerificationSearchAction(
   const collection = (await connectDB())
     .db("yasc")
     .collection("student-verification");
-
-  let filter: Filter<Document> = {};
-
+  query.toLowerCase();
   query = query.trim();
 
-  if (validateV4(query)) {
-    filter = {
-      referenceNumber: query,
-    };
-  } else if (query.length > 0) {
-    filter = {
-      $text: {
-        $search: query,
-        $caseSensitive: false,
+  let filter: Filter<Document> = {
+    $or: [
+      {
+        fullName: {
+          $regex: stringToRegexSearch(query),
+        },
       },
-    };
-  }
+      { referenceNumber: { $regex: stringToRegexSearch(query) } },
+    ],
+  };
 
   const filterCursor = collection.find(filter);
   const totalCount = await filterCursor.count();

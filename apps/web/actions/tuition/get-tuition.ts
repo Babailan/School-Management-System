@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 
 export async function getTuitionAction() {
   const tuitionCollection = (await connectDB())

@@ -19,7 +19,7 @@ import {
   InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
-import { Strand } from "@/libs/helpers/strand";
+import { Strand } from "@/lib/helpers/strand";
 import { GetCurriculumByFilter } from "@/actions/curriculum/get-curriculum";
 import Loading from "@/app/loading";
 import { addSectionAction } from "@/actions/section/add-section";

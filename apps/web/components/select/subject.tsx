@@ -1,4 +1,4 @@
-import SearchSubjectActions from "@/actions/subject/search-subject";
+import { getSubjectSearchAction } from "@/actions/subject/get-subject";
 import { CaretDownIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import {
   Box,
@@ -27,15 +27,15 @@ const SelectSubject: React.FC<{ onClick?: (subject: object) => void }> = ({
 }) => {
   const { mutate, data, isPending, isError } = useMutation({
     mutationFn: async (query: string) =>
-      await SearchSubjectActions(1, query, 0),
+      await getSubjectSearchAction(1, query, 0),
   });
   return (
     <Popover.Root onOpenChange={() => mutate("")}>
       <Popover.Trigger>
         <Box display="inline">
-          <Button variant="soft">
-            Pick Subjects
-            <CaretDownIcon width="16" height="16" />
+          <Button>
+            <MagnifyingGlassIcon />
+            Search Subject
           </Button>
         </Box>
       </Popover.Trigger>

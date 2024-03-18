@@ -1,21 +1,20 @@
 "use client";
 import { LoginAccountAction } from "@/actions/account/login-account";
-import { EnvelopeClosedIcon, LockClosedIcon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Flex,
-  Text,
-  TextField,
-  Link as RadixLink,
-  Button,
-} from "@radix-ui/themes";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useFormStatus } from "react-dom";
-import { FieldValues, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
 
 const schema = z.object({
   email: z
@@ -26,7 +25,8 @@ const schema = z.object({
 });
 
 export default function CredientialLogin() {
-  const { handleSubmit, register, formState } = useForm({
+  const { toast } = useToast();
+  const form = useForm({
     resolver: zodResolver(schema),
     mode: "onSubmit",
     defaultValues: {
@@ -40,70 +40,50 @@ export default function CredientialLogin() {
   const login = async (values: z.infer<typeof schema>) => {
     const result = await LoginAccountAction(values.email, values.password);
     if (result?.success == false) {
-      toast.error(result.message);
+      toast({
+        description: result.message,
+        variant: "destructive",
+      });
     }
   };
   return (
-    <form onSubmit={handleSubmit(login)} className="space-y-5 w-full">
-      <Flex direction="column" gap="2">
-        <Box>
-          <Text weight={"medium"}>Email</Text>
-          <TextField.Root>
-            <TextField.Slot pl="3">
-              <EnvelopeClosedIcon />
-            </TextField.Slot>
-            <TextField.Input
-              size={"3"}
-              color="indigo"
-              {...register("email")}
-              placeholder="Enter your email"
-            ></TextField.Input>
-          </TextField.Root>
-          <Text size="2" color="red">
-            {formState.errors.email?.message}
-          </Text>
-        </Box>
-        <Box>
-          <Text weight={"medium"}>Password</Text>
-          <TextField.Root>
-            <TextField.Slot pl="3">
-              <LockClosedIcon />
-            </TextField.Slot>
-            <TextField.Input
-              type="password"
-              size={"3"}
-              color={formState.errors.password?.message ? "red" : "indigo"}
-              {...register("password")}
-              placeholder="Enter your password"
-              // variant="soft"
-            ></TextField.Input>
-          </TextField.Root>
-          <Text size="2" color="red">
-            {formState.errors.password?.message}
-          </Text>
-        </Box>
-        <Flex justify="end">
-          <Link href={"#"} legacyBehavior passHref>
-            <RadixLink>Forget Password?</RadixLink>
-          </Link>
-        </Flex>
-        <LoginButton pending={formState.isLoading} />
-      </Flex>
-    </form>
-  );
-}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(login)} className="space-y-5 w-full">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter your email" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        ></FormField>
 
-function LoginButton({ pending }) {
-  return (
-    <Button
-      size="3"
-      disabled={pending}
-      type="submit"
-      className={`${
-        pending ? "hover:cursor-not-allowed" : "hover:cursor-pointer"
-      }`}
-    >
-      {pending ? "Logging in...." : "Log in"}
-    </Button>
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  {...field}
+                  placeholder="Enter your password"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        ></FormField>
+        <Button disabled={form.formState.isSubmitting} className="w-full">
+          {form.formState.isSubmitting ? "Logging in...." : "Log in"}
+        </Button>
+      </form>
+    </Form>
   );
 }

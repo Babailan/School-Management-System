@@ -1,77 +1,72 @@
-"use client";
-
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { Box, Flex, Text } from "@radix-ui/themes";
 import {
-  Box,
-  Button,
-  Flex,
-  Heading,
   Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
   Table,
-  Text,
-} from "@radix-ui/themes";
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { TypographyH3 } from "@/components/typography/h3";
 
 export default function AccessControlPage() {
   return (
-    <Box p="6" className="space-y-5">
-      <Flex wrap={"wrap"} align="center" justify="between">
-        <Box>
-          <Heading>Access Control</Heading>
-          <Text color="gray">
-            This page is only accessible to the admin user. If you think this is
-            a mistake, please contact the administrator.
-          </Text>
-        </Box>
-        <Box>
+    <div className="p-10 space-y-5">
+      <div className="flex justify-between">
+        <TypographyH3 className="text-3xl font-bold">
+          Access Control
+        </TypographyH3>
+        <Link href={"/access-control/create"}>
           <Button>
-            <PlusCircledIcon />
+            <Plus className="w-4 h-4 mr-2" />
             Create User
           </Button>
-        </Box>
-      </Flex>
-      <Flex direction="column">
-        <Text>Role</Text>
-        <Select.Root defaultValue="all">
-          <Select.Trigger></Select.Trigger>
-          <Select.Content position="popper">
-            <Select.Item value="all">All</Select.Item>
-            <Select.Item value="administrator">Administrator</Select.Item>
-            <Select.Item value="faculty">Faculty</Select.Item>
-            <Select.Item value="registrar">Registrar</Select.Item>
-          </Select.Content>
-        </Select.Root>
-      </Flex>
-      <Box>
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeaderCell>Full name</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-              <Table.ColumnHeaderCell>Group</Table.ColumnHeaderCell>
-            </Table.Row>
-          </Table.Header>
-
-          <Table.Body>
-            <Table.Row>
-              <Table.RowHeaderCell>Danilo Sousa</Table.RowHeaderCell>
-              <Table.Cell>danilo@example.com</Table.Cell>
-              <Table.Cell>Developer</Table.Cell>
-            </Table.Row>
-
-            <Table.Row>
-              <Table.RowHeaderCell>Zahra Ambessa</Table.RowHeaderCell>
-              <Table.Cell>zahra@example.com</Table.Cell>
-              <Table.Cell>Admin</Table.Cell>
-            </Table.Row>
-
-            <Table.Row>
-              <Table.RowHeaderCell>Jasper Eriksson</Table.RowHeaderCell>
-              <Table.Cell>jasper@example.com</Table.Cell>
-              <Table.Cell>Developer</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table.Root>
-      </Box>
-    </Box>
+        </Link>
+      </div>
+      <div>
+        <p className="mb-1">Role</p>
+        <Select defaultValue="all">
+          <SelectTrigger>
+            <SelectValue placeholder="Select a Role"></SelectValue>
+          </SelectTrigger>
+          <SelectContent position="popper">
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="administrator">Administrator</SelectItem>
+            <SelectItem value="faculty">Faculty</SelectItem>
+            <SelectItem value="registrar">Registrar</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Table>
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Invoice</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Method</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell className="font-medium">INV001</TableCell>
+            <TableCell>Paid</TableCell>
+            <TableCell>Credit Card</TableCell>
+            <TableCell className="text-right">$250.00</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
   );
 }

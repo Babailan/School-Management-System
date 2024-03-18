@@ -1,15 +1,16 @@
 "use server";
 
-import connectDB from "@/libs/helpers/connectDb";
+import connectDB from "@/lib/helpers/connectDb";
 import Joi from "joi";
 import { ObjectId } from "mongodb";
 
-// add a new section in the database section collection return is like this { message : string,succes : boolean}
+// add a new section in the database section collection return is like this { message : string, success : boolean }
 export async function addSectionAction(formData: FormData) {
   // connect to the database
   const sectionCollection = (await connectDB())
     .db("yasc")
     .collection("section");
+
   //validate formData , subjects field is non strict but only projects the subjects field
   const { error, value } = Joi.object({
     curriculumID: Joi.string()

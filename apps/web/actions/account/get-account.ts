@@ -1,15 +1,21 @@
 "use server";
 
-import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
+import connectDB from "@/lib/helpers/connectDb";
+import { getAuth } from "@/middleware";
+import { ObjectId } from "mongodb";
 
-export async function GetAccountInformationAction(): Promise<any> {
-  if (!process.env.iron_key) {
-    throw new Error("Missing iron_key environment variable");
+export async function getAccountInformationAction() {
+  const session = await getAuth();
+
+  if (session) {
+    const collection = (await connectDB())
+      .db("yasc")
+      .collection("user-account");
+    return JSON.parse(
+      JSON.stringify(
+        await collection.findOne({ _id: new ObjectId(session._id) })
+      )
+    );
   }
-  const session = await getIronSession(cookies(), {
-    cookieName: "user_session",
-    password: process.env.iron_key,
-  });
-  return session;
+  return null;
 }

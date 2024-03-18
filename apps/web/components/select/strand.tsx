@@ -1,5 +1,4 @@
-import { Label } from "@radix-ui/react-label";
-import { Flex, Select } from "@radix-ui/themes";
+import { Select } from "@radix-ui/themes";
 import { SelectRootProps } from "@radix-ui/themes/dist/cjs/components/select";
 
 const SelectStrand: React.FC<SelectRootProps> = ({ ...props }) => {
