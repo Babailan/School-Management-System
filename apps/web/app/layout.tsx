@@ -96,6 +96,7 @@ const BaseLayout = async ({ children }: { children: React.ReactNode }) => {
             <Sidebar />
           </ScrollArea>
         </ResizablePanel>
+        <ResizableHandle />
         <ResizablePanel defaultSize={80}>
           <ScrollArea className="h-screen">{children}</ScrollArea>
         </ResizablePanel>

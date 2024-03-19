@@ -25,8 +25,6 @@ export const getAuth = async () => {
 };
 
 export async function middleware(request: NextRequest) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
   const token = await getAuth();
 
   if (!token) {

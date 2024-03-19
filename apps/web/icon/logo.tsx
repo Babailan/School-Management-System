@@ -1,5 +1,10 @@
-export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 1229 301" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const Logo = (props: JSX.IntrinsicElements["svg"]) => (
+  <svg
+    {...props}
+    viewBox="0 0 1229 301"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       fillRule="evenodd"
       clipRule="evenodd"

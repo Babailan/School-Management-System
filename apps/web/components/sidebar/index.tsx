@@ -19,6 +19,7 @@ import {
   BadgeHelp,
   Book,
   BookOpen,
+  Command,
   HandCoins,
   Landmark,
   Moon,
@@ -46,7 +47,7 @@ export default async function Sidebar() {
       title: "Access Control",
       href: "/access-control",
       location: [],
-      icon: <UserRoundCog className="w-4 h-4 mr-2" />,
+      icon: <UserRoundCog className="w-4 h-4 " />,
     },
   ];
   const subjectTeacherOption = [
@@ -54,7 +55,7 @@ export default async function Sidebar() {
       title: "Manage Subject",
       href: "/faculty/manage-subject",
       location: [],
-      icon: <BookOpen className="w-4 h-4 mr-2" />,
+      icon: <BookOpen className="w-4 h-4" />,
     },
   ];
   const enrollmentOption = [
@@ -62,19 +63,19 @@ export default async function Sidebar() {
       title: "Assessment",
       href: "/assessment",
       location: [],
-      icon: <Route className="w-4 h-4 mr-2" />,
+      icon: <Route className="w-4 h-4 " />,
     },
     {
       title: "Verification",
       href: "/verification",
       location: [],
-      icon: <BadgeHelp className="w-4 h-4 mr-2" />,
+      icon: <BadgeHelp className="w-4 h-4 " />,
     },
     {
       title: "Student Fee",
       href: "/student-fee",
       location: [],
-      icon: <Landmark className="w-4 h-4 mr-2" />,
+      icon: <Landmark className="w-4 h-4 " />,
     },
   ];
   const tuitionOption = [
@@ -82,7 +83,7 @@ export default async function Sidebar() {
       title: "Tuition",
       href: "/tuition",
       location: [],
-      icon: <HandCoins className="w-4 h-4 mr-2" />,
+      icon: <HandCoins className="w-4 h-4 " />,
     },
   ];
   const dataManagement = [
@@ -90,19 +91,19 @@ export default async function Sidebar() {
       title: "Section",
       href: "/section",
       location: [],
-      icon: <Book className="w-4 h-4 mr-2" />,
+      icon: <Book className="w-4 h-4 " />,
     },
     {
       title: "Curriculum",
       href: "/curriculum",
       location: [],
-      icon: <ScrollText className="w-4 h-4 mr-2" />,
+      icon: <ScrollText className="w-4 h-4 " />,
     },
     {
       title: "Subjects",
       href: "/subjects",
       location: [],
-      icon: <Scroll className="w-4 h-4 mr-2" />,
+      icon: <Scroll className="w-4 h-4 " />,
     },
   ];
 
@@ -116,10 +117,11 @@ export default async function Sidebar() {
   };
 
   return (
-    <div className="min-h-screen *:py-2 *:border-b  flex flex-col border-r">
+    <div className="min-h-screen *:py-2 *:border-b  flex flex-col">
       <div className="px-4 !py-8">
         <Link href="/">
-          <Logo className="w-full" />
+          <Logo className="w-full hidden lg:block" />
+          <Command className="lg:hidden block" />
         </Link>
       </div>
       {includes(session.roles, ["faculty"]) && (
@@ -143,21 +145,20 @@ export default async function Sidebar() {
 
       <div className="!p-4 w-fit border-none">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary">
-              <span className="mr-2">
-                <Avatar className="w-8 h-8">
-                  <AvatarImage
-                    src={"https://avatars.githubusercontent.com/u/83863770?v=4"}
-                  />
-                  <AvatarFallback className="uppercase">
-                    {session.firstName.charAt(0)}
-                    {session.lastName.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </span>
-              <span className="capitalize">{session.lastName}</span>
-            </Button>
+          <DropdownMenuTrigger className="flex items-center gap-2 ml-4">
+            <span>
+              <Avatar className="size-8">
+                <AvatarImage
+                  src={"https://avatars.githubusercontent.com/u/83863770?v=4"}
+                />
+                <AvatarFallback className="uppercase">
+                  {session.firstName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+            </span>
+            <span className="capitalize hidden lg:inline">
+              {session.firstName} {session.lastName}
+            </span>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-60 m-2">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>

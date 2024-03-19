@@ -1,68 +1,73 @@
 "use client";
-import { getTuitionAction } from "@/actions/tuition/get-tuition";
+import { getTuitionSearchAction } from "@/actions/tuition/get-tuition";
 import { Pencil1Icon } from "@radix-ui/react-icons";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Table,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
+import { Heading, Text, TextField } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Loading from "../loading";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function Page() {
   const { data, isPending } = useQuery({
     queryKey: ["tuitionlist"],
-    queryFn: async () => await getTuitionAction(),
+    queryFn: async () => await getTuitionSearchAction(),
   });
-  if (isPending) {
-    return <Loading p="6" />;
-  }
-  console.log(data);
-  return (
-    <Box className="space-y-5" p="6">
-      <Flex justify="between" align="center">
-        <Flex direction="column">
-          <Heading>Tuition Fee</Heading>
-          <Text color="gray">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-          </Text>
-        </Flex>
-        <Link href={"/tuition/add"}>
-          <Button variant="ghost">Add Tuition</Button>
-        </Link>
-      </Flex>
 
-      <Table.Root>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeaderCell>Tuition Title</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Amount</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {data?.map((tuition, idx) => {
-            return (
-              <Table.Row key={idx} align={"center"}>
-                <Table.Cell>{tuition.tuition_title}</Table.Cell>
-                <Table.Cell>₱{tuition.amount}</Table.Cell>
-                <Table.Cell justify={"end"}>
-                  <Link href={`/tuition/`}>
-                    <Button className="hover:cursor-pointer">
-                      <Pencil1Icon /> Edit
-                    </Button>
-                  </Link>
-                </Table.Cell>
-              </Table.Row>
-            );
-          })}
-        </Table.Body>
-      </Table.Root>
-    </Box>
+  return (
+    <div className="space-y-5 p-10">
+      <h1 className="text-2xl font-bold">Tuition Fee</h1>
+      <Link href={"/tuition/add"}>
+        <Button variant="ghost">Add Tuition</Button>
+      </Link>
+      {isPending ? <Loading disablePadding /> : <TuitionList data={data} />}
+    </div>
   );
 }
+
+const TuitionList = ({ data }) => {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Tuition Title</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead></TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data?.map((tuition, idx) => {
+          return (
+            <TableRow key={idx}>
+              <Table>{tuition.tuition_title}</Table>
+              <Table>₱{tuition.amount}</Table>
+              <Table>
+                <Link href={`/tuition/`}>
+                  <Button className="hover:cursor-pointer">
+                    <Pencil1Icon /> Edit
+                  </Button>
+                </Link>
+              </Table>
+            </TableRow>
+          );
+        })}
+        {data?.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={3} className="text-center">
+              No tuition fee found.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+};

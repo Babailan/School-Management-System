@@ -1,118 +1,138 @@
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+"use client";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
-  Box,
-  Container,
-  Flex,
-  Text,
-  TextFieldInput,
-  CalloutRoot,
-  CalloutText,
-  CalloutIcon,
-  Button,
-  Checkbox,
-  SelectRoot,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "@radix-ui/themes";
-import Image from "next/image";
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  firstName: z.string().min(1, { message: "First name is required" }),
+  lastName: z.string().min(1, { message: "Last name is required" }),
+  middleName: z.string().min(1, { message: "Middle name is required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email address" }),
+  referenceNumber: z
+    .string()
+    .min(1, { message: "Reference number is required" }),
+  year: z.string().min(1, { message: "Year is required" }),
+  strand: z.string().min(1, { message: "Strand is required" }),
+  gradeLevel: z.string().min(1, { message: "Grade level is required" }),
+  birthDate: z.string().min(1, { message: "Birth date is required" }),
+});
 
 export default function Home() {
+  const form = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: "",
+      email: "",
+      lastName: "",
+      middleName: "",
+      referenceNumber: "",
+      year: "",
+      strand: "",
+      gradeLevel: "",
+      birthDate: "",
+    },
+  });
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   return (
-    <Container size="2" p={"9"}>
-      <Box className="space-y-2">
-        <Image src={"/logo.png"} alt="Logo" width={400} height={150}></Image>
-        <CalloutRoot>
-          <CalloutIcon>
-            <InfoCircledIcon />
-          </CalloutIcon>
-          <CalloutText>
-            After submitting the form successfully, kindly proceed to the
-            school's cashier.
-          </CalloutText>
-        </CalloutRoot>
-        <Flex gap="2" className="[&>*]:w-full">
-          <Box>
-            <Text size="2" color="gray">
-              First Name
-            </Text>
-            <TextFieldInput></TextFieldInput>
-          </Box>
-          <Box>
-            <Text size="2" color="gray">
-              Middle Name
-            </Text>
-            <TextFieldInput></TextFieldInput>
-          </Box>
-          <Box>
-            <Text size="2" color="gray">
-              Last Name
-            </Text>
-            <TextFieldInput></TextFieldInput>
-          </Box>
-        </Flex>
-        <Box>
-          <Text size="2" color="gray">
-            Address
-          </Text>
-          <TextFieldInput></TextFieldInput>
-        </Box>
-        <Box>
-          <Text size="2" color="gray">
-            Contact Number
-          </Text>
-          <TextFieldInput></TextFieldInput>
-        </Box>
-        <Box>
-          <Text size="2" color="gray">
-            Email
-          </Text>
-          <TextFieldInput></TextFieldInput>
-        </Box>
-        <Flex direction="column">
-          <Text size="2" color="gray">
-            Sex
-          </Text>
-          <SelectRoot>
-            <SelectTrigger placeholder="Select Your Sex"></SelectTrigger>
-            <SelectContent position="popper">
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-            </SelectContent>
-          </SelectRoot>
-        </Flex>
-        <Flex direction="column">
-          <Text size="2" color="gray">
-            Sex
-          </Text>
-          <SelectRoot>
-            <SelectTrigger placeholder="Select Your Sex"></SelectTrigger>
-            <SelectContent position="popper">
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-            </SelectContent>
-          </SelectRoot>
-        </Flex>
-        <Flex direction="column">
-          <Text size="2" color="gray">
-            Sex
-          </Text>
-          <SelectRoot>
-            <SelectTrigger placeholder="Select Your Sex"></SelectTrigger>
-            <SelectContent position="popper">
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
-            </SelectContent>
-          </SelectRoot>
-        </Flex>
-        <Flex align="center">
-          <Checkbox mr="3" />
-          <Text size="2">I agree to the terms and conditions</Text>
-        </Flex>
-        <Button className="hover:cursor-pointer w-full" size="3">
-          Submit
-        </Button>
-      </Box>
-    </Container>
+    <div className="mx-auto my-10  max-w-4xl">
+      <Tabs defaultValue="new">
+        <TabsList className="w-full">
+          <TabsTrigger value="new" className="w-full">
+            New Student
+          </TabsTrigger>
+          <TabsTrigger value="password" className="w-full">
+            Old Student
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="new">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="flex *:w-full gap-5">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter First Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Last Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="middleName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Middle Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Middle Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit">Submit</Button>
+            </form>
+          </Form>
+        </TabsContent>
+        <TabsContent value="password">
+          <form>
+            <header>
+              <h1 className="font-semibold text-2xl">For Old Student</h1>
+            </header>
+          </form>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

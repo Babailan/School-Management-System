@@ -44,7 +44,8 @@ export default function Page() {
   // const [limit, setLimit] = useState("10");
   // const queryClient = useQueryClient();
   const { data, isPending } = useQuery({
-    queryFn: async () => GetVerificationSearchAction(searchInput, page, 10),
+    queryFn: async () =>
+      await GetVerificationSearchAction(searchInput, page, 10),
     queryKey: ["verification", searchInput, page],
   });
   useEffect(() => {

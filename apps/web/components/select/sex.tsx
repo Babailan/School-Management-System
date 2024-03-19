@@ -1,24 +1,24 @@
 import {
-  SelectRoot,
-  SelectTrigger,
+  Select,
   SelectContent,
   SelectItem,
-} from "@radix-ui/themes";
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SelectRootProps } from "@radix-ui/themes/dist/cjs/components/select";
 import React from "react";
 
 const SelectSex: React.FC<SelectRootProps> = (props) => {
   return (
-    <SelectRoot {...props}>
-      <SelectTrigger
-        className="w-full"
-        placeholder="Select Sex"
-      ></SelectTrigger>
-      <SelectContent position="popper">
+    <Select {...props}>
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder="Select Sex" />
+      </SelectTrigger>
+      <SelectContent>
         <SelectItem value="female">Female</SelectItem>
         <SelectItem value="male">Male</SelectItem>
       </SelectContent>
-    </SelectRoot>
+    </Select>
   );
 };
 

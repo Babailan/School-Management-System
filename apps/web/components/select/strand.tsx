@@ -1,30 +1,39 @@
-import { Select } from "@radix-ui/themes";
-import { SelectRootProps } from "@radix-ui/themes/dist/cjs/components/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const SelectStrand: React.FC<SelectRootProps> = ({ ...props }) => {
+const SelectStrand = ({
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Select>) => {
   return (
-    <Select.Root {...props}>
-      <Select.Trigger
-        className="w-60"
-        placeholder="Select A Strand"
-      ></Select.Trigger>
-      <Select.Content position="popper">
-        <Select.Item value="ABM">
-          Accountancy Business Management (ABM)
-        </Select.Item>
-        <Select.Item value="STEM">
-          Science, Technology, Engineering, and Mathematics (STEM)
-        </Select.Item>
-        <Select.Item value="HUMSS">
-          Humanities and Social Sciences (HUMSS)
-        </Select.Item>
-        <Select.Item value="GAS">General Academic Strand (GAS)</Select.Item>
-        <Select.Item value="HE">Home Economics (HE)</Select.Item>
-        <Select.Item value="ICT">
-          Information and Communication Technology (ICT)
-        </Select.Item>
-      </Select.Content>
-    </Select.Root>
+    <Select {...props}>
+      <SelectTrigger>
+        <SelectValue placeholder="Select A Strand"></SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="ABM">
+            Accountancy and Business Management (ABM)
+          </SelectItem>
+          <SelectItem value="STEM">
+            Science, Technology, Engineering, and Mathematics (STEM)
+          </SelectItem>
+          <SelectItem value="HUMSS">
+            Humanities and Social Sciences (HUMSS)
+          </SelectItem>
+          <SelectItem value="GAS">General Academic Strand (GAS)</SelectItem>
+          <SelectItem value="HE">Home Economics (HE)</SelectItem>
+          <SelectItem value="ICT">
+            Information and Communication Technology (ICT)
+          </SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 };
 

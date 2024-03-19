@@ -4,7 +4,6 @@ import {
   SelectItem,
   SelectValue,
   SelectTrigger,
-  SelectGroup,
 } from "../ui/select";
 
 const SelectYear = ({

@@ -4,10 +4,12 @@ import { Box, Text, TextFieldInput } from "@radix-ui/themes";
 import { useState } from "react";
 
 export default function ({ date }) {
+  console.log(date);
   const [birthdate, setBirthdate] = useState<Date>(new Date(date));
   // exact date today age
   const age =
     new Date(new Date().getTime() - birthdate.getTime()).getFullYear() - 1970;
+  return <></>;
   return (
     <>
       <Box>

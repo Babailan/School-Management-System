@@ -13,8 +13,7 @@ export async function GetVerificationSearchAction(
   const collection = (await connectDB())
     .db("yasc")
     .collection("student-verification");
-  query.toLowerCase();
-  query = query.trim();
+  query = query.toLowerCase().trim();
 
   let filter: Filter<Document> = {
     $or: [
