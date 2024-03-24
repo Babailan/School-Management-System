@@ -35,7 +35,7 @@ const roles = ["faculty", "registrar", "administrator"] as const;
 const validationSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
-  middleName: z.string().min(1, { message: "Middle name is required" }),
+  middleName: z.string().optional(),
   email: z.string().email({ message: "Invalid Email" }),
   password: z
     .string()
@@ -75,7 +75,6 @@ export default function CreateUser() {
       });
     }
   };
-  console.log(form.getValues());
 
   return (
     <div className="p-10 space-y-5">
@@ -112,7 +111,9 @@ export default function CreateUser() {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>
+                    First Name <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your first name" {...field} />
                   </FormControl>
@@ -138,7 +139,9 @@ export default function CreateUser() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>
+                    Last Name <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your last name" {...field} />
                   </FormControl>
@@ -153,7 +156,9 @@ export default function CreateUser() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>
+                  Email <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter the email" {...field} />
                 </FormControl>
@@ -167,7 +172,9 @@ export default function CreateUser() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>
+                  Password <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     type="password"
@@ -180,7 +187,9 @@ export default function CreateUser() {
             )}
           />
           <div className="space-y-2">
-            <TypographyH4>Pick a roles</TypographyH4>
+            <TypographyH4>
+              Pick a roles <span className="text-destructive">*</span>
+            </TypographyH4>
             {roles.map((role, idx) => (
               <FormField
                 key={role}

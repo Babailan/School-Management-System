@@ -7,9 +7,7 @@ import { ObjectId } from "mongodb";
 // add a new section in the database section collection return is like this { message : string, success : boolean }
 export async function addSectionAction(formData: FormData) {
   // connect to the database
-  const sectionCollection = (await connectDB())
-    .db("yasc")
-    .collection("section");
+  const sectionCollection = (await connectDB()).collection("section");
 
   //validate formData , subjects field is non strict but only projects the subjects field
   const { error, value } = Joi.object({
@@ -32,10 +30,8 @@ export async function addSectionAction(formData: FormData) {
   if (await sectionCollection.findOne({ sectionName: value.sectionName })) {
     return { message: "Section already exist", success: false };
   }
-  const curriculum = await (
-    await connectDB()
-  )
-    .db("yasc")
+  const curriculum = await (await connectDB())
+
     .collection("curriculum")
     .findOne({ _id: new ObjectId(value.curriculumID) });
 

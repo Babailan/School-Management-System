@@ -8,7 +8,7 @@ export default async function connectDB() {
     const client = new MongoClient(uri);
 
     // Connect to the MongoDB server
-    return await client.connect();
+    return (await client.connect()).db("sms");
   } catch (error) {
     throw Error("Bad Connection");
   }

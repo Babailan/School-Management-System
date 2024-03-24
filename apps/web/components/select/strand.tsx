@@ -17,18 +17,18 @@ const SelectStrand = ({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="ABM">
+          <SelectItem value="abm">
             Accountancy and Business Management (ABM)
           </SelectItem>
-          <SelectItem value="STEM">
+          <SelectItem value="stem">
             Science, Technology, Engineering, and Mathematics (STEM)
           </SelectItem>
-          <SelectItem value="HUMSS">
+          <SelectItem value="humss">
             Humanities and Social Sciences (HUMSS)
           </SelectItem>
-          <SelectItem value="GAS">General Academic Strand (GAS)</SelectItem>
-          <SelectItem value="HE">Home Economics (HE)</SelectItem>
-          <SelectItem value="ICT">
+          <SelectItem value="gas">General Academic Strand (GAS)</SelectItem>
+          <SelectItem value="he">Home Economics (HE)</SelectItem>
+          <SelectItem value="ict">
             Information and Communication Technology (ICT)
           </SelectItem>
         </SelectGroup>

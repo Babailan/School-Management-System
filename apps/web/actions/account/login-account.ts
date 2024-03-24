@@ -1,9 +1,11 @@
 "use server";
 
+import { comparePassword } from "@/lib/crypto/password";
 import connectDB from "@/lib/helpers/connectDb";
 import { sealData } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 /**
  * Logs in a user account.
@@ -17,14 +19,15 @@ export async function LoginAccountAction(email: string, password: string) {
     throw new Error("Missing iron_key environment variable");
   }
 
-  const account_collection = (await connectDB())
-    .db("yasc")
-    .collection("user-account");
-  const result = await account_collection.findOne({ email });
+  const account_collection = (await connectDB()).collection("user-account");
+  const filter = z.string().email().safeParse(email).success
+    ? { email }
+    : { username: email };
+  const result = await account_collection.findOne(filter);
   if (!result) {
-    return { success: false, message: "Email not found" };
+    return { success: false, message: "Invalid Username or Email" };
   }
-  if (result.password !== password) {
+  if (!(await comparePassword(password, result.password))) {
     return { success: false, message: "Invalid password" };
   }
 

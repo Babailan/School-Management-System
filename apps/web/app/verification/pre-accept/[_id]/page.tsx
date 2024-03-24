@@ -8,22 +8,15 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import Loading from "@/app/loading";
-import { updateVerificationAction } from "@/actions/verification/update-verification";
-import { toast } from "react-toastify";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-
 import Link from "next/link";
 import Form from "./form";
 import { SelectTuition } from "@/components/select";
 
 export default async function Page({ params: { _id } }) {
   const data = await GetVerificationByIdAction(_id);
-
+  if (!data) throw new Error("Verification ID not found");
   return (
-    <div className="space-y-5 p-10">
+    <div className="space-y-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -44,9 +37,8 @@ export default async function Page({ params: { _id } }) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <SelectTuition />
       <h1 className="text-2xl font-semibold">Accept Student Verification</h1>
-      <Form />
+      <Form data={data} />
     </div>
   );
 }

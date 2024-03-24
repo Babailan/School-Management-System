@@ -8,9 +8,7 @@ interface GetCurriculumByFilterParams {
 export async function GetCurriculumByFilter(
   filter: GetCurriculumByFilterParams
 ) {
-  const subjects_collection = (await connectDB())
-    .db("yasc")
-    .collection("curriculum");
+  const subjects_collection = (await connectDB()).collection("curriculum");
 
   // Find the curriculum based on year and gradeLevel
   const results = await subjects_collection
@@ -25,9 +23,7 @@ export async function GetCurriculumByFilter(
 export async function GetCurriculumByIdAction(id: string) {
   if (ObjectId.isValid(id) === false) throw new Error("Invalid ID");
 
-  const subjects_collection = (await connectDB())
-    .db("yasc")
-    .collection("curriculum");
+  const subjects_collection = (await connectDB()).collection("curriculum");
 
   // Find the curriculum based on year and gradeLevel
   const results = await subjects_collection.findOne({

@@ -53,8 +53,8 @@ export default function Page() {
   }, [searchInput]);
 
   return (
-    <div className="space-y-5 p-10">
-      <TypographyH3>Verification</TypographyH3>
+    <div className="space-y-5">
+      <h1 className="text-2xl font-bold">Verification</h1>
       <Input
         onChange={(e) => setSearchInput(e.target.value)}
         placeholder="Search for student"
@@ -80,7 +80,6 @@ export default function Page() {
 
             <TableBody>
               {data?.results.map((student, idx) => {
-                console.log(student);
                 return (
                   <TableRow className="capitalize" key={idx}>
                     <TableCell>{student.firstName}</TableCell>
@@ -102,16 +101,14 @@ export default function Page() {
                         <DropdownMenuContent className="w-60 m-4">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <Link href={`/verification/accept/${student._id}`}>
+                          <Link
+                            href={`/verification/pre-accept/${student._id}`}
+                          >
                             <DropdownMenuItem>
                               <Edit2 className="w-4 h-4 mr-2" />
-                              Edit
+                              Edit | Verify
                             </DropdownMenuItem>
                           </Link>
-                          <DropdownMenuItem>
-                            <Check className="w-4 h-4 mr-2" />
-                            Verify
-                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -131,7 +128,12 @@ export default function Page() {
       </div>
       <Pagination>
         <PaginationContent>
-          <PaginationItem onClick={() => setPage(page - 1)}>
+          <PaginationItem
+            onClick={() => {
+              if (page <= 1) return;
+              setPage(page - 1);
+            }}
+          >
             <PaginationPrevious href="#" />
           </PaginationItem>
           {page > 1 && (

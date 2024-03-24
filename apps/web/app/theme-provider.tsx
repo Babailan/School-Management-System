@@ -11,7 +11,7 @@ export async function ThemeProvider({
   const accountInfo = await getAccountInformationAction();
   return (
     <NextThemesProvider
-      forcedTheme={_.get(accountInfo, "theme") ?? "light"}
+      forcedTheme={_.get(accountInfo, "theme", "light")}
       {...props}
     >
       {children}

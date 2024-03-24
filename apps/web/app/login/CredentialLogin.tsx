@@ -17,10 +17,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 
 const schema = z.object({
-  email: z
-    .string()
-    .min(1, "Please enter a email address.")
-    .email("Please enter a valid email address."),
+  email: z.string().min(1, "Please enter a username or email"),
   password: z.string().min(1, "Please enter a password."),
 });
 
@@ -54,7 +51,7 @@ export default function CredientialLogin() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Username or Email</FormLabel>
               <FormControl>
                 <Input {...field} placeholder="Enter your email" />
               </FormControl>

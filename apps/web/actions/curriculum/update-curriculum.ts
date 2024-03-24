@@ -17,7 +17,7 @@ export async function UpdateStrandSubjectAction({
   strand,
   id,
 }: UpdateStrandSubjectActionParams) {
-  const db = (await connectDB()).db("yasc");
+  const db = await connectDB();
   const curriculumCollection = db.collection("curriculum");
   const filterSchema = Joi.object({
     remove: Joi.array().items(Joi.string()),

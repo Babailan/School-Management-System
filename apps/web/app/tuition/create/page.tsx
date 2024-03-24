@@ -1,8 +1,6 @@
 "use client";
 
 import { addTuitionAction } from "@/actions/tuition/add-tuition";
-import PesoInput from "@/components/input/pesoinput";
-import { toast } from "react-toastify";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,10 +25,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Page() {
   return (
-    <div className="space-y-5 p-10">
+    <div className="space-y-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -58,29 +57,51 @@ export default function Page() {
 
 const tuitionSchema = z.object({
   tuition_title: z.string().min(1, "Tuition title is required"),
-  amount: z
+  amount: z.coerce
     .number()
-    .min(1, "Amount is required")
+    .min(0, "Amount is required")
     .nonnegative("Amount must be a positive number"),
 });
 
 const AddTuitionForm = () => {
+  const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(tuitionSchema),
-    defaultValues: {},
+    defaultValues: {
+      tuition_title: "",
+      amount: "",
+    },
   });
-  const onSubmit = async (data) => {
-    console.log(data);
+  const submit = async (data) => {
+    const result = await addTuitionAction(data.tuition_title, data.amount);
+    if (result.success) {
+      toast({
+        title: "Tuition added",
+        description: "Tuition has been added successfully.",
+      });
+    } else {
+      toast({
+        title: "Failed to add tuition",
+        description: result.message,
+        variant: "destructive",
+      });
+    }
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <form
+        autoComplete="off"
+        onSubmit={form.handleSubmit(submit)}
+        className="space-y-5"
+      >
         <FormField
           control={form.control}
           name="tuition_title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tuition Title</FormLabel>
+              <FormLabel>
+                Tuition Title <span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter tuition title" {...field} />
               </FormControl>
@@ -94,12 +115,17 @@ const AddTuitionForm = () => {
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>
+                Amount <span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
-                  type="number"
                   placeholder="Enter tuition title"
                   {...field}
+                  onChange={(e) => {
+                    if (isNaN(Number(e.target.value))) return;
+                    field.onChange(e);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -108,7 +134,7 @@ const AddTuitionForm = () => {
         />
         <Button type="submit" className="gap-2">
           <Plus className="w-4 h-4" />
-          Add
+          Add Tuition
         </Button>
       </form>
     </Form>

@@ -10,9 +10,7 @@ export async function GetVerificationSearchAction(
   limit: number
 ) {
   const skip = (page - 1) * limit;
-  const collection = (await connectDB())
-    .db("yasc")
-    .collection("student-verification");
+  const collection = (await connectDB()).collection("student-verification");
   query = query.toLowerCase().trim();
 
   let filter: Filter<Document> = {
@@ -41,9 +39,7 @@ export async function GetVerificationSearchAction(
 }
 
 export async function GetVerificationByIdAction(id: string) {
-  const collection = (await connectDB())
-    .db("yasc")
-    .collection("student-verification");
+  const collection = (await connectDB()).collection("student-verification");
 
   const result = await collection.findOne({
     _id: new ObjectId(id),

@@ -15,9 +15,7 @@ export async function addStudentFeeAction(
   year: string,
   amount: number
 ) {
-  const studentFeeCollection = (await connectDB())
-    .db("yasc")
-    .collection("student-record");
+  const studentFeeCollection = (await connectDB()).collection("student-record");
 
   const result = await studentFeeCollection.updateOne(
     {

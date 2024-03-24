@@ -9,9 +9,7 @@ export async function getAssessmentSearchAction(
   year: string
 ) {
   const skip = (page - 1) * limit;
-  const collection = (await connectDB())
-    .db("yasc")
-    .collection("student-record");
+  const collection = (await connectDB()).collection("student-record");
 
   let filter: Filter<Document> = {
     assessment: {

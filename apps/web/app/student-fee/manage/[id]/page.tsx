@@ -3,7 +3,6 @@
 import { addStudentFeeAction } from "@/actions/student-fee/add-student-fee";
 import { getStudentFeeById } from "@/actions/student-fee/get-student-fee";
 import Loading from "@/app/loading";
-import PesoInput from "@/components/input/pesoinput";
 import { ExclamationTriangleIcon, PaperPlaneIcon } from "@radix-ui/react-icons";
 import {
   Badge,
@@ -31,7 +30,7 @@ export default function Page() {
     queryFn: async () => await getStudentFeeById(id as string),
   });
   if (isPending) {
-    return <Loading p="6"></Loading>;
+    return <Loading disablePadding></Loading>;
   }
   return (
     <Box p="6" className="space-y-5">

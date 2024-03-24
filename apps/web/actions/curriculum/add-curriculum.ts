@@ -2,7 +2,7 @@
 import connectDB from "@/lib/helpers/connectDb";
 
 export async function AddCurriculumAction(data) {
-  const collection = (await connectDB()).db("yasc").collection("curriculum");
+  const collection = (await connectDB()).collection("curriculum");
 
   try {
     const existingCurriculum = await collection.findOne({

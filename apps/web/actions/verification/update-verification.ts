@@ -2,57 +2,41 @@
 import connectDB from "@/lib/helpers/connectDb";
 import { ObjectId } from "mongodb";
 
-export async function updateVerificationInfomationAction(formData: FormData) {
-  const verificationCollection = (await connectDB())
-    .db("yasc")
-    .collection("student-verification");
-
-  const id = new ObjectId(formData.get("_id") as string);
-  const informationToUpdate = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    middleName: formData.get("middleName"),
-    address: formData.get("address"),
-    phone: formData.get("phone"),
-    guardian: formData.get("guardian"),
-    strand: formData.get("strand"),
-    sex: formData.get("sex"),
-    year: formData.get("year"),
-    birthdate: formData.get("birthdate"),
-    age: Number(formData.get("age")),
-    fullName: `${formData.get("lastName")} ${formData.get(
-      "firstName"
-    )} ${formData.get("middleName")}`,
-  };
-
-  const update = {
-    $set: informationToUpdate,
-  };
-  const result = await verificationCollection.updateOne(
-    { _id: new ObjectId(id) },
-    update
+export async function updateVerificationInfomationAction(data, _id) {
+  const verificationCollection = (await connectDB()).collection(
+    "student-verification"
   );
 
-  if (result.acknowledged) {
-    return {
-      success: true,
-      message: "Information Updated",
-    };
-  } else {
-    return {
-      success: false,
-      message: "Failed to update",
-    };
-  }
+  // const id = new ObjectId(fo.get("_id") as string);
+
+  // const update = {
+  //   $set: informationToUpdate,
+  // };
+  // const result = await verificationCollection.updateOne(
+  //   { _id: new ObjectId(id) },
+  //   update
+  // );
+
+  // if (result.acknowledged) {
+  //   return {
+  //     success: true,
+  //     message: "Information Updated",
+  //   };
+  // } else {
+  //   return {
+  //     success: false,
+  //     message: "Failed to update",
+  //   };
+  // }
 }
 
 export async function updateVerificationAction(formData: FormData) {
-  const verificationCollection = (await connectDB())
-    .db("yasc")
-    .collection("student-verification");
-  const studentRecordCollection = (await connectDB())
-    .db("yasc")
-    .collection("student-record");
+  const verificationCollection = (await connectDB()).collection(
+    "student-verification"
+  );
+  const studentRecordCollection = (await connectDB()).collection(
+    "student-record"
+  );
 
   const id = new ObjectId(formData.get("_id") as string);
 

@@ -8,9 +8,7 @@ export async function getAccountInformationAction() {
   const session = await getAuth();
 
   if (session) {
-    const collection = (await connectDB())
-      .db("yasc")
-      .collection("user-account");
+    const collection = (await connectDB()).collection("user-account");
     return JSON.parse(
       JSON.stringify(
         await collection.findOne({ _id: new ObjectId(session._id) })

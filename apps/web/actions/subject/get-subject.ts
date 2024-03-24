@@ -15,9 +15,7 @@ export async function getSubjectSearchAction(
   query: string,
   limit: number
 ) {
-  const subjectCollection = (await connectDB())
-    .db("yasc")
-    .collection("subjects");
+  const subjectCollection = (await connectDB()).collection("subjects");
 
   const documentCounted = await subjectCollection.countDocuments();
 
@@ -52,9 +50,7 @@ export async function getSubjectSearchAction(
  * @returns A Promise that resolves to the subject object.
  */
 export async function getSubjectByIdAction(id: string) {
-  const subjectCollection = (await connectDB())
-    .db("yasc")
-    .collection("subjects");
+  const subjectCollection = (await connectDB()).collection("subjects");
 
   if (!ObjectId.isValid(id)) {
     throw new Error("Invalid ID");

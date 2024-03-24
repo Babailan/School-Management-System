@@ -8,7 +8,7 @@ import { ObjectId } from "mongodb";
  * @returns {Promise<Array<Object>>} - A promise that resolves to an array of section objects that match the filter.
  */
 export async function GetSectionByFilterAction(filter) {
-  const collection = (await connectDB()).db("yasc").collection("section");
+  const collection = (await connectDB()).collection("section");
 
   if (filter._id) {
     filter._id = new ObjectId(filter.id || filter._id);
@@ -27,8 +27,8 @@ export async function GetSectionByFilterAction(filter) {
  * @returns A Promise that resolves to the retrieved section.
  */
 export async function GetSectionByIdAction(id: string) {
-  const collection = (await connectDB()).db("yasc").collection("section");
-  const useraccount = (await connectDB()).db("yasc").collection("useraccount");
+  const collection = (await connectDB()).collection("section");
+  const useraccount = (await connectDB()).collection("useraccount");
 
   const results = await collection.findOne({
     _id: new ObjectId(id),

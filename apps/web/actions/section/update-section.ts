@@ -10,7 +10,7 @@ export async function updateSubjectTeacherAction(
   subjectCode,
   subjectTeacherId
 ) {
-  const collection = (await connectDB()).db("yasc").collection("section");
+  const collection = (await connectDB()).collection("section");
   const update = await collection.updateOne(
     { _id: new ObjectId(sectionID), "subjects.subject_code": subjectCode },
     { $set: { "subjects.$.subject_teacher": subjectTeacherId } }

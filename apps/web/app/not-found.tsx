@@ -1,25 +1,16 @@
 import { Heading, Text, Flex, Box } from "@radix-ui/themes";
+import { Frown } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <Flex
-      align={"center"}
-      justify={"center"}
-      p={{
-        initial: "4",
-        md: "6",
-      }}
-      className="h-screen"
-    >
-      <Box>
-        <Heading size={"8"} className="text-center">
-          Page not found
-        </Heading>
-        <Text className="text-center" as="div">
-          Sorry, the page you are looking for could not be found or has been
-          removed.
-        </Text>
-      </Box>
-    </Flex>
+    <div className="h-screen flex-col flex justify-center items-center">
+      <h1 className="text-2xl font-bold flex gap-2 items-center">
+        Page not found <Frown />
+      </h1>
+      <p className="text-center">
+        Sorry, the page you are looking for could not be found or has been
+        removed.
+      </p>
+    </div>
   );
 }

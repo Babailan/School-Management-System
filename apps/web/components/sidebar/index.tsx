@@ -1,19 +1,5 @@
-import { LogOutSubMenu, ThemeSubMenu } from "./subMenu";
 import Options from "./options";
 import { getAuth } from "@/middleware";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 import {
   BadgeHelp,
@@ -117,61 +103,34 @@ export default async function Sidebar() {
   };
 
   return (
-    <div className="min-h-screen *:py-2 *:border-b  flex flex-col">
-      <div className="px-4 !py-8">
-        <Link href="/">
-          <Logo className="w-full hidden lg:block" />
-          <Command className="lg:hidden block" />
+    <div className="flex h-full max-h-screen flex-col gap-2">
+      <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+        <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Command className="h-6 w-6" />
+          <span>SMS</span>
         </Link>
       </div>
-      {includes(session.roles, ["faculty"]) && (
-        <Options option={subjectTeacherOption} />
-      )}
+      <div className="flex-1">
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+          {includes(session.roles, ["faculty"]) && (
+            <Options option={subjectTeacherOption} />
+          )}
 
-      {includes(session.roles, ["administrator"]) && (
-        <Options option={userControlOption} />
-      )}
+          {includes(session.roles, ["administrator"]) && (
+            <Options option={userControlOption} />
+          )}
 
-      {includes(session.roles, ["registrar", "administrator"]) && (
-        <Options option={enrollmentOption} />
-      )}
+          {includes(session.roles, ["registrar", "administrator"]) && (
+            <Options option={enrollmentOption} />
+          )}
 
-      {includes(session.roles, ["administrator"]) && (
-        <Options option={tuitionOption} />
-      )}
-      {includes(session.roles, ["administrator", "registrar"]) && (
-        <Options option={dataManagement} />
-      )}
-
-      <div className="!p-4 w-fit border-none">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 ml-4">
-            <span>
-              <Avatar className="size-8">
-                <AvatarImage
-                  src={"https://avatars.githubusercontent.com/u/83863770?v=4"}
-                />
-                <AvatarFallback className="uppercase">
-                  {session.firstName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </span>
-            <span className="capitalize hidden lg:inline">
-              {session.firstName} {session.lastName}
-            </span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-60 m-2">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings2 className="w-4 h-4 mr-2" />
-              Settings
-            </DropdownMenuItem>
-            <ThemeSubMenu />
-            <LogOutSubMenu />
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {includes(session.roles, ["administrator"]) && (
+            <Options option={tuitionOption} />
+          )}
+          {includes(session.roles, ["administrator", "registrar"]) && (
+            <Options option={dataManagement} />
+          )}
+        </nav>
       </div>
     </div>
   );

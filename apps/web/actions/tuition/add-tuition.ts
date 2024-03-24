@@ -1,14 +1,13 @@
 "use server";
 
+import { deepLowerCase } from "@/lib/helpers";
 import connectDB from "@/lib/helpers/connectDb";
 
 export async function addTuitionAction(tuition_name, amount) {
-  const tuitionCollection = (await connectDB())
-    .db("yasc")
-    .collection("tuition");
+  const tuitionCollection = (await connectDB()).collection("tuition");
 
   const isExist = await tuitionCollection.findOne({
-    tuition_title: tuition_name,
+    tuition_title: String(tuition_name).toLowerCase(),
   });
   if (isExist) {
     return {
@@ -17,10 +16,12 @@ export async function addTuitionAction(tuition_name, amount) {
     };
   }
 
-  const result = await tuitionCollection.insertOne({
-    tuition_title: tuition_name,
-    amount: amount,
-  });
+  const result = await tuitionCollection.insertOne(
+    deepLowerCase({
+      tuition_title: tuition_name,
+      amount: amount,
+    })
+  );
 
   return {
     success: true,

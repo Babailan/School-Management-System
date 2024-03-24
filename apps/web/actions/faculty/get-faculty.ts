@@ -6,7 +6,7 @@ import connectDB from "@/lib/helpers/connectDb";
  * @returns {Promise<Array<Object>>} A promise that resolves to an array of faculty member objects.
  */
 export async function GetAllFacultyActions() {
-  const collection = (await connectDB()).db("yasc").collection("user_account");
+  const collection = (await connectDB()).collection("user_account");
   const data = await collection
     .find(
       {

@@ -11,7 +11,7 @@ import { ObjectId } from "mongodb";
  * @throws {Error} - If the subject with the given ID does not exist.
  */
 export async function updateSubjectById(id, payload) {
-  const collection = (await connectDB()).db("yasc").collection("subjects");
+  const collection = (await connectDB()).collection("subjects");
   const convertToObjectId = new ObjectId(id);
 
   const exist = await collection.findOne({ _id: convertToObjectId });

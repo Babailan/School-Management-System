@@ -7,7 +7,7 @@ export default async function AddSubjectAction(formData: FormData) {
   try {
     // Establish database connection
     const db = await connectDB();
-    const subjectCollection = db.db("yasc").collection("subjects");
+    const subjectCollection = db.collection("subjects");
 
     // Validate form data
     let { error, value } = Joi.object({
