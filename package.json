@@ -18,6 +18,5 @@
   ],
   "dependencies": {
     "turbo": "^1.12.4"
-  },
-  "description": ""
+  }
 }

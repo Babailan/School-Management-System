@@ -16,6 +16,7 @@ import { z } from "zod";
 import { useState } from "react";
 import {
   SelectGradeLevel,
+  SelectSex,
   SelectStrand,
   SelectTuition,
   SelectYear,
@@ -30,7 +31,10 @@ const schema = z.object({
   lastName: z.string().min(1, "Last Name is required"),
   middleName: z.string().min(1, "Middle Name is required"),
   address: z.string().min(1, "Address is required"),
-  email: z.string().min(1, "Email is required"),
+  email: z
+    .string()
+    .email("Please enter a valid email")
+    .min(1, "Email is required"),
   phone: z.string().min(1, "Phone Number is required"),
   guardian: z.string().min(1, "Guardian Name is required"),
   strand: z.string().min(1, "Strand is required"),
@@ -63,9 +67,8 @@ export default function EditVerificationForm({ data }) {
   const updateInformation = async () => {
     // update the information
   };
-  const submit = async (data) => {
-    // const result = await updateVerificationInfomationAction();
-    console.log(data);
+  const submit = async (formData) => {
+    const result = await updateVerificationInfomationAction(formData, data._id);
   };
 
   return (
@@ -117,6 +120,24 @@ export default function EditVerificationForm({ data }) {
             )}
           />
         </div>
+        <FormField
+          control={form.control}
+          name="sex"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Sex <span className="text-destructive">*</span>
+              </FormLabel>
+              <FormControl>
+                <SelectSex
+                  value={field.value.toString()}
+                  onValueChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="address"

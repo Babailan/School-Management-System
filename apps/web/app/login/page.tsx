@@ -1,6 +1,5 @@
 import React from "react";
 import CredientialLogin from "./CredentialLogin";
-import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Command, LucideFacebook } from "lucide-react";
 import { TypographyH3 } from "@/components/typography/h3";
@@ -13,9 +12,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-export const metadata: Metadata = {
-  title: "YASCI - Login Page",
-};
 
 export default async function Page() {
   return (

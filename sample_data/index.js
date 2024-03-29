@@ -12,14 +12,14 @@ function addStudent() {
   const middleName = faker.person.middleName();
   const fullName = `${lastName} ${firstName} ${middleName}`;
   const sex = faker.person.sexType();
-  const dateOfBirth = faker.date
+  const birthday = faker.date
     .between({
       from: "2006-01-01",
       to: "2013-12-31",
     })
     .toISOString()
     .split("T")[0]; // format: YYYY-MM-DD
-  const birthDate = new Date(dateOfBirth);
+  const birthDate = new Date(birthday);
   const strand = faker.helpers.arrayElement([
     "STEM",
     "ABM",
@@ -33,20 +33,13 @@ function addStudent() {
       from: new Date().setFullYear(new Date().getFullYear() - 18),
       to: new Date().setFullYear(new Date().getFullYear() - 15),
     })
-    .getFullYear();
-  const gradeLevel = faker.helpers.arrayElement([11, 12]);
+    .getFullYear()
+    .toString();
+  const gradeLevel = faker.helpers.arrayElement([11, 12]).toString();
   const address = faker.location.streetAddress();
   const phone = faker.phone.number("09#########");
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
   const referenceNumber = randomUUID();
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    age--;
-  }
+
   const student = {
     // student details
     firstName,
@@ -54,8 +47,7 @@ function addStudent() {
     middleName,
     guardian,
     sex,
-    dateOfBirth,
-    age,
+    birthday,
     strand,
     year,
     address,
@@ -89,7 +81,7 @@ function addStudent() {
   return deepLowerCase(student);
 }
 
-for (let i = 0; i < 7000; i++) {
+for (let i = 0; i < 10000; i++) {
   students.push(addStudent());
 }
 

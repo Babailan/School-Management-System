@@ -1,17 +1,25 @@
 "use server";
 import connectDB from "@/lib/helpers/connectDb";
+import { detailedDiff, diff, updatedDiff } from "deep-object-diff";
 import { ObjectId } from "mongodb";
 
-export async function updateVerificationInfomationAction(data, _id) {
+export async function updateVerificationInfomationAction(
+  data: Record<string, string>,
+  id: string
+) {
   const verificationCollection = (await connectDB()).collection(
     "student-verification"
   );
+  const _id = new ObjectId(id);
 
-  // const id = new ObjectId(fo.get("_id") as string);
+  //get the current information
+  const informationToUpdate = await verificationCollection.findOne({ _id });
 
-  // const update = {
-  //   $set: informationToUpdate,
-  // };
+  if (!informationToUpdate) throw new Error("No _id found in the database");
+
+  const tobeUpdated = diff(informationToUpdate, data);
+  console.log(tobeUpdated);
+
   // const result = await verificationCollection.updateOne(
   //   { _id: new ObjectId(id) },
   //   update
