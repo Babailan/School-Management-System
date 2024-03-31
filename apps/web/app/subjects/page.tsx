@@ -1,14 +1,113 @@
-import ListSubjectPage from "./list";
-import { Metadata } from "next";
+"use client";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getSubjectSearchAction } from "@/actions/subject/get-subject";
+import Link from "next/link";
+import Loading from "@/app/loading";
+import { TypographyH3 } from "@/components/typography/h3";
+import { Button } from "@/components/ui/button";
+import { Ellipsis, Pencil, Plus, Trash } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-export const metadata: Metadata = {
-  title: "YASCI - Subject List",
-};
+export default function ListSubjectPage() {
+  const { isPending, data, isError } = useQuery({
+    queryKey: ["subject", 1],
+    queryFn: async () => await getSubjectSearchAction(1, "", 10),
+  });
 
-export default async function Page() {
+  if (isPending) {
+    return <Loading disablePadding />;
+  }
   return (
-    <div className="p-10">
-      <ListSubjectPage></ListSubjectPage>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <TypographyH3>Subject List</TypographyH3>
+        <Link href={"/subjects/add"} legacyBehavior>
+          <Button>
+            <Plus className="w-5 h-5 mr-2" />
+            Add Subject
+          </Button>
+        </Link>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Subject Name</TableHead>
+            <TableHead>Subject Code</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {data?.results.map(({ subjectCode, subjectName, _id }, idx) => {
+            return (
+              <TableRow key={idx}>
+                <TableCell className="uppercase">{subjectName}</TableCell>
+                <TableCell className="uppercase">{subjectCode}</TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-7">
+                        <Ellipsis className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56 m-2">
+                      <Link href={`/subjects/edit/${_id}`}>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink>1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

@@ -1,223 +1,179 @@
 "use client";
 
+import { SelectSubject, SelectYear } from "@/components/select";
 import {
-  Box,
-  Button,
-  Callout,
-  Flex,
-  Heading,
-  Separator,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
+import {
   Table,
-  Text,
-  TextField,
-} from "@radix-ui/themes";
-import { SelectYear } from "@/components/select";
-import { useState } from "react";
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
-  CheckIcon,
-  ExclamationTriangleIcon,
-  InfoCircledIcon,
-} from "@radix-ui/react-icons";
-import { useQuery } from "@tanstack/react-query";
-import { Strand } from "@/lib/helpers/strand";
-import { GetCurriculumByFilter } from "@/actions/curriculum/get-curriculum";
-import Loading from "@/app/loading";
-import { addSectionAction } from "@/actions/section/add-section";
-import { toast } from "react-toastify";
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { CircleAlert, CirclePlus, Plus } from "lucide-react";
+import { DialogSubject } from "@/components/dialog/DialogSubject";
+import { Separator } from "@/components/ui/separator";
 
-function CurriculumTable({
-  data,
-  selectedCurriculum,
-  selectedStrand,
-  onSelect,
-  isPending,
-}) {
-  if (isPending) {
-    return <Loading />;
-  }
-  return (
-    <Table.Root variant="surface">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeaderCell>Curriculum Strand</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Grade Level</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Semester</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-        </Table.Row>
-      </Table.Header>
-
-      <Table.Body>
-        {data?.length === 0 && (
-          <Table.Row align="center">
-            <Table.Cell colSpan={4} justify="center">
-              <Text weight={"medium"}>No available Curriculum</Text>
-            </Table.Cell>
-          </Table.Row>
-        )}
-        {data?.map((curriculum) => {
-          console.log(curriculum);
-          return Object.keys(Strand).map((strand, idx) => {
-            const isSelected = selectedCurriculum
-              ? selectedCurriculum?.id === curriculum.id &&
-                selectedStrand === strand &&
-                selectedCurriculum.semester == curriculum.semester
-              : false;
-            if (!curriculum?.[strand] || curriculum?.[strand].length === 0)
-              return null;
-
-            return (
-              <Table.Row align="center" key={idx}>
-                <Table.RowHeaderCell>{strand}</Table.RowHeaderCell>
-                <Table.Cell>{curriculum.gradeLevel}</Table.Cell>
-                <Table.Cell>{curriculum.semester}</Table.Cell>
-                <Table.Cell justify="end">
-                  <Button
-                    variant="soft"
-                    disabled={isSelected}
-                    onClick={() => {
-                      onSelect(curriculum, strand);
-                    }}
-                  >
-                    Select Curriculum
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            );
-          });
-        })}
-      </Table.Body>
-    </Table.Root>
-  );
-}
-
-function SubjectTable({ strand, curriculum }) {
-  if (!curriculum || !strand) return null;
-  return (
-    <>
-      <Callout.Root color="yellow" variant="surface">
-        <Callout.Icon>
-          <ExclamationTriangleIcon />
-        </Callout.Icon>
-        <Callout.Text>
-          The following are the subjects for the selected curriculum and strand.
-        </Callout.Text>
-      </Callout.Root>
-      <Table.Root variant="surface">
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeaderCell>Subject Code</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell>Subject Name</Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
-
-        <Table.Body>
-          {curriculum[strand].map(({ subjectCode, subjectName }, idx) => {
-            return (
-              <Table.Row className="uppercase" align="center" key={idx}>
-                <Table.Cell>{subjectCode}</Table.Cell>
-                <Table.Cell>{subjectName}</Table.Cell>
-              </Table.Row>
-            );
-          })}
-        </Table.Body>
-      </Table.Root>
-    </>
-  );
-}
+const formSchema = z.object({
+  year: z.string().min(1, "Year is required"),
+  section_name: z.string().min(1, "Section is required"),
+  subjects: z.array(
+    z.object({
+      _id: z.string(),
+      subjectName: z.string(),
+      subjectCode: z.string(),
+    })
+  ),
+});
 
 export default function SectionAdd() {
-  const [year, setYear] = useState("");
-  const [sectionName, setSectionName] = useState("");
-  const [selectedCurriculum, setSelectedCurriculum] = useState<any>();
-  const [selectedStrand, setSelectedStrand] = useState<any>();
-  const { data, isPending } = useQuery({
-    queryKey: ["curriculum-list", year],
-    queryFn: async () => await GetCurriculumByFilter({ year }),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      year: "",
+      section_name: "",
+      subjects: [],
+    },
   });
 
-  const handleCurriculumSelect = (curriculum, strand) => {
-    setSelectedCurriculum(curriculum);
-    setSelectedStrand(strand);
-  };
-
-  const submit = async () => {
-    const formdata = new FormData();
-    formdata.append("sectionName", sectionName);
-    formdata.append("curriculumID", selectedCurriculum?._id);
-    formdata.append("strand", selectedStrand);
-
-    const toastID = toast.loading("Please wait...");
-    const result = await addSectionAction(formdata);
-    if (result.success) {
-      toast.update(toastID, {
-        render: "All is good",
-        type: "success",
-        isLoading: false,
-        autoClose: 5000,
-      });
-    } else {
-      toast.update(toastID, {
-        render: result.message,
-        type: "error",
-        isLoading: false,
-        autoClose: 5000,
-      });
+  const addSubject = (subject) => {
+    // dont mutate if subjcet already exists
+    if (form.getValues().subjects.some((s) => s._id === subject._id)) {
+      return;
     }
+
+    form.setValue("subjects", [...form.getValues().subjects, subject], {
+      shouldValidate: true,
+    });
   };
 
   return (
-    <Box p={"6"} className="space-y-5">
-      <Box>
-        <Heading>Section Information</Heading>
-        <Text size={"2"} color="gray">
-          List of available sections in the school
-        </Text>
-      </Box>
+    <div className="space-y-5">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <Link legacyBehavior passHref href={"/section"}>
+              <BreadcrumbLink>Section</BreadcrumbLink>
+            </Link>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Create Section</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div>
+        <h1 className="text-2xl font-bold">Create New Section</h1>
+        <p className="text-muted-foreground">
+          Once you create a section, you can't edit the subjects anymore.
+        </p>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(() => {})} className="space-y-2">
+          <FormField
+            control={form.control}
+            name="section_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Section Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="year"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Year</FormLabel>
+                <FormControl>
+                  <SelectYear onValueChange={field.onChange} />
+                </FormControl>
+                <FormDescription>The year of section.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <Callout.Root>
-        <Callout.Icon>
-          <InfoCircledIcon />
-        </Callout.Icon>
-        <Callout.Text>
-          Please select the curriculum for the section you are adding.
-        </Callout.Text>
-      </Callout.Root>
-      <Box className="space-y-2">
-        <Box>
-          <Flex direction="column">
-            <Text size="2">Curriculum Year</Text>
-            <SelectYear name="year" onValueChange={(e) => setYear(e)} />
-          </Flex>
-
-          <Flex direction="column">
-            <Text size={"2"}>Section name</Text>
-            <TextField.Input
-              onChange={(e) => setSectionName(e.target.value)}
-              disabled={year ? false : true}
-            ></TextField.Input>
-          </Flex>
-        </Box>
-
-        <CurriculumTable
-          data={data}
-          selectedCurriculum={selectedCurriculum}
-          selectedStrand={selectedStrand}
-          onSelect={handleCurriculumSelect}
-          isPending={isPending}
-        />
-
-        <Box py="5">
-          <Separator size={"4"} />
-        </Box>
-
-        <SubjectTable curriculum={selectedCurriculum} strand={selectedStrand} />
-      </Box>
-      <Box>
-        <Button onClick={submit}>
-          <CheckIcon />
-          Confirm
-        </Button>
-      </Box>
-    </Box>
+          <div className="flex justify-end !my-5">
+            <DialogSubject onSubjectSelected={addSubject}>
+              <Button type="button" size="sm">
+                <CirclePlus className="h-4 w-4 mr-1" />
+                Add Subject
+              </Button>
+            </DialogSubject>
+          </div>
+          <div className="p-5 rounded-md border-dashed border h-96">
+            <h2 className="text-xl font-bold">Subjects</h2>
+            <p className="text-muted-foreground text-sm">
+              List of subjects that will be added to this section.
+            </p>
+            <Table className="mt-2">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Subject Name</TableHead>
+                  <TableHead>Subject Code</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {form.getValues().subjects.map((subject, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell className="uppercase">
+                      {subject?.subjectName}
+                    </TableCell>
+                    <TableCell className="uppercase">
+                      {subject?.subjectCode}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {form.getValues().subjects.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={2} className="text-center">
+                      No subjects added yet.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <Button type="submit">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Section
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

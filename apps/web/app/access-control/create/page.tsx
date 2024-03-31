@@ -69,8 +69,7 @@ export default function CreateUser() {
       });
     } else {
       toast({
-        title: "Account not created",
-        description: message,
+        title: message,
         variant: "destructive",
       });
     }

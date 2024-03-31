@@ -1,6 +1,4 @@
 "use client";
-
-import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import {
   DropdownMenuItem,
@@ -13,11 +11,10 @@ import { LogOut, Moon, Sun, SunMoon } from "lucide-react";
 import { accountChangeThemeAction } from "@/actions/account/update-account";
 
 export function LogOutSubMenu() {
-  const router = useRouter();
   const [cookies, setCookie, removeCookie] = useCookies(["user_token"]);
   const logOut = () => {
     removeCookie("user_token");
-    router.refresh();
+    location.reload();
   };
   return (
     <DropdownMenuItem onClick={logOut} className="text-red-500">

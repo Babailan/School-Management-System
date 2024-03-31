@@ -69,11 +69,11 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <ReactClientProvider>
-            {/* <ReactQueryDevtools
+            <ReactQueryDevtools
               position="top"
-              buttonPosition="top-right"
-              initialIsOpen={true}
-            /> */}
+              buttonPosition="bottom-left"
+              initialIsOpen={false}
+            />
             <BetterToast />
             {session ? (
               <AuthorizeBaseLayout>{children}</AuthorizeBaseLayout>

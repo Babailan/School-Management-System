@@ -41,7 +41,7 @@ export const config = {
     "/section/:path*",
     "/verification/:path*",
     "/student-fee/:path*",
-    "/subject/:path*",
+    "/subjects/:path*",
     "/tuition/:path*",
     "/access-control/:path*",
     "/settings/:path*",

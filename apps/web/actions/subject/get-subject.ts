@@ -28,6 +28,7 @@ export async function getSubjectSearchAction(
       },
     };
   }
+  if (page < 1) page = 1;
 
   const result = await subjectCollection
     .find(filter)

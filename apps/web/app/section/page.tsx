@@ -39,7 +39,7 @@ function SectionList() {
 
   console.log(data);
   return (
-    <div className="space-y-5 p-10">
+    <div className="space-y-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

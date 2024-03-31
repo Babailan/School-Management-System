@@ -3,36 +3,16 @@ import { deepLowerCase } from "@/lib/helpers";
 import connectDB from "@/lib/helpers/connectDb";
 import Joi from "joi";
 
-export default async function AddSubjectAction(formData: FormData) {
+export default async function AddSubjectAction(data) {
   try {
     // Establish database connection
+    data = deepLowerCase(data);
     const db = await connectDB();
     const subjectCollection = db.collection("subjects");
 
-    // Validate form data
-    let { error, value } = Joi.object({
-      subjectCode: Joi.string().required().messages({
-        "string.empty": "Subject Code is required",
-      }),
-      subjectName: Joi.string().required().messages({
-        "string.empty": "Subject Name is required",
-      }),
-    }).validate({
-      subjectCode: formData.get("subjectCode"),
-      subjectName: formData.get("subjectName"),
-    });
-    value = deepLowerCase(value);
-
-    if (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
-
     // Check if subject code already exists
     const exist = await subjectCollection.findOne({
-      subjectCode: value.subjectCode,
+      subjectCode: data.subjectCode,
     });
 
     if (exist) {
@@ -43,12 +23,7 @@ export default async function AddSubjectAction(formData: FormData) {
     }
 
     // Insert subject into the database
-    const insertResult = await subjectCollection.insertOne({
-      subjectCode: value.subjectCode,
-      subjectName: value.subjectName,
-      active_status: true,
-      date: new Date(),
-    });
+    const insertResult = await subjectCollection.insertOne(data);
 
     if (insertResult.acknowledged) {
       return {
