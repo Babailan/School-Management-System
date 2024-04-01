@@ -36,7 +36,7 @@ import {
 export default function ListSubjectPage() {
   const { isPending, data, isError } = useQuery({
     queryKey: ["subject", 1],
-    queryFn: async () => await getSubjectSearchAction(1, "", 10),
+    queryFn: async () => await getSubjectSearchAction(1, "", 0),
   });
 
   if (isPending) {

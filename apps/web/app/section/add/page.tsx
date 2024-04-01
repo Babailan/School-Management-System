@@ -1,6 +1,11 @@
 "use client";
 
-import { SelectSubject, SelectYear } from "@/components/select";
+import {
+  SelectGradeLevel,
+  SelectSemester,
+  SelectStrand,
+  SelectYear,
+} from "@/components/select";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,6 +14,25 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Table,
@@ -35,12 +59,23 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CircleAlert, CirclePlus, Plus } from "lucide-react";
+import {
+  CheckCircle,
+  CircleAlert,
+  CircleCheck,
+  CirclePlus,
+  Ellipsis,
+  Plus,
+  Trash,
+} from "lucide-react";
 import { DialogSubject } from "@/components/dialog/DialogSubject";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/components/ui/use-toast";
+import { addSectionAction } from "@/actions/section/add-section";
 
 const formSchema = z.object({
-  year: z.string().min(1, "Year is required"),
+  school_year: z.string().min(1, "Year is required"),
   section_name: z.string().min(1, "Section is required"),
   subjects: z.array(
     z.object({
@@ -49,27 +84,82 @@ const formSchema = z.object({
       subjectCode: z.string(),
     })
   ),
+  grade_level: z.string().min(1, "Grade level is required"),
+  academic_strand: z.string().min(1, "Academic Strand is required"),
+  semester: z.string().min(1, "Semester is required"),
 });
 
 export default function SectionAdd() {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      year: "",
+      school_year: "",
       section_name: "",
       subjects: [],
+      grade_level: "",
+      semester: "",
+      academic_strand: "",
     },
   });
 
   const addSubject = (subject) => {
-    // dont mutate if subjcet already exists
     if (form.getValues().subjects.some((s) => s._id === subject._id)) {
+      toast({
+        action: (
+          <div className="w-full flex !m-0">
+            <CircleAlert className="mr-2" />
+            <span className="first-letter:capitalize">
+              The subject has already been added.
+            </span>
+          </div>
+        ),
+        variant: "destructive",
+      });
       return;
     }
 
     form.setValue("subjects", [...form.getValues().subjects, subject], {
       shouldValidate: true,
     });
+    //toast
+    toast({
+      action: (
+        <div className="w-full flex !m-0">
+          <CheckCircle className="mr-2" />
+          <span className="first-letter:capitalize">successfully updated</span>
+        </div>
+      ),
+    });
+  };
+
+  const removeSubject = (subject) => {
+    return () => {
+      form.setValue(
+        "subjects",
+        form.getValues().subjects.filter((s) => s._id !== subject._id),
+        {
+          shouldValidate: true,
+        }
+      );
+    };
+  };
+
+  const submitForm = async () => {
+    const valid = await form.trigger();
+    if (valid) {
+      const result = await addSectionAction(form.getValues());
+      if (result.success) {
+        toast({
+          title: result.message,
+        });
+      } else {
+        toast({
+          title: result.message,
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (
@@ -98,15 +188,64 @@ export default function SectionAdd() {
         </p>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(() => {})} className="space-y-2">
+        <form className="space-y-2">
+          <div className="flex *:w-full gap-2">
+            <FormField
+              control={form.control}
+              name="section_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Section Name <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="school_year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    School Year <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <SelectYear onValueChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="semester"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Semester <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <SelectSemester onValueChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
-            name="section_name"
+            name="grade_level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Section Name</FormLabel>
+                <FormLabel>
+                  Grade Level <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <SelectGradeLevel onValueChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,19 +253,20 @@ export default function SectionAdd() {
           />
           <FormField
             control={form.control}
-            name="year"
+            name="academic_strand"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Year</FormLabel>
+                <FormLabel>
+                  Academic Strand <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
-                  <SelectYear onValueChange={field.onChange} />
+                  <SelectStrand onValueChange={field.onChange} />
                 </FormControl>
-                <FormDescription>The year of section.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-
+          <Separator />
           <div className="flex justify-end !my-5">
             <DialogSubject onSubjectSelected={addSubject}>
               <Button type="button" size="sm">
@@ -135,7 +275,14 @@ export default function SectionAdd() {
               </Button>
             </DialogSubject>
           </div>
-          <div className="p-5 rounded-md border-dashed border h-96">
+          <Alert className="mb-5">
+            <CircleAlert className="h-4 w-4 mr-2" />
+            <AlertTitle>Heads up!</AlertTitle>
+            <AlertDescription>
+              Once you create a section, you can't edit the subjects anymore.
+            </AlertDescription>
+          </Alert>
+          <div className="p-5 rounded-md border">
             <h2 className="text-xl font-bold">Subjects</h2>
             <p className="text-muted-foreground text-sm">
               List of subjects that will be added to this section.
@@ -156,10 +303,28 @@ export default function SectionAdd() {
                     <TableCell className="uppercase">
                       {subject?.subjectCode}
                     </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <Ellipsis className="w-4 h-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={removeSubject(subject)}
+                          >
+                            <Trash className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {form.getValues().subjects.length === 0 && (
-                  <TableRow>
+                  <TableRow className="h-screen">
                     <TableCell colSpan={2} className="text-center">
                       No subjects added yet.
                     </TableCell>
@@ -168,10 +333,31 @@ export default function SectionAdd() {
               </TableBody>
             </Table>
           </div>
-          <Button type="submit">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Section
-          </Button>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button type="button">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Section
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This will create a new section and add the subjects to it.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="secondary">Cancel</Button>
+                </DialogClose>
+                <DialogTrigger asChild onClick={submitForm}>
+                  <Button>Confirm</Button>
+                </DialogTrigger>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </form>
       </Form>
     </div>

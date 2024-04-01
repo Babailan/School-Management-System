@@ -14,7 +14,7 @@ const SelectSemester = ({
   return (
     <Select {...props}>
       <SelectTrigger>
-        <SelectValue placeholder="Select a semester"></SelectValue>
+        <SelectValue></SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

@@ -11,7 +11,7 @@ const SelectGradeLevel = ({
   return (
     <Select {...props}>
       <SelectTrigger>
-        <SelectValue placeholder="Select a grade level"></SelectValue>
+        <SelectValue></SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="11">Grade 11 Senior High School</SelectItem>

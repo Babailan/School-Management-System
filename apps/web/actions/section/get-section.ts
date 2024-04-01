@@ -7,17 +7,12 @@ import { ObjectId } from "mongodb";
  * @param {Object} filter - The filter to apply when querying the database.
  * @returns {Promise<Array<Object>>} - A promise that resolves to an array of section objects that match the filter.
  */
-export async function GetSectionByFilterAction(filter) {
+export async function getSectionByFilter(filter) {
   const collection = (await connectDB()).collection("section");
 
-  if (filter._id) {
-    filter._id = new ObjectId(filter.id || filter._id);
-    delete filter.id;
-  }
-
   // Find the curriculum based on year and gradeLevel
-  const results = await collection.find({ ...filter }).toArray();
-
+  const results = await collection.find(filter).toArray();
+  console.log(results);
   return JSON.parse(JSON.stringify(results));
 }
 

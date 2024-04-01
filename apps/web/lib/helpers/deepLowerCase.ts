@@ -4,7 +4,15 @@ const deepLowerCase = (obj: any) => {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepLowerCase(item));
+    return obj.map((item) => {
+      if (typeof item === "string") {
+        return item.toLowerCase();
+      } else if (typeof item === "object" && item !== null) {
+        return deepLowerCase(item);
+      } else {
+        return item;
+      }
+    });
   }
 
   return Object.keys(obj).reduce((acc, key) => {

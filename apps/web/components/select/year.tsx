@@ -27,7 +27,7 @@ const SelectYear = ({
   return (
     <Select {...props}>
       <SelectTrigger>
-        <SelectValue placeholder="Select Year" />
+        <SelectValue />
       </SelectTrigger>
       <SelectContent>
         <Options />

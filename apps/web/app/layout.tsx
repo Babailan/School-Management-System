@@ -213,7 +213,11 @@ function AuthorizeBaseLayout({ children }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex-1 p-4 md:p-6 lg:p-10">{children}</main>
+        <ScrollArea>
+          <main className="p-4 md:p-6 lg:p-10 max-h-[calc(100vh-3.5rem)] lg:max-h-[calc(100vh-60px)]">
+            {children}
+          </main>
+        </ScrollArea>
       </div>
     </div>
   );

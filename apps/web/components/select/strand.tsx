@@ -13,7 +13,7 @@ const SelectStrand = ({
   return (
     <Select {...props}>
       <SelectTrigger>
-        <SelectValue placeholder="Select A Strand"></SelectValue>
+        <SelectValue></SelectValue>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
