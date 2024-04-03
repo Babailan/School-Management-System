@@ -6,7 +6,7 @@ import Link from "next/link";
 import { SelectYear } from "../../components/select";
 import { useState } from "react";
 import { getSectionByFilter } from "@/actions/section/get-section";
-import numeral from "numeral";
+import numeral, { Numeral } from "numeral";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -80,6 +80,7 @@ function SectionList() {
             <TableHead>Section Name</TableHead>
             <TableHead>Grade Level</TableHead>
             <TableHead>Academic Strand</TableHead>
+            <TableHead>Semester</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>
@@ -93,6 +94,7 @@ function SectionList() {
               <TableCell>
                 {Strand[section.academic_strand.toUpperCase()]}
               </TableCell>
+              <TableCell>{numeral(section.semester).format("Oo")}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger>

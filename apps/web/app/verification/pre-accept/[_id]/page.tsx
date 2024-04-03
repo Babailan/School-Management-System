@@ -10,7 +10,6 @@ import {
 
 import Link from "next/link";
 import Form from "./form";
-import { SelectTuition } from "@/components/select";
 
 export default async function Page({ params: { _id } }) {
   const data = await GetVerificationByIdAction(_id);

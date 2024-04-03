@@ -80,12 +80,6 @@ export default async function Sidebar() {
       icon: <Book className="w-4 h-4 " />,
     },
     {
-      title: "Curriculum",
-      href: "/curriculum",
-      location: [],
-      icon: <ScrollText className="w-4 h-4 " />,
-    },
-    {
       title: "Subjects",
       href: "/subjects",
       location: [],

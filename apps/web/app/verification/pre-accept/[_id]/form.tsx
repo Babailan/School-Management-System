@@ -22,9 +22,15 @@ import {
   SelectYear,
 } from "@/components/select";
 import { calculateAge } from "@/lib/date/age";
-import { FolderCheck, FolderSync } from "lucide-react";
-import { updateVerificationInfomationAction } from "@/actions/verification/update-verification";
+import { FolderCheck, FolderSync, Loader2, LoaderIcon } from "lucide-react";
+import {
+  updateVerificationInfomationAction,
+  updateVerificationToVerifiedAction,
+} from "@/actions/verification/update-verification";
 import _ from "lodash";
+import { useToast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const schema = z.object({
   firstName: z.string().min(1, "First Name is required"),
@@ -44,6 +50,7 @@ const schema = z.object({
 });
 
 export default function EditVerificationForm({ data }) {
+  const { toast } = useToast();
   const [birthday, setBirthday] = useState(data.birthday);
   const form = useForm({
     resolver: zodResolver(schema),
@@ -64,8 +71,21 @@ export default function EditVerificationForm({ data }) {
       data
     ),
   });
+  const verifyStudent = async () => {
+    const valid = await form.trigger();
+    if (valid) {
+      const result = await form.handleSubmit(async () =>
+        updateVerificationToVerifiedAction(form.getValues(), data._id)
+      )();
+    }
+  };
   const updateInformation = async () => {
-    // update the information
+    const valid = await form.trigger();
+    if (valid) {
+      const result = await form.handleSubmit(async () =>
+        updateVerificationInfomationAction(form.getValues(), data._id)
+      )();
+    }
   };
   const submit = async (formData) => {
     const result = await updateVerificationInfomationAction(formData, data._id);
@@ -299,18 +319,41 @@ export default function EditVerificationForm({ data }) {
           )}
         />
 
+        <h1 className="font-bold">Documents</h1>
+        <div className="flex gap-1 flex-col *:flex *:gap-1 *:w-fit">
+          <Label htmlFor="grade10card">
+            <Checkbox id="grade10card" />
+            <span className="font-normal">GRADE 10 CARD</span>
+          </Label>
+          <Label htmlFor="psa">
+            <Checkbox id="psa" /> <span className="font-normal">PSA</span>
+          </Label>
+          <Label htmlFor="2x2">
+            <Checkbox id="2x2" /> <span className="font-normal">2x2</span>
+          </Label>
+        </div>
+
         <div className="flex gap-2 !my-5">
           <Button
             className="gap-2"
-            type="submit"
+            type="button"
             variant="secondary"
             onClick={updateInformation}
+            disabled={form.formState.isSubmitting}
           >
-            <FolderSync className="w-4 h-4" />
+            {form.formState.isSubmitting ? (
+              <Loader2 className="animate-spin w-4 h-4" />
+            ) : (
+              <FolderSync className="w-4 h-4" />
+            )}
             Update Information
           </Button>
-          <Button className="gap-2">
-            <FolderCheck className="w-4 h-4" />
+          <Button className="gap-2" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? (
+              <Loader2 className="animate-spin w-4 h-4" />
+            ) : (
+              <FolderCheck className="w-4 h-4" />
+            )}
             Accept Student
           </Button>
         </div>

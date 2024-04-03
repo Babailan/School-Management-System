@@ -4,6 +4,37 @@ const { faker } = require("@faker-js/faker");
 const { randomUUID } = require("crypto");
 const fs = require("fs");
 const students = [];
+
+const deepLowerCase = (obj) => {
+  if (typeof obj !== "object") {
+    return obj.toLowerCase();
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => {
+      if (typeof item === "string") {
+        return item.toLowerCase();
+      } else if (typeof item === "object" && item !== null) {
+        return deepLowerCase(item);
+      } else {
+        return item;
+      }
+    });
+  }
+
+  return Object.keys(obj).reduce((acc, key) => {
+    const value = obj[key];
+    if (typeof value === "string") {
+      acc[key] = value.toLowerCase();
+    } else if (typeof value === "object" && value !== null) {
+      acc[key] = deepLowerCase(value);
+    } else {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+};
+
 function addStudent() {
   // student details
   const guardian = faker.person.fullName();
@@ -41,7 +72,6 @@ function addStudent() {
   const referenceNumber = randomUUID();
 
   const student = {
-    // student details
     firstName,
     lastName,
     middleName,
@@ -55,33 +85,13 @@ function addStudent() {
     gradeLevel,
     referenceNumber,
     fullName,
-  };
-  const deepLowerCase = (obj) => {
-    if (typeof obj !== "object") {
-      return obj.toLowerCase();
-    }
-
-    if (Array.isArray(obj)) {
-      return obj.map((item) => deepLowerCase(item));
-    }
-
-    return Object.keys(obj).reduce((acc, key) => {
-      const value = obj[key];
-      if (typeof value === "string") {
-        acc[key] = value.toLowerCase();
-      } else if (typeof value === "object" && value !== null) {
-        acc[key] = deepLowerCase(value);
-      } else {
-        acc[key] = value;
-      }
-      return acc;
-    }, {});
+    verified: false,
   };
 
   return deepLowerCase(student);
 }
 
-for (let i = 0; i < 10000; i++) {
+for (let i = 0; i < 6000; i++) {
   students.push(addStudent());
 }
 

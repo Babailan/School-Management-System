@@ -2,9 +2,7 @@
 
 import { deepLowerCase } from "@/lib/helpers";
 import connectDB from "@/lib/helpers/connectDb";
-import Joi from "joi";
 import _ from "lodash";
-import { ObjectId } from "mongodb";
 
 // add a new section in the database section collection return is like this { message : string, success : boolean }
 export async function addSectionAction(data) {
@@ -16,10 +14,11 @@ export async function addSectionAction(data) {
     await sectionCollection.findOne({
       section_name: data.section_name,
       year: data.year,
+      semester: data.semester,
     })
   ) {
     return {
-      message: "The section has already been established this year.",
+      message: "The semester has already been established this year.",
       success: false,
     };
   }

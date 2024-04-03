@@ -17,3 +17,10 @@ export async function getAccountInformationAction() {
   }
   return null;
 }
+
+export async function getAccountsByFilter(filter) {
+  // const session = await getAuth();
+
+  const collection = (await connectDB()).collection("user-account");
+  return JSON.parse(JSON.stringify(await collection.find({ filter })));
+}

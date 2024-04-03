@@ -188,7 +188,7 @@ export default function SectionAdd() {
         </p>
       </div>
       <Form {...form}>
-        <form className="space-y-2">
+        <form className="space-y-2 !last:mb-10">
           <div className="flex *:w-full gap-2">
             <FormField
               control={form.control}
@@ -324,7 +324,7 @@ export default function SectionAdd() {
                   </TableRow>
                 ))}
                 {form.getValues().subjects.length === 0 && (
-                  <TableRow className="h-screen">
+                  <TableRow className="h-[calc(100vh/2)]">
                     <TableCell colSpan={2} className="text-center">
                       No subjects added yet.
                     </TableCell>
@@ -336,7 +336,7 @@ export default function SectionAdd() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button type="button">
+              <Button type="button" className="!mb-5">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Section
               </Button>
