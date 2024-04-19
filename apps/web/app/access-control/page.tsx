@@ -22,7 +22,7 @@ import { TypographyH3 } from "@/components/typography/h3";
 
 export default function AccessControlPage() {
   return (
-    <div className="p-10 space-y-5">
+    <div className="space-y-5">
       <div className="flex justify-between">
         <TypographyH3 className="text-3xl font-bold">
           Access Control

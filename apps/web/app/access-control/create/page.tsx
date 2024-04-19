@@ -76,7 +76,7 @@ export default function CreateUser() {
   };
 
   return (
-    <div className="p-10 space-y-5">
+    <div className="space-y-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -103,7 +103,7 @@ export default function CreateUser() {
         <header className="text-3xl font-bold">Create User</header>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 ">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <div className="*:w-full flex gap-5">
             <FormField
               control={form.control}

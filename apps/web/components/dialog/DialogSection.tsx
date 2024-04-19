@@ -1,5 +1,6 @@
 "use client";
 
+import { getSectionSearchAction } from "@/actions/section/get-section";
 import { getSubjectSearchAction } from "@/actions/subject/get-subject";
 import {
   Command,
@@ -13,24 +14,28 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { useQuery } from "@tanstack/react-query";
-import { Book } from "lucide-react";
+import { Book, LampDesk } from "lucide-react";
+import numeral from "numeral";
 import React from "react";
+import { SelectYear } from "../select";
 
 // make props
-type DialogSubjectProps = {
+type DialogSectionProps = {
   children?: React.ReactNode;
-  onSubjectSelected?: (subject: any) => void;
+  onSectionSelected?: (subject: any) => void;
 };
 
-export function DialogSubject({
+export function DialogSection({
   children,
-  onSubjectSelected,
-}: DialogSubjectProps) {
+  onSectionSelected,
+}: DialogSectionProps) {
+  const [school_year,setSchoolYear] = React.useState(new Date().getFullYear().toString())
   const [open, setOpen] = React.useState(false);
 
   const { data, isPending, isSuccess } = useQuery({
-    queryKey: ["subjects-list"],
-    queryFn: async () => await getSubjectSearchAction(1, "", 0),
+    queryKey: ["section-list",school_year],
+    queryFn: async () =>
+      await getSectionSearchAction("", 0, 0, { school_year }),
   });
 
   return (
@@ -39,26 +44,32 @@ export function DialogSubject({
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
+          <SelectYear onValueChange={(year)=>setSchoolYear(year)} value={school_year}/>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup>
             {isPending && <CommandItem>Loading...</CommandItem>}
-            {data?.results.map((subject, idx) => (
+            {data?.results.map((section, idx) => (
               <span
                 key={idx}
                 onClick={() => {
                   setOpen(false);
-                  if (onSubjectSelected) onSubjectSelected(subject);
+                  if (onSectionSelected) onSectionSelected(section);
                 }}
               >
                 <CommandItem>
-                  <Book size={16} />
-                  <span className="ml-2 uppercase">{subject.subjectName}</span>
+                  <div>
+                    <LampDesk size={16} />
+                  </div>
+                  <div className="ml-2">
+                    <span className="uppercase">{section.section_name}</span>
+                    <span className="w-full block">
+                      {numeral(section.semester).format("0o")} Semester
+                    </span>
+                  </div>
                 </CommandItem>
               </span>
             ))}
-            {isSuccess && data?.results.length === 0 && (
-              <CommandItem>No results found.</CommandItem>
-            )}
+          
           </CommandGroup>
         </CommandList>
       </CommandDialog>

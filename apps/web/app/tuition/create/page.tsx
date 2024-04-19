@@ -78,6 +78,7 @@ const AddTuitionForm = () => {
       toast({
         title: "Tuition added",
         description: "Tuition has been added successfully.",
+        variant: "success",
       });
     } else {
       toast({

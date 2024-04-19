@@ -1,4 +1,3 @@
-// Description: This file contains cryptography about passwords.
 import bcrypt from "bcrypt";
 
 /**

@@ -48,6 +48,13 @@ export default async function Page({ params: { _id } }) {
               </TableCell>
             </TableRow>
           ))}
+          {data.subjects?.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={4} className="text-center">
+                No subjects found
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>

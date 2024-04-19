@@ -3,26 +3,19 @@
 import connectDB from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
 import _ from "lodash";
-import { Filter,Document } from "mongodb";
+import type { Filter, Document } from "mongodb";
 
-export async function getAllTuitionFee() {
-  const tuitionCollection = (await connectDB()).collection("tuition");
-
-  return JSON.parse(JSON.stringify(await tuitionCollection.find({}).toArray()));
-}
-
-
-export async function getTuitionSearchAction(
+export async function getDocumentsSearchAction(
   query: string,
   page: number,
   limit: number,
   filter: Filter<Document> = {}
 ) {
   const skip = (page - 1) * limit;
-  const collection = (await connectDB()).collection("tuition");
+  const collection = (await connectDB()).collection("documents");
   query = query.toLowerCase().trim();
 
-  if (query || Object.keys(filter).length) {
+  if (query) {
     filter = _.merge(filter, { document_name: stringToRegexSearch(query, true) });
   }
 
@@ -39,4 +32,3 @@ export async function getTuitionSearchAction(
     })
   );
 }
-

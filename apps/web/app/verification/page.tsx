@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/breadcrumb";
 
 export default function Page() {
+
   const [searchInput, setSearchInput] = useState("");
   const [page, setPage] = useState(1);
   // const [year, setYear] = useState(new Date().getFullYear().toString());
@@ -81,7 +82,7 @@ export default function Page() {
       />
       <div>
         {isPending ? (
-          <Loading disablePadding />
+          <Loading disablePadding  />
         ) : (
           <Table>
             <TableCaption>List of verification</TableCaption>

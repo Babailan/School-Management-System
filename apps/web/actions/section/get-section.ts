@@ -1,6 +1,8 @@
 "use server";
 import connectDB from "@/lib/helpers/connectDb";
-import { ObjectId } from "mongodb";
+import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
+import _ from "lodash";
+import { Document, Filter, ObjectId } from "mongodb";
 
 /**
  * Retrieves a section from the database based on the provided filter.
@@ -38,4 +40,35 @@ export async function GetSectionByIdAction(id: string) {
     .toArray();
 
   return JSON.parse(JSON.stringify(results));
+}
+
+export async function getSectionSearchAction(
+  query: string,
+  page: number,
+  limit: number,
+  filter: Filter<Document> = {}
+) {
+  const skip = (page - 1) * limit;
+  const collection = (await connectDB()).collection("section");
+  query = query.toLowerCase().trim();
+
+  if (query || Object.keys(filter).length) {
+    filter = _.merge(
+      filter,
+      query ? { section_name: stringToRegexSearch(query, true) } : {}
+    );
+  }
+
+  const filterCursor = collection.find(filter);
+  const totalCount = await filterCursor.count();
+  const totalPages = Math.ceil(totalCount / limit);
+
+  const result = await filterCursor.skip(skip).limit(limit).toArray();
+
+  return JSON.parse(
+    JSON.stringify({
+      results: result,
+      totalPages,
+    })
+  );
 }

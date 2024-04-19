@@ -12,7 +12,7 @@ const schema = z.object({
   subjectCode: z.string().min(1, "Subject code is required"),
 });
 
-export default function ({ data }) {
+export default function Form({ data }) {
   const { register, handleSubmit, formState } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {

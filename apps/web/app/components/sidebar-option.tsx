@@ -22,7 +22,7 @@ export default function SidebarOption({ option }) {
         key={idx}
       >
         {option.icon}
-        <span className="hidden lg:inline">{option.title}</span>
+        <span>{option.title}</span>
       </Link>
     );
   });

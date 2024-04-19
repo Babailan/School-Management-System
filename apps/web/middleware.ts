@@ -45,5 +45,6 @@ export const config = {
     "/tuition/:path*",
     "/access-control/:path*",
     "/settings/:path*",
+    "/documents/:path*",
   ],
 };

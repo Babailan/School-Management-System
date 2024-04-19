@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Command, LucideFacebook } from "lucide-react";
 import { TypographyH3 } from "@/components/typography/h3";
 import { Separator } from "@/components/ui/separator";
-import CarouselLoginImages from "./CarouselLoginImages";
 
 import {
   Accordion,
@@ -12,16 +11,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import HarvardImage from "./harvard_image.jpg";
 export default async function Page() {
   return (
     <div className="flex *:w-full">
-      <div className="hidden min-h-screen lg:block p-6 border-r">
+      <div className="hidden min-h-screen lg:block p-6 border-r space-y-5">
         <div className="flex gap-2">
           <Command />
           <span>School Management System</span>
         </div>
-        <CarouselLoginImages />
+        <AspectRatio ratio={16 / 9} className="bg-muted ">
+          <Image
+            fill
+            src={HarvardImage}
+            alt="Photo by Drew Beamer"
+            className="rounded-md object-cover"
+          />
+        </AspectRatio>
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>
@@ -37,7 +45,7 @@ export default async function Page() {
           <AccordionItem value="item-2">
             <AccordionTrigger>My favorite quotes</AccordionTrigger>
             <AccordionContent>
-              I think, therefore I am." (Latin: Cogito, ergo sum) is a
+              I think, therefore I am. {`"`} (Latin: Cogito, ergo sum) is a
               philosophical statement by René Descartes
             </AccordionContent>
           </AccordionItem>

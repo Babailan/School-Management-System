@@ -4,3 +4,5 @@ dist
 .turbo
 tsconfig.tsbuildinfo
 package-lock.json
+.env.local
+.env

@@ -1,12 +1,11 @@
 "use server";
 import { deepLowerCase } from "@/lib/helpers";
 import connectDB from "@/lib/helpers/connectDb";
-import { detailedDiff, diff, updatedDiff } from "deep-object-diff";
-import _, { update } from "lodash";
+import _ from "lodash";
 import { ObjectId } from "mongodb";
 
 export async function updateVerificationInfomationAction(
-  data: Record<string, string>,
+  data: Record<string, any>,
   id: string
 ) {
   const verificationCollection = (await connectDB()).collection("students");
@@ -17,22 +16,21 @@ export async function updateVerificationInfomationAction(
 
   if (!informationToUpdate) throw new Error("No _id found in the database");
 
-  let tobeUpdated = diff(informationToUpdate, data);
+  // update lastname
+  data.fullName = `${data.lastName} ${data.firstName} ${data.middleName}`;
+  data = _.omit(data, ["_id"]);
 
-  tobeUpdated = _.omit(tobeUpdated, ["_id"]);
-
-  console.log(deepLowerCase(tobeUpdated));
   const result = await verificationCollection.updateOne(
     { _id: new ObjectId(id) },
     {
-      $set: deepLowerCase(tobeUpdated),
+      $set: deepLowerCase(data),
     }
   );
 
   if (result.acknowledged) {
     return {
       success: true,
-      message: "Information Updated",
+      message: "Student Information updated",
     };
   } else {
     return {
@@ -42,14 +40,37 @@ export async function updateVerificationInfomationAction(
   }
 }
 
-export async function updateVerificationToVerifiedAction(
-  data: Record<string, string>,
-  id: string
-) {
-  const verificationCollection = (await connectDB()).collection("students");
-  const _id = new ObjectId(id);
-  const updated = await updateVerificationInfomationAction(data, id);
-  if (updated.success) {
-    console.log(updated);
-  }
+export async function updateVerifiedStudent(form, _id) {
+  const db = await connectDB();
+  const studentsCollection = db.collection<{
+    verified: boolean;
+    assessment: any[];
+  }>("students");
+  const sectionCollection = db.collection("section");
+
+  await studentsCollection.updateOne(
+    { _id: new ObjectId(_id) },
+    {
+      $set:{
+        verified:true,
+      },
+      $push: {
+        assessment: {
+          issued_date: new Date(),
+          title: "Tuition Fee",
+          year: new Date().getFullYear().toString(),
+          amount: form.tuition,
+        },
+      },
+    }
+  );
+
+  await sectionCollection.updateOne(
+    { _id: new ObjectId(form.section._id) },
+    {
+      $push: {
+        students: _id
+      }
+    }
+  );
 }

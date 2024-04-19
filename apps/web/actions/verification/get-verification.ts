@@ -2,6 +2,7 @@
 
 import connectDB from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
+import _ from "lodash";
 import { Document, Filter, ObjectId } from "mongodb";
 
 export async function GetVerificationSearchAction(
@@ -39,12 +40,20 @@ export async function GetVerificationSearchAction(
   );
 }
 
-export async function GetVerificationByIdAction(id: string) {
+export async function GetVerificationByIdAction(
+  id: string,
+  filter: Filter<Document> = {}
+) {
   const collection = (await connectDB()).collection("students");
 
-  const result = await collection.findOne({
-    _id: new ObjectId(id),
-  });
+  const result = await collection.findOne(
+    _.merge(
+      {
+        _id: new ObjectId(id),
+      },
+      filter
+    )
+  );
 
   return JSON.parse(JSON.stringify(result));
 }

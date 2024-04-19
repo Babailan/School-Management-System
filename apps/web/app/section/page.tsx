@@ -114,6 +114,13 @@ function SectionList() {
               </TableCell>
             </TableRow>
           ))}
+          {data?.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center">
+                No section found
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>

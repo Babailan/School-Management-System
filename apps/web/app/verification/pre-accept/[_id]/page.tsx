@@ -10,9 +10,13 @@ import {
 
 import Link from "next/link";
 import Form from "./form";
+import _ from "lodash";
+import { getDocumentsSearchAction } from "@/actions/documents/get-documents";
 
 export default async function Page({ params: { _id } }) {
-  const data = await GetVerificationByIdAction(_id);
+  const data = await GetVerificationByIdAction(_id,{verified:false});
+  const documents = await getDocumentsSearchAction("", 1, 0,{active_status:true});
+
   if (!data) throw new Error("Verification ID not found");
   return (
     <div className="space-y-5">
@@ -36,8 +40,7 @@ export default async function Page({ params: { _id } }) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className="text-2xl font-semibold">Accept Student Verification</h1>
-      <Form data={data} />
+      <Form data={data} documents={documents.results} />
     </div>
   );
 }

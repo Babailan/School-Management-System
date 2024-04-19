@@ -1,5 +1,4 @@
-import Options from "./options";
-import { getAuth } from "@/middleware";
+import Options from "./sidebar-option";
 
 import {
   BadgeHelp,
@@ -8,26 +7,14 @@ import {
   Command,
   HandCoins,
   Landmark,
-  Moon,
+  Paperclip,
   Route,
   Scroll,
-  ScrollText,
-  Settings2,
-  Sun,
-  SunMoon,
   UserRoundCog,
 } from "lucide-react";
 import Link from "next/link";
-import { Logo } from "@/icon/logo";
-import { Button } from "../ui/button";
-import { accountChangeThemeAction } from "@/actions/account/update-account";
-import _ from "lodash";
 
-export default async function Sidebar() {
-  const session = await getAuth();
-  if (!session) {
-    return <></>;
-  }
+export default async function Sidebar({ user }) {
   const userControlOption = [
     {
       title: "Access Control",
@@ -46,22 +33,10 @@ export default async function Sidebar() {
   ];
   const enrollmentOption = [
     {
-      title: "Assessment",
-      href: "/assessment",
-      location: [],
-      icon: <Route className="w-4 h-4 " />,
-    },
-    {
       title: "Verification",
       href: "/verification",
       location: [],
       icon: <BadgeHelp className="w-4 h-4 " />,
-    },
-    {
-      title: "Student Fee",
-      href: "/student-fee",
-      location: [],
-      icon: <Landmark className="w-4 h-4 " />,
     },
   ];
   const tuitionOption = [
@@ -85,6 +60,13 @@ export default async function Sidebar() {
       location: [],
       icon: <Scroll className="w-4 h-4 " />,
     },
+    {
+      // documents
+      title: "Documents",
+      href: "/documents",
+      location: [],
+      icon: <Paperclip className="w-4 h-4 " />,
+    },
   ];
 
   const includes = (arr, arraysValue) => {
@@ -105,25 +87,43 @@ export default async function Sidebar() {
         </Link>
       </div>
       <div className="flex-1">
-        <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-          {includes(session.roles, ["faculty"]) && (
-            <Options option={subjectTeacherOption} />
+        <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-2">
+          {includes(user.roles, ["faculty"]) && (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground"></span>
+              <Options option={subjectTeacherOption} />
+            </div>
           )}
 
-          {includes(session.roles, ["administrator"]) && (
-            <Options option={userControlOption} />
+          {includes(user.roles, ["administrator"]) && (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">
+                Users Control
+              </span>
+              <Options option={userControlOption} />
+            </div>
           )}
 
-          {includes(session.roles, ["registrar", "administrator"]) && (
-            <Options option={enrollmentOption} />
+          {includes(user.roles, ["registrar", "administrator"]) && (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">
+                Enrollment Control
+              </span>
+              <Options option={enrollmentOption} />
+            </div>
           )}
 
-          {includes(session.roles, ["administrator"]) && (
+          {includes(user.roles, ["administrator"]) && (
             <Options option={tuitionOption} />
           )}
-          {includes(session.roles, ["administrator", "registrar"]) && (
-            <Options option={dataManagement} />
-          )}
+          <div className="space-y-1">
+            <span className="text-xs text-muted-foreground">
+              Data Management
+            </span>
+            {includes(user.roles, ["administrator", "registrar"]) && (
+              <Options option={dataManagement} />
+            )}
+          </div>
         </nav>
       </div>
     </div>

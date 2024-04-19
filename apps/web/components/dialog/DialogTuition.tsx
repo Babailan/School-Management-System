@@ -1,6 +1,7 @@
 "use client";
 
 import { getSubjectSearchAction } from "@/actions/subject/get-subject";
+import { getTuitionSearchAction } from "@/actions/tuition/get-tuition";
 import {
   Command,
   CommandDialog,
@@ -17,20 +18,20 @@ import { Book } from "lucide-react";
 import React from "react";
 
 // make props
-type DialogSubjectProps = {
-  children?: React.ReactNode;
-  onSubjectSelected?: (subject: any) => void;
+type DialogTuitionProps = {
+  children: React.ReactNode;
+  onTuitionSelected?: (subject: any) => void;
 };
 
-export function DialogSubject({
+export function DialogTuition({
   children,
-  onSubjectSelected,
-}: DialogSubjectProps) {
+  onTuitionSelected,
+}: DialogTuitionProps) {
   const [open, setOpen] = React.useState(false);
 
   const { data, isPending, isSuccess } = useQuery({
-    queryKey: ["subjects-list"],
-    queryFn: async () => await getSubjectSearchAction(1, "", 0),
+    queryKey: ["tuition-list"],
+    queryFn: async () => await getTuitionSearchAction("", 0, 0),
   });
 
   return (
@@ -42,17 +43,17 @@ export function DialogSubject({
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup>
             {isPending && <CommandItem>Loading...</CommandItem>}
-            {data?.results.map((subject, idx) => (
+            {data?.results.map((tuition, idx) => (
               <span
                 key={idx}
                 onClick={() => {
                   setOpen(false);
-                  if (onSubjectSelected) onSubjectSelected(subject);
+                  if (onTuitionSelected) onTuitionSelected(tuition);
                 }}
               >
                 <CommandItem>
                   <Book size={16} />
-                  <span className="ml-2 uppercase">{subject.subjectName}</span>
+                  <span className="ml-2 uppercase">{tuition.tuition_title}</span>
                 </CommandItem>
               </span>
             ))}

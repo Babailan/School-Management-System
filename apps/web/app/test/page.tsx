@@ -1,17 +1,16 @@
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function Test() {
-  const clerr = async () => {
-    "use server";
-    // Create a transporter object
-  };
-  return (
-    <div className="p-10">
-      <form action={clerr}>
-        <Button variant="secondary" type="submit">
-          Do something
-        </Button>
-      </form>
-    </div>
-  );
-}
+export default () => (
+  <Tabs defaultValue="account" className="w-[400px]">
+    <TabsList>
+      <TabsTrigger value="token">Account</TabsTrigger>
+      <TabsTrigger value="password">Password</TabsTrigger>
+    </TabsList>
+    <TabsContent value="account">
+      Make changes to your account here.
+    </TabsContent>
+    <TabsContent value="password">
+      <TabsTrigger value="account">Account</TabsTrigger>
+    </TabsContent>
+  </Tabs>
+);

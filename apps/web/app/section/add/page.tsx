@@ -106,14 +106,8 @@ export default function SectionAdd() {
   const addSubject = (subject) => {
     if (form.getValues().subjects.some((s) => s._id === subject._id)) {
       toast({
-        action: (
-          <div className="w-full flex !m-0">
-            <CircleAlert className="mr-2" />
-            <span className="first-letter:capitalize">
-              The subject has already been added.
-            </span>
-          </div>
-        ),
+        title: "Duplicate subject",
+        description: "This subject is already added to the list.",
         variant: "destructive",
       });
       return;
@@ -124,12 +118,9 @@ export default function SectionAdd() {
     });
     //toast
     toast({
-      action: (
-        <div className="w-full flex !m-0">
-          <CheckCircle className="mr-2" />
-          <span className="first-letter:capitalize">successfully updated</span>
-        </div>
-      ),
+      title: "Subject added",
+      description: "Subject has been added successfully.",
+      variant: "success",
     });
   };
 
@@ -152,6 +143,7 @@ export default function SectionAdd() {
       if (result.success) {
         toast({
           title: result.message,
+          variant: "success",
         });
       } else {
         toast({
@@ -184,7 +176,7 @@ export default function SectionAdd() {
       <div>
         <h1 className="text-2xl font-bold">Create New Section</h1>
         <p className="text-muted-foreground">
-          Once you create a section, you can't edit the subjects anymore.
+          Once you create a section, you cannot edit the subjects anymore.
         </p>
       </div>
       <Form {...form}>
@@ -267,26 +259,31 @@ export default function SectionAdd() {
             )}
           />
           <Separator />
-          <div className="flex justify-end !my-5">
-            <DialogSubject onSubjectSelected={addSubject}>
-              <Button type="button" size="sm">
-                <CirclePlus className="h-4 w-4 mr-1" />
-                Add Subject
-              </Button>
-            </DialogSubject>
-          </div>
+
           <Alert className="mb-5">
             <CircleAlert className="h-4 w-4 mr-2" />
             <AlertTitle>Heads up!</AlertTitle>
             <AlertDescription>
-              Once you create a section, you can't edit the subjects anymore.
+              Once you create a section, you cannot edit the subjects anymore.
             </AlertDescription>
           </Alert>
           <div className="p-5 rounded-md border">
-            <h2 className="text-xl font-bold">Subjects</h2>
-            <p className="text-muted-foreground text-sm">
-              List of subjects that will be added to this section.
-            </p>
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold">Subjects</h2>
+                <p className="text-muted-foreground text-sm">
+                  List of subjects that will be added to this section.
+                </p>
+              </div>
+              <div>
+                <DialogSubject onSubjectSelected={addSubject}>
+                  <Button type="button" size="sm">
+                    <CirclePlus className="h-4 w-4 mr-1" />
+                    Add Subject
+                  </Button>
+                </DialogSubject>
+              </div>
+            </div>
             <Table className="mt-2">
               <TableHeader>
                 <TableRow>
@@ -324,7 +321,7 @@ export default function SectionAdd() {
                   </TableRow>
                 ))}
                 {form.getValues().subjects.length === 0 && (
-                  <TableRow className="h-[calc(100vh/2)]">
+                  <TableRow>
                     <TableCell colSpan={2} className="text-center">
                       No subjects added yet.
                     </TableCell>

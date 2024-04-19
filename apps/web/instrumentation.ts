@@ -2,7 +2,6 @@ export const register = async () => {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const connectDb = await import("@/lib/helpers/connectDb");
     const { hashPassword } = await import("@/lib/crypto/password");
-
     const userCollection = await connectDb.default();
     const result = await userCollection
       .collection("user-account")

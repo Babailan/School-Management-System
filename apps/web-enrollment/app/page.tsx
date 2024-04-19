@@ -1,6 +1,5 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,22 +14,20 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { CircleAlert, Command, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { newRecord } from "@/actions/enroll/add";
 
 const schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
-  middleName: z.string().min(1, { message: "Middle name is required" }),
+  middleName: z.string().optional(),
   email: z
     .string()
     .min(1, { message: "Email is required" })
     .email({ message: "Invalid email address" }),
-  referenceNumber: z
-    .string()
-    .min(1, { message: "Reference number is required" }),
-  year: z.string().min(1, { message: "Year is required" }),
-  strand: z.string().min(1, { message: "Strand is required" }),
-  gradeLevel: z.string().min(1, { message: "Grade level is required" }),
-  birthDate: z.string().min(1, { message: "Birth date is required" }),
+  birthday: z.string().min(1, { message: "Birth date is required" }),
+  phone: z.string().min(1, { message: "Phone number is required" }),
 });
 
 export default function Home() {
@@ -45,94 +42,136 @@ export default function Home() {
       year: "",
       strand: "",
       gradeLevel: "",
-      birthDate: "",
+      birthday: "",
+      phone: "",
     },
   });
-  const onSubmit = (data) => {
-    console.log(data);
+
+  const onSubmit = async (data) => {
+    await newRecord(data);
   };
 
   return (
-    <div className="mx-auto my-10  max-w-4xl">
-      <Tabs defaultValue="new">
-        <TabsList className="w-full">
-          <TabsTrigger value="new" className="w-full">
-            New Student
-          </TabsTrigger>
-          <TabsTrigger value="password" className="w-full">
-            Old Student
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="new">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="flex *:w-full gap-5">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter First Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter Last Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="middleName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Middle Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter Middle Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+    <div className="mx-auto  max-w-4xl">
+      <main className="p-5 md:p-10">
+        <div className="flex gap-2">
+          <Command />
+          <span className="font-semibold">SMS Enrollment</span>
+        </div>
+        <Alert className="mt-4">
+          <CircleAlert className="h-4 w-4" />
+          <AlertTitle>Notice!</AlertTitle>
+          <AlertDescription>
+            After submitting the form, proceed to the registrar's office for the
+            enrollment process.
+          </AlertDescription>
+        </Alert>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-2 mt-5"
+          >
+            <div className="flex *:w-full gap-5 flex-col md:flex-row">
               <FormField
                 control={form.control}
-                name="email"
+                name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>
+                      First Name <span className="text-destructive">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Email" {...field} />
+                      <Input placeholder="Enter First Name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Last Name <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter Last Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="middleName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Middle Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter Middle Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Email <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Phone Number <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="birthday"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Birthday <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
-        </TabsContent>
-        <TabsContent value="password">
-          <form>
-            <header>
-              <h1 className="font-semibold text-2xl">For Old Student</h1>
-            </header>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting && (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              )}
+              Submit Enrollment
+            </Button>
           </form>
-        </TabsContent>
-      </Tabs>
+        </Form>
+      </main>
     </div>
   );
 }

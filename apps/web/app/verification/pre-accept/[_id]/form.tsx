@@ -13,26 +13,40 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useStep } from "usehooks-ts";
 import {
   SelectGradeLevel,
   SelectSex,
   SelectStrand,
-  SelectTuition,
   SelectYear,
 } from "@/components/select";
 import { calculateAge } from "@/lib/date/age";
-import { FolderCheck, FolderSync, Loader2, LoaderIcon } from "lucide-react";
 import {
-  updateVerificationInfomationAction,
-  updateVerificationToVerifiedAction,
-} from "@/actions/verification/update-verification";
+  ArrowRight,
+  Check,
+  ChevronDown,
+  FolderCheck,
+  FolderSync,
+  Loader2,
+  User,
+} from "lucide-react";
+import { updateVerificationInfomationAction } from "@/actions/verification/update-verification";
 import _ from "lodash";
 import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useQueryClient } from "@tanstack/react-query";
+import { Separator } from "@/components/ui/separator";
+import { diff } from "@/lib/helpers/diff";
+import { cn } from "@/lib/utils";
+import { DialogTuition } from "@/components/dialog/DialogTuition";
+import { Select } from "@/components/ui/select";
+import numeral from "numeral";
 import { Label } from "@/components/ui/label";
+import Confirmation from "./confirmation";
 
-const schema = z.object({
+const personalInfomrationSchemaForm = z.object({
+  lrn: z.string().min(1, "LRN is required"),
   firstName: z.string().min(1, "First Name is required"),
   lastName: z.string().min(1, "Last Name is required"),
   middleName: z.string().min(1, "Middle Name is required"),
@@ -47,317 +61,435 @@ const schema = z.object({
   year: z.string().min(1, "Year is required"),
   gradeLevel: z.string().min(1, "Grade Level is required"),
   birthday: z.string().min(1, "Birthday is required"),
+  documents: z.array(z.string()),
+  sex: z.enum(["male", "female"]),
 });
 
-export default function EditVerificationForm({ data }) {
+const confimrationSchema = z.object({
+  tuition: z.string().min(1, "Tuition is required"),
+});
+
+const steps = [
+  {
+    label: "Personal Information",
+  },
+  {
+    label: "Enrollment Confirmation",
+  },
+];
+
+export default function EditVerificationForm({ data, documents }) {
+  const [currentStep, helpers] = useStep(steps.length);
+
+  const {
+    canGoToPrevStep,
+    canGoToNextStep,
+    goToNextStep,
+    goToPrevStep,
+    reset,
+    setStep,
+  } = helpers;
+
+  const defaultValues = _.merge(
+    {
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      address: "",
+      email: "",
+      phone: "",
+      guardian: "",
+      strand: "",
+      year: "",
+      gradeLevel: "",
+      birthday: "",
+      sex: "",
+      lrn: "",
+      documents: [],
+    },
+    _.omit(data, ["_id"]) as any
+  );
+  const queries = useQueryClient();
   const { toast } = useToast();
   const [birthday, setBirthday] = useState(data.birthday);
-  const form = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: _.merge(
-      {
-        firstName: "",
-        lastName: "",
-        middleName: "",
-        address: "",
-        email: "",
-        phone: "",
-        guardian: "",
-        strand: "",
-        year: "",
-        gradeLevel: "",
-        birthday: "",
-      },
-      data
-    ),
+  const personalInformationForm = useForm<
+    z.infer<typeof personalInfomrationSchemaForm>
+  >({
+    resolver: zodResolver(personalInfomrationSchemaForm),
+    defaultValues: defaultValues,
   });
-  const verifyStudent = async () => {
-    const valid = await form.trigger();
-    if (valid) {
-      const result = await form.handleSubmit(async () =>
-        updateVerificationToVerifiedAction(form.getValues(), data._id)
-      )();
-    }
-  };
+
+  const [tuition, setTuition] = useState("");
+
   const updateInformation = async () => {
-    const valid = await form.trigger();
-    if (valid) {
-      const result = await form.handleSubmit(async () =>
-        updateVerificationInfomationAction(form.getValues(), data._id)
-      )();
-    }
-  };
-  const submit = async (formData) => {
-    const result = await updateVerificationInfomationAction(formData, data._id);
+    await personalInformationForm.handleSubmit(async (formData) => {
+      const tobeUpdated = JSON.parse(
+        JSON.stringify(diff(defaultValues, formData))
+      );
+      const result = await updateVerificationInfomationAction(
+        tobeUpdated,
+        data._id
+      );
+      if (result.success) {
+        toast({
+          title: "Edit Successfully",
+          description: "Student information has been updated",
+          variant: "success",
+        });
+      }
+      queries.clear();
+    })();
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(submit)} className="space-y-2">
-        <h2 className="text-xl font-bold">Personal Information</h2>
-        <div className="flex gap-2 *:w-full">
+    <div className="space-y-5">
+      <nav className="flex gap-5 justify-center items-center">
+        {steps.map((step, index) => (
+          <React.Fragment key={index}>
+            <div className="flex flex-col justify-center items-center">
+              <span
+                className={cn(
+                  currentStep == index + 1 ? "border-primary" : "",
+                  "border size-10 flex items-center justify-center rounded-full"
+                )}
+              >
+                {index + 1}
+              </span>
+              <span>{step.label}</span>
+            </div>
+            {index != steps.length - 1 && (
+              <Separator className="flex-1 max-w-96" />
+            )}
+          </React.Fragment>
+        ))}
+      </nav>
+      <Form {...personalInformationForm}>
+        <form
+          className={cn(
+            "space-y-2 pb-10",
+            currentStep == 1 ? "block" : "hidden"
+          )}
+        >
+          <h2 className="text-xl font-bold">Personal Information</h2>
+
+          <div className="flex gap-2 *:w-full">
+            <FormField
+              control={personalInformationForm.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    First Name <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={personalInformationForm.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Last Name <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={personalInformationForm.control}
+              name="middleName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Middle Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
-            control={form.control}
-            name="firstName"
+            control={personalInformationForm.control}
+            name="lrn"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  First Name <span className="text-destructive">*</span>
+                  LRN <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter first name" {...field} />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
-            control={form.control}
-            name="lastName"
+            control={personalInformationForm.control}
+            name="sex"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Last Name <span className="text-destructive">*</span>
+                  Sex <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter last name" {...field} />
+                  <SelectSex
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
-            control={form.control}
-            name="middleName"
+            control={personalInformationForm.control}
+            name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Middle Name</FormLabel>
+                <FormLabel>
+                  Address <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter middle name" {...field} />
+                  <Input placeholder="Enter address" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
-        <FormField
-          control={form.control}
-          name="sex"
-          render={({ field }) => (
+          <div className="flex *:w-full gap-2">
+            <FormField
+              control={personalInformationForm.control}
+              name="gradeLevel"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Grade Level <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <SelectGradeLevel
+                      value={field.value.toString()}
+                      onValueChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={personalInformationForm.control}
+              name="birthday"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Birthday <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={field.value}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setBirthday(e.target.value);
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormItem>
-              <FormLabel>
-                Sex <span className="text-destructive">*</span>
+              <FormLabel htmlFor={undefined}>
+                Age <span className="text-destructive">*</span>
               </FormLabel>
               <FormControl>
-                <SelectSex
-                  value={field.value.toString()}
-                  onValueChange={field.onChange}
+                <Input
+                  type="text"
+                  readOnly
+                  value={calculateAge(
+                    personalInformationForm.getValues("birthday")
+                  ).toString()}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Address <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="Enter address" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex *:w-full gap-2">
+          </div>
+          <div className="flex gap-2 *:w-full">
+            <FormField
+              control={personalInformationForm.control}
+              name="year"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Year <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <SelectYear
+                      onValueChange={field.onChange}
+                      value={field.value.toString()}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    The year you are applying for the school year.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={personalInformationForm.control}
+              name="strand"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Strand <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <SelectStrand
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <h2 className="text-xl font-bold">Contact Information</h2>
           <FormField
-            control={form.control}
-            name="gradeLevel"
+            control={personalInformationForm.control}
+            name="phone"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Grade Level <span className="text-destructive">*</span>
+                  Phone <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <SelectGradeLevel
-                    value={field.value.toString()}
-                    onValueChange={field.onChange}
-                  />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
-            control={form.control}
-            name="birthday"
+            control={personalInformationForm.control}
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Birthday <span className="text-destructive">*</span>
+                  Email <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input
-                    type="date"
-                    value={field.value}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      setBirthday(e.target.value);
-                    }}
-                  />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormItem>
-            <FormLabel htmlFor={undefined}>
-              Age <span className="text-destructive">*</span>
-            </FormLabel>
-            <FormControl>
-              <Input
-                type="text"
-                readOnly
-                value={calculateAge(birthday).toString()}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </div>
-        <div className="flex gap-2 *:w-full">
           <FormField
-            control={form.control}
-            name="year"
+            control={personalInformationForm.control}
+            name="guardian"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Year <span className="text-destructive">*</span>
+                  Guardian <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
-                  <SelectYear
-                    onValueChange={field.onChange}
-                    value={field.value.toString()}
-                  />
+                  <Input {...field} />
                 </FormControl>
                 <FormDescription>
-                  The year you are applying for the school year.
+                  The name of the guardian of the student.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="strand"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Strand <span className="text-destructive">*</span>
-                </FormLabel>
-                <FormControl>
-                  <SelectStrand
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-        <h2 className="text-xl font-bold">Contact Information</h2>
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Phone <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Email <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="guardian"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Guardian <span className="text-destructive">*</span>
-              </FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormDescription>
-                The name of the guardian of the student.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
-        <h1 className="font-bold">Documents</h1>
-        <div className="flex gap-1 flex-col *:flex *:gap-1 *:w-fit">
-          <Label htmlFor="grade10card">
-            <Checkbox id="grade10card" />
-            <span className="font-normal">GRADE 10 CARD</span>
-          </Label>
-          <Label htmlFor="psa">
-            <Checkbox id="psa" /> <span className="font-normal">PSA</span>
-          </Label>
-          <Label htmlFor="2x2">
-            <Checkbox id="2x2" /> <span className="font-normal">2x2</span>
-          </Label>
-        </div>
+          <Separator />
+          <div className="space-y-2">
+            <div>
+              <h1 className="font-bold">Documents</h1>
+              <p className="text-sm text-muted-foreground">
+                Please select the documents that the student has submitted.
+              </p>
+            </div>
+            <div className="space-y-2">
+              {documents.map((item) => (
+                <FormField
+                  key={item._id}
+                  control={personalInformationForm.control}
+                  name="documents"
+                  render={({ field }) => {
+                    return (
+                      <FormItem
+                        key={item._id}
+                        className="flex flex-row items-start space-x-3 space-y-0"
+                      >
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(item._id)}
+                            onCheckedChange={(checked) => {
+                              return checked
+                                ? field.onChange([...field.value, item._id])
+                                : field.onChange(
+                                    field.value?.filter(
+                                      (value) => value !== item._id
+                                    )
+                                  );
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal uppercase">
+                          {item.document_name}
+                        </FormLabel>
+                      </FormItem>
+                    );
+                  }}
+                />
+              ))}
+            </div>
+          </div>
 
-        <div className="flex gap-2 !my-5">
-          <Button
-            className="gap-2"
-            type="button"
-            variant="secondary"
-            onClick={updateInformation}
-            disabled={form.formState.isSubmitting}
-          >
-            {form.formState.isSubmitting ? (
-              <Loader2 className="animate-spin w-4 h-4" />
-            ) : (
-              <FolderSync className="w-4 h-4" />
-            )}
-            Update Information
-          </Button>
-          <Button className="gap-2" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? (
-              <Loader2 className="animate-spin w-4 h-4" />
-            ) : (
-              <FolderCheck className="w-4 h-4" />
-            )}
-            Accept Student
-          </Button>
-        </div>
-      </form>
-    </Form>
+          <div className="flex gap-2 mb-5">
+            <Button
+              className="gap-2"
+              type="button"
+              variant="secondary"
+              onClick={updateInformation}
+              disabled={personalInformationForm.formState.isSubmitting}
+            >
+              {personalInformationForm.formState.isSubmitting ? (
+                <Loader2 className="animate-spin w-4 h-4" />
+              ) : (
+                <FolderSync className="w-4 h-4" />
+              )}
+              Update Information
+            </Button>
+            <Button
+              className="gap-2"
+              disabled={personalInformationForm.formState.isSubmitting}
+              type="button"
+              onClick={goToNextStep}
+            >
+              {personalInformationForm.formState.isSubmitting ? (
+                <Loader2 className="animate-spin w-4 h-4" />
+              ) : (
+                <ArrowRight className="w-4 h-4" />
+              )}
+              Confirmation Page
+            </Button>
+          </div>
+        </form>
+      </Form>
+      <Confirmation goToPrevStep={goToPrevStep} currentStep={currentStep} data={data} />
+    </div>
   );
 }
