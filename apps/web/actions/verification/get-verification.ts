@@ -12,7 +12,6 @@ export async function GetVerificationSearchAction(
 ) {
   const skip = (page - 1) * limit;
   const collection = (await connectDB()).collection("students");
-  query = query.toLowerCase().trim();
 
   let filter: Filter<Document> = {
     $or: [

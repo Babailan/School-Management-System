@@ -15,6 +15,7 @@ import { z } from "zod";
  * @throws An error if the iron_key environment variable is missing.
  */
 export async function LoginAccountAction(email: string, password: string) {
+ 
   if (!process.env.iron_key) {
     throw new Error("Missing iron_key environment variable");
   }
@@ -25,10 +26,10 @@ export async function LoginAccountAction(email: string, password: string) {
     : { username: email };
   const result = await account_collection.findOne(filter);
   if (!result) {
-    return { success: false, message: "Invalid Username or Email" };
+    return { success: false, message: "Invalid Username/Email or Password" };
   }
   if (!(await comparePassword(password, result.password))) {
-    return { success: false, message: "Invalid password" };
+    return { success: false, message: "Invalid Username/Email or Password" };
   }
 
   const ttl = 60 * 60 * 24;

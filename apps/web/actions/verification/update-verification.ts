@@ -3,22 +3,30 @@ import { deepLowerCase } from "@/lib/helpers";
 import connectDB from "@/lib/helpers/connectDb";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 
 export async function updateVerificationInfomationAction(
   data: Record<string, any>,
   id: string
 ) {
+  data = _.omit(data, ["_id"]);
   const verificationCollection = (await connectDB()).collection("students");
-  const _id = new ObjectId(id);
 
   //get the current information
-  const informationToUpdate = await verificationCollection.findOne({ _id });
+  const info = await verificationCollection.findOne({ _id: new ObjectId(id) });
 
-  if (!informationToUpdate) throw new Error("No _id found in the database");
+  if (!info) throw new Error("No _id found in the database");
 
-  // update lastname
-  data.fullName = `${data.lastName} ${data.firstName} ${data.middleName}`;
-  data = _.omit(data, ["_id"]);
+  if (
+    _.intersectionWith(
+      Object.keys(data),
+      ["firstName", "lastName", "middleName"],
+      _.isEqual
+    ).length > 0
+  ) {
+    _.merge(info, data);
+    data.fullName = `${info.lastName} ${info.firstName} ${info.middleName}`;
+  }
 
   const result = await verificationCollection.updateOne(
     { _id: new ObjectId(id) },
@@ -26,6 +34,8 @@ export async function updateVerificationInfomationAction(
       $set: deepLowerCase(data),
     }
   );
+
+  revalidatePath("/", "layout");
 
   if (result.acknowledged) {
     return {
@@ -40,6 +50,7 @@ export async function updateVerificationInfomationAction(
   }
 }
 
+// update the student into verified student
 export async function updateVerifiedStudent(form, _id) {
   const db = await connectDB();
   const studentsCollection = db.collection<{
@@ -48,11 +59,13 @@ export async function updateVerifiedStudent(form, _id) {
   }>("students");
   const sectionCollection = db.collection("section");
 
+
+  // add to the students collection
   await studentsCollection.updateOne(
     { _id: new ObjectId(_id) },
     {
-      $set:{
-        verified:true,
+      $set: {
+        verified: true,
       },
       $push: {
         assessment: {
@@ -65,12 +78,20 @@ export async function updateVerifiedStudent(form, _id) {
     }
   );
 
+  //add to the section
   await sectionCollection.updateOne(
     { _id: new ObjectId(form.section._id) },
     {
       $push: {
-        students: _id
-      }
+        students: _id,
+      },
     }
   );
+
+  revalidatePath("/", "layout");
+
+  return {
+    success: true,
+    message: "Successfully verified",
+  };
 }

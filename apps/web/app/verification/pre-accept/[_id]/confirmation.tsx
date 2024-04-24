@@ -6,6 +6,18 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import {
   Form,
   FormControl,
   FormDescription,
@@ -19,6 +31,8 @@ import numeral from "numeral";
 import { DialogSection } from "@/components/dialog/DialogSection";
 import { SelectSemester } from "@/components/select";
 import { updateVerifiedStudent } from "@/actions/verification/update-verification";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   tuition: z.string().min(1, "Tuition is required"),
@@ -36,6 +50,8 @@ const schema = z.object({
 });
 
 export default function Confirmation({ data, currentStep, goToPrevStep }) {
+  const router = useRouter()
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -44,8 +60,29 @@ export default function Confirmation({ data, currentStep, goToPrevStep }) {
     },
   });
 
-  const submit = async (formData) => {
-    await updateVerifiedStudent(formData, data._id);
+  const submit = async () => {
+    const valid = await form.trigger();
+    if (valid) {
+      form.handleSubmit(async (formData) => {
+        try {
+          const result = await updateVerifiedStudent(formData, data._id);
+          if (result.success) {
+            toast({
+              variant: "success",
+              title: "Successful",
+              description: "The student has been verified.",
+            });
+            router.push("/verification")
+          }
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Something went wrong.",
+          });
+        }
+      })();
+    }
   };
 
   return (
@@ -53,9 +90,8 @@ export default function Confirmation({ data, currentStep, goToPrevStep }) {
       <div>
         <h1 className="text-2xl font-bold">Enrollment Confirmation</h1>
       </div>
-
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-2">
+        <form className="space-y-2">
           <FormField
             control={form.control}
             name="tuition"
@@ -77,7 +113,7 @@ export default function Confirmation({ data, currentStep, goToPrevStep }) {
                     >
                       {field.value
                         ? "PHP " + numeral(field.value).format("0,")
-                        : "Select Tuition"}{" "}
+                        : "Select Tuition"}
                       <ChevronDown size={16} />
                     </Button>
                   </DialogTuition>
@@ -118,13 +154,39 @@ export default function Confirmation({ data, currentStep, goToPrevStep }) {
           />
 
           <div className="space-x-2">
-            <Button type="button" onClick={goToPrevStep} disabled={form.formState.isSubmitting}>
+            <Button
+              type="button"
+              onClick={goToPrevStep}
+              disabled={form.formState.isSubmitting}
+            >
               <ArrowLeft size={16} className="mr-2" />
               Previous Page
             </Button>
-            <Button className="gap-2" type="submit" disabled={form.formState.isSubmitting}>
-              <Check size={16} /> Confirm Enrollment
-            </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  className="gap-2"
+                  type="button"
+                  disabled={form.formState.isSubmitting}
+                >
+                  <Check size={16} /> Confirm Enrollment
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your account and remove your data from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={submit}>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </form>
       </Form>

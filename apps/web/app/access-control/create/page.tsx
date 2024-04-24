@@ -60,6 +60,7 @@ export default function CreateUser() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
   });
+
   const onSubmit = async (data) => {
     const { success, message } = await createAccountAction(data);
     if (success) {
@@ -98,7 +99,6 @@ export default function CreateUser() {
           Once the user is created, the user will receive an email to verify.
         </AlertDescription>
       </Alert>
-
       <div className="flex justify-between">
         <header className="text-3xl font-bold">Create User</header>
       </div>
@@ -200,6 +200,7 @@ export default function CreateUser() {
                       <div className="flex items-center gap-2">
                         <Checkbox
                           id={role}
+                          disabled={role == "faculty" ? true : false}
                           onCheckedChange={(checked) => {
                             return checked
                               ? field.onChange([...field.value, role])

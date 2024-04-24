@@ -1,12 +1,11 @@
 "use server";
-
 import connectDB from "@/lib/helpers/connectDb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
 export async function updateDocumentAction(id, data) {
-  revalidatePath("/","layout")
-    
+  revalidatePath("/","layout");
+
   data = JSON.parse(data);
 
   const collection = (await connectDB()).collection("documents");
@@ -24,6 +23,7 @@ export async function updateDocumentAction(id, data) {
       $set: data,
     }
   );
+
 
 
   return {

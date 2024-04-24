@@ -12,7 +12,7 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import { useMutation } from "@tanstack/react-query";
-import Skeleton from "react-loading-skeleton";
+import { Skeleton } from "../ui/skeleton";
 
 /**
  * SelectSubject component.
@@ -84,7 +84,7 @@ const SelectSubject: React.FC<{ onClick?: (subject: object) => void }> = ({
                     No results found
                   </Text>
                 )}
-                {isPending && <Skeleton height={30} count={5} />}
+                {isPending && <Skeleton />}
               </Flex>
             </Box>
           </ScrollArea>

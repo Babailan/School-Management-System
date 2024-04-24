@@ -1,7 +1,5 @@
 "use client";
 
-import { Button, Flex } from "@radix-ui/themes";
-import { CheckIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { GetVerificationSearchAction } from "@/actions/verification/get-verification";
 import { useEffect, useState } from "react";

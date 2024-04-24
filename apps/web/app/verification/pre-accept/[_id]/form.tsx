@@ -22,15 +22,7 @@ import {
   SelectYear,
 } from "@/components/select";
 import { calculateAge } from "@/lib/date/age";
-import {
-  ArrowRight,
-  Check,
-  ChevronDown,
-  FolderCheck,
-  FolderSync,
-  Loader2,
-  User,
-} from "lucide-react";
+import { ArrowRight, FolderSync, Loader2 } from "lucide-react";
 import { updateVerificationInfomationAction } from "@/actions/verification/update-verification";
 import _ from "lodash";
 import { useToast } from "@/components/ui/use-toast";
@@ -39,10 +31,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import { diff } from "@/lib/helpers/diff";
 import { cn } from "@/lib/utils";
-import { DialogTuition } from "@/components/dialog/DialogTuition";
-import { Select } from "@/components/ui/select";
-import numeral from "numeral";
-import { Label } from "@/components/ui/label";
 import Confirmation from "./confirmation";
 
 const personalInfomrationSchemaForm = z.object({
@@ -122,23 +110,26 @@ export default function EditVerificationForm({ data, documents }) {
   const [tuition, setTuition] = useState("");
 
   const updateInformation = async () => {
-    await personalInformationForm.handleSubmit(async (formData) => {
-      const tobeUpdated = JSON.parse(
-        JSON.stringify(diff(defaultValues, formData))
-      );
-      const result = await updateVerificationInfomationAction(
-        tobeUpdated,
-        data._id
-      );
-      if (result.success) {
-        toast({
-          title: "Edit Successfully",
-          description: "Student information has been updated",
-          variant: "success",
-        });
-      }
-      queries.clear();
-    })();
+    const valid = await personalInformationForm.trigger();
+    if (valid) {
+      await personalInformationForm.handleSubmit(async (formData) => {
+        const tobeUpdated = JSON.parse(
+          JSON.stringify(diff(defaultValues, formData))
+        );
+        const result = await updateVerificationInfomationAction(
+          tobeUpdated,
+          data._id
+        );
+        if (result.success) {
+          toast({
+            title: "Edit Successfully",
+            description: "Student information has been updated",
+            variant: "success",
+          });
+        }
+        queries.clear();
+      })();
+    }
   };
 
   return (
@@ -469,15 +460,31 @@ export default function EditVerificationForm({ data, documents }) {
               {personalInformationForm.formState.isSubmitting ? (
                 <Loader2 className="animate-spin w-4 h-4" />
               ) : (
-                <FolderSync className="w-4 h-4" />
+                <FolderSync size={16} />
               )}
               Update Information
             </Button>
             <Button
               className="gap-2"
-              disabled={personalInformationForm.formState.isSubmitting}
               type="button"
-              onClick={goToNextStep}
+              onClick={async () => {
+                if (await personalInformationForm.trigger()) {
+                  if (
+                    Object.keys(
+                      diff(defaultValues, personalInformationForm.getValues())
+                    ).length > 0
+                  ) {
+                    await updateInformation();
+                  }
+                  goToNextStep();
+                } else {
+                  toast({
+                    title: "Incomplete Information",
+                    variant: "destructive",
+                    description: "Fill out all required field to continue.",
+                  });
+                }
+              }}
             >
               {personalInformationForm.formState.isSubmitting ? (
                 <Loader2 className="animate-spin w-4 h-4" />
@@ -489,7 +496,11 @@ export default function EditVerificationForm({ data, documents }) {
           </div>
         </form>
       </Form>
-      <Confirmation goToPrevStep={goToPrevStep} currentStep={currentStep} data={data} />
+      <Confirmation
+        goToPrevStep={goToPrevStep}
+        currentStep={currentStep}
+        data={data}
+      />
     </div>
   );
 }

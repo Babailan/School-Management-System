@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Command, LucideFacebook } from "lucide-react";
 import { TypographyH3 } from "@/components/typography/h3";
 import { Separator } from "@/components/ui/separator";
-
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +12,8 @@ import {
 } from "@/components/ui/accordion";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
-import HarvardImage from "./harvard_image.jpg";
+import HarvardImage from "./harvard_image.png";
+
 export default async function Page() {
   return (
     <div className="flex *:w-full">
@@ -22,12 +22,13 @@ export default async function Page() {
           <Command />
           <span>School Management System</span>
         </div>
-        <AspectRatio ratio={16 / 9} className="bg-muted ">
+        <AspectRatio ratio={16 / 9} className="bg-muted">
           <Image
             fill
             src={HarvardImage}
             alt="Photo by Drew Beamer"
-            className="rounded-md object-cover"
+            className="object-cover rounded-sm"
+            sizes="100vw"
           />
         </AspectRatio>
         <Accordion type="single" collapsible>

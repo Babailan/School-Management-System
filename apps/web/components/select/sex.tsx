@@ -5,10 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SelectRootProps } from "@radix-ui/themes/dist/cjs/components/select";
 import React from "react";
 
-const SelectSex: React.FC<SelectRootProps> = (props) => {
+const SelectSex = (props) => {
   return (
     <Select {...props}>
       <SelectTrigger className="w-full">

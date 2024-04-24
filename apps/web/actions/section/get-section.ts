@@ -1,4 +1,5 @@
 "use server";
+import { arrayOfIdToDocument } from "@/lib/helpers";
 import connectDB from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
 import _ from "lodash";
@@ -14,7 +15,6 @@ export async function getSectionByFilter(filter) {
 
   // Find the curriculum based on year and gradeLevel
   const results = await collection.find(filter).toArray();
-  console.log(results);
   return JSON.parse(JSON.stringify(results));
 }
 
@@ -23,23 +23,23 @@ export async function getSectionByFilter(filter) {
  * @param id - The ID of the section to retrieve.
  * @returns A Promise that resolves to the retrieved section.
  */
-export async function GetSectionByIdAction(id: string) {
+export async function getSectionByIdAction(id: string) {
   const collection = (await connectDB()).collection("section");
   const useraccount = (await connectDB()).collection("useraccount");
 
-  const results = await collection.findOne({
+  const result = await collection.findOne({
     _id: new ObjectId(id),
   });
-  if (!results) return null;
+  if (!result) return null;
 
-  const subjectIds = results.subjects
-    .filter((subjects) => subjects.subject_teacher_id)
-    .map((subjects) => new ObjectId(subjects.subject_teacher_id));
-  const teachers = await useraccount
-    .find({ _id: { $in: subjectIds } })
-    .toArray();
 
-  return JSON.parse(JSON.stringify(results));
+  
+
+  if(result?.students) {
+    result.students = await arrayOfIdToDocument(result.students as string[],"students");
+  }
+
+  return JSON.parse(JSON.stringify(result));
 }
 
 export async function getSectionSearchAction(

@@ -1,7 +1,6 @@
 import { Select } from "@radix-ui/themes";
-import { SelectRootProps } from "@radix-ui/themes/dist/cjs/components/select";
 
-const SelectLimit: React.FC<SelectRootProps> = ({ ...props }) => {
+const SelectLimit = ({ ...props }) => {
   return (
     <Select.Root {...props}>
       <Select.Trigger className="w-60" placeholder="Limit" />

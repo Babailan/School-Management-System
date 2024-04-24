@@ -27,7 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, Pencil, Plus } from "lucide-react";
+import { Ellipsis, Pencil, Plus, View } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -103,10 +103,10 @@ function SectionList() {
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Action</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <Link href={`/section/edit/${section._id}`}>
+                    <Link href={`/section/view/${section._id}`}>
                       <DropdownMenuItem>
-                        <Pencil className="w-4 h-4 mr-2" />
-                        Edit
+                        <View size={16} className="mr-2" />
+                        View
                       </DropdownMenuItem>
                     </Link>
                   </DropdownMenuContent>
