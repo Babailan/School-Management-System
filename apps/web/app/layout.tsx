@@ -1,9 +1,5 @@
 import { Inter } from "next/font/google";
-import "@radix-ui/themes/styles.css";
 import "./global.css";
-import "react-toastify/dist/ReactToastify.css";
-import "react-loading-skeleton/dist/skeleton.css";
-import "handsontable/dist/handsontable.full.min.css";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ReactClientProvider from "./react-query-provider";
 import Sidebar from "@/app/components/sidebar";
@@ -11,22 +7,14 @@ import { Metadata } from "next";
 import { Toaster as BetterToast } from "@/components/ui/toaster";
 import { ThemeProvider } from "./theme-provider";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
 import Link from "next/link";
 import {
-  AlarmClock,
-  Bell,
-  Book,
-  CircleUser,
-  Command,
-  Home,
+  CircleUser, Home,
   LineChart,
   Menu,
   Package,
-  Package2,
-  Search,
-  ShoppingCart,
-  Users,
+  Package2, ShoppingCart,
+  Users
 } from "lucide-react";
 import { LogOutSubMenu, ThemeSubMenu } from "@/components/submenu/user";
 import { getAccountInformationAction } from "@/actions/account/get-account";
@@ -47,7 +35,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 // If loading a variable font, you don't need to specify the font weight

@@ -30,7 +30,12 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2Icon } from "lucide-react";
 
-const roles = ["faculty", "registrar", "administrator"] as const;
+const roles = [
+  "faculty",
+  "registrar",
+  "administrator",
+  "cashier",
+] as const;
 
 const validationSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -222,7 +227,7 @@ export default function CreateUser() {
             ))}
           </div>
 
-          <Button type="submit" disabled={form.formState.isSubmitting}>
+          <Button type="submit" disabled={form.formState.isSubmitting} className="!mb-10">
             {form.formState.isSubmitting && (
               <Loader2Icon className="animate-spin mr-2" />
             )}

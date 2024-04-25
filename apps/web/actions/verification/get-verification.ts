@@ -2,28 +2,26 @@
 
 import connectDB from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
+import { wait } from "@/lib/helpers/wait";
 import _ from "lodash";
 import { Document, Filter, ObjectId } from "mongodb";
 
-export async function GetVerificationSearchAction(
+
+export async function getVerificationSearchAction(
   query: string,
   page: number,
-  limit: number
+  limit: number,
+  filter: Filter<Document> = {}
 ) {
+  await wait(3000)
   const skip = (page - 1) * limit;
   const collection = (await connectDB()).collection("students");
+  query = query.toLowerCase().trim();
 
-  let filter: Filter<Document> = {
-    $or: [
-      {
-        fullName: {
-          $regex: stringToRegexSearch(query),
-        },
-      },
-      { referenceNumber: { $regex: stringToRegexSearch(query) } },
-    ],
-    verified: false,
-  };
+  if (query) {
+    filter = _.merge(filter, { fullName: stringToRegexSearch(query, true) });
+    // Assuming verification_name is the field to search for in the verification collection
+  }
 
   const filterCursor = collection.find(filter);
   const totalCount = await filterCursor.count();
@@ -38,6 +36,7 @@ export async function GetVerificationSearchAction(
     })
   );
 }
+
 
 export async function GetVerificationByIdAction(
   id: string,
