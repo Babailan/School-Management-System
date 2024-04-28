@@ -43,7 +43,7 @@ export default function Page({ searchParams: { search, limit } }) {
       </div>
       <VerificationSearch />
       <Suspense fallback={<Loading disablePadding />}>
-        <TableVerification search={search} limit={10} />
+        <TableVerification search={search}  />
       </Suspense>
     </div>
   );

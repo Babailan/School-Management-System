@@ -14,7 +14,7 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "types/*"
+    "sample_data"
   ],
   "dependencies": {
     "turbo": "^1.12.4"

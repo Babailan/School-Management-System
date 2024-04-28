@@ -6,3 +6,4 @@ tsconfig.tsbuildinfo
 package-lock.json
 .env.local
 .env
+sample_data/students.json

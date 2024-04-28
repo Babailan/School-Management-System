@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Facebook } from "lucide-react";
 import SettingsAccountProfileTab from "./AccountTab";
 import SettingsPasswordTab from "./SettingsPasswordTab";
-import { getAuth } from "@/middleware";
+import { getAuth } from "@/lib/crypto/getAuth";
 
 export default async function SettingsPage() {
   const session = await getAuth();

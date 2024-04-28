@@ -5,9 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 
-const SelectSex = (props) => {
+const SelectSex = ({ ...props }: ComponentPropsWithoutRef<typeof Select>) => {
   return (
     <Select {...props}>
       <SelectTrigger className="w-full">

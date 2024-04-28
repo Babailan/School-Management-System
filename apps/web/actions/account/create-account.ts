@@ -2,21 +2,37 @@
 
 import { hashPassword } from "@/lib/crypto/password";
 import { deepLowerCase } from "@/lib/helpers";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import _ from "lodash";
+import { getValidatePIN } from "./get-account";
+import { wait } from "@/lib/helpers/wait";
 
-export async function createAccountAction(user: Record<string, any>) {
-  user = deepLowerCase(user);
+export async function createAccountAction(formObject: Record<string, any>) {
+  await wait(3000);
+  const validatePIN = await getValidatePIN(formObject.pin);
+
+  if (!validatePIN.success) {
+    return validatePIN;
+  }
+  formObject = deepLowerCase(formObject);
 
   const collection = (await connectDB()).collection("user-account");
-  if (await collection.findOne({ email: user.email })) {
-    return { message: "Email already exist", success: false };
+  if (await collection.findOne({ email: formObject.email })) {
+    return { message: "Email address already in use. Please try another.", success: false };
   }
-  // lastName, firstName, middleName
-  user.fullName = `${user.lastName} ${user.firstName} ${user.middleName}`;
+  if (await collection.findOne({ username: formObject.username })) {
+    return { message: "Username already in use. Please try another.", success: false };
+  }
+  formObject.fullName =
+    `${formObject.lastName} ${formObject.firstName} ${formObject.middleName}`.trim();
 
   await collection.insertOne(
-    _.merge(user, { password: await hashPassword(user.password) })
+    _.omit(
+      _.merge(formObject, {
+        password: await hashPassword(formObject.password),
+      }),
+      ["pin"]
+    )
   );
   return { message: "Successfull Added", success: true };
 }

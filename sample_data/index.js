@@ -70,6 +70,8 @@ function addStudent() {
   const address = faker.location.streetAddress();
   const phone = faker.phone.number("09#########");
   const referenceNumber = randomUUID();
+  const email = faker.internet.email({ firstName, lastName });
+  const lrn = faker.number.bigInt({ min: 100000000000, max: 199999999999 }).toString();
 
   const student = {
     firstName,
@@ -86,12 +88,14 @@ function addStudent() {
     referenceNumber,
     fullName,
     verified: false,
+    lrn,
+    email,
   };
 
   return deepLowerCase(student);
 }
 
-for (let i = 0; i < 6000; i++) {
+for (let i = 0; i < 300; i++) {
   students.push(addStudent());
 }
 

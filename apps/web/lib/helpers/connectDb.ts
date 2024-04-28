@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 
-export default async function connectDB() {
+export async function connectDB() {
   try {
     const uri = "mongodb://localhost:27017";
 

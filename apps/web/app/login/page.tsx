@@ -11,7 +11,7 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import HarvardImage from "./harvard_image.png";
-import { getAuth } from "@/middleware";
+import { getAuth } from "@/lib/crypto/getAuth";
 import { redirect } from "next/navigation";
 
 export default async function Page() {

@@ -1,3 +1,4 @@
+import _ from "lodash";
 import Options from "./sidebar-option";
 
 import {
@@ -5,14 +6,14 @@ import {
   Book,
   BookOpen,
   Command,
+  DollarSign,
   HandCoins,
-  Landmark,
   Paperclip,
-  Route,
   Scroll,
   UserRoundCog,
 } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 export default async function Sidebar({ user }) {
   const userControlOption = [
@@ -20,7 +21,7 @@ export default async function Sidebar({ user }) {
       title: "Access Control",
       href: "/access-control",
       location: [],
-      icon: <UserRoundCog className="w-4 h-4 " />,
+      icon: <UserRoundCog size={16} />,
     },
   ];
   const subjectTeacherOption = [
@@ -31,12 +32,21 @@ export default async function Sidebar({ user }) {
       icon: <BookOpen className="w-4 h-4" />,
     },
   ];
+  // for registrar and administrator
   const enrollmentOption = [
     {
       title: "Verification",
       href: "/verification",
       location: [],
-      icon: <BadgeHelp className="w-4 h-4 " />,
+      icon: <BadgeHelp size={16} />,
+    },
+  ];
+  const student_account = [
+    {
+      title: "Account Fee",
+      href: "/student-fee",
+      location: [],
+      icon: <DollarSign size={16} />,
     },
   ];
   const tuitionOption = [
@@ -44,7 +54,7 @@ export default async function Sidebar({ user }) {
       title: "Tuition",
       href: "/tuition",
       location: [],
-      icon: <HandCoins className="w-4 h-4 " />,
+      icon: <HandCoins size={16} />,
     },
   ];
   const dataManagement = [
@@ -52,30 +62,29 @@ export default async function Sidebar({ user }) {
       title: "Section",
       href: "/section",
       location: [],
-      icon: <Book className="w-4 h-4 " />,
+      icon: <Book size={16} />,
     },
     {
       title: "Subjects",
       href: "/subjects",
       location: [],
-      icon: <Scroll className="w-4 h-4 " />,
+      icon: <Scroll size={16} />,
     },
     {
       // documents
       title: "Documents",
       href: "/documents",
       location: [],
-      icon: <Paperclip className="w-4 h-4 " />,
+      icon: <Paperclip size={16} />,
     },
   ];
 
-  const includes = (arr, arraysValue) => {
-    for (let i = 0; i < arr.length; i++) {
-      if (arraysValue.includes(arr[i])) {
-        return true;
-      }
-    }
-    return false;
+  //check if some values exist in the array
+  const customIntersection = (firstArray, secondArray) => {
+    // Use _.intersection() to find common values between the two arrays
+    const intersection = _.intersection(firstArray, secondArray);
+    // If the intersection array has any elements, return true
+    return intersection.length > 0;
   };
 
   return (
@@ -88,14 +97,19 @@ export default async function Sidebar({ user }) {
       </div>
       <div className="flex-1">
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-2">
-          {includes(user.roles, ["faculty"]) && (
+          <div>
+            {user.roles.map((role) => (
+              <Badge key={role} className="capitalize" variant="secondary">{role}</Badge>
+            ))}
+          </div>
+          {customIntersection(user.roles, ["faculty"]) && (
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground"></span>
               <Options option={subjectTeacherOption} />
             </div>
           )}
 
-          {includes(user.roles, ["administrator"]) && (
+          {customIntersection(user.roles, ["administrator"]) && (
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">
                 Users Control
@@ -104,7 +118,7 @@ export default async function Sidebar({ user }) {
             </div>
           )}
 
-          {includes(user.roles, ["registrar", "administrator"]) && (
+          {customIntersection(user.roles, ["registrar", "administrator"]) && (
             <div className="space-y-1">
               <span className="text-xs text-muted-foreground">
                 Enrollment Control
@@ -113,17 +127,29 @@ export default async function Sidebar({ user }) {
             </div>
           )}
 
-          {includes(user.roles, ["administrator"]) && (
-            <Options option={tuitionOption} />
+          {customIntersection(user.roles, ["administrator", "cashier"]) && (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">
+                Student Account
+              </span>
+              <Options option={student_account} />
+            </div>
           )}
-          <div className="space-y-1">
-            <span className="text-xs text-muted-foreground">
-              Data Management
-            </span>
-            {includes(user.roles, ["administrator", "registrar"]) && (
+          {customIntersection(user.roles, ["administrator", "cashier"]) && (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">Payment Fee</span>
+              <Options option={tuitionOption} />
+            </div>
+          )}
+
+          {customIntersection(user.roles, ["administrator", "registrar"]) && (
+            <div className="space-y-1">
+              <span className="text-xs text-muted-foreground">
+                Data Management
+              </span>
               <Options option={dataManagement} />
-            )}
-          </div>
+            </div>
+          )}
         </nav>
       </div>
     </div>

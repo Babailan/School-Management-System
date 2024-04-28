@@ -9,15 +9,20 @@ import { ThemeProvider } from "./theme-provider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import {
-  CircleUser, Home,
+  CircleUser,
+  Home,
   LineChart,
   Menu,
   Package,
-  Package2, ShoppingCart,
-  Users
+  Package2,
+  ShoppingCart,
+  Users,
 } from "lucide-react";
 import { LogOutSubMenu, ThemeSubMenu } from "@/components/submenu/user";
-import { getAccountInformationAction } from "@/actions/account/get-account";
+import {
+  getAccountInformationAction,
+  getCheckExistingPIN,
+} from "@/actions/account/get-account";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +41,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import dynamic from "next/dynamic";
+
+
+const CheckPin = dynamic(() => import('./components/pin'), {
+  loading: () => null,
+  ssr:false,
+})
 
 // If loading a variable font, you don't need to specify the font weight
 const inter = Inter({
@@ -53,12 +65,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const accountInformation = await getAccountInformationAction();
+  const pin = await getCheckExistingPIN();
 
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head></head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system">
+          {accountInformation && <CheckPin pin={pin} />}
+          
           <ReactClientProvider>
             <ReactQueryDevtools
               position="top"

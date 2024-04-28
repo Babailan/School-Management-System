@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 
 export async function addDocumentAction(document_name: string) {
   // add documents to database

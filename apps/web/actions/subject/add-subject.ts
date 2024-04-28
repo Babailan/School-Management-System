@@ -1,6 +1,6 @@
 "use server";
 import { deepLowerCase } from "@/lib/helpers";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import Joi from "joi";
 
 export default async function AddSubjectAction(data) {

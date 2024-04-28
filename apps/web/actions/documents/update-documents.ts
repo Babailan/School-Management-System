@@ -1,10 +1,9 @@
 "use server";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
 export async function updateDocumentAction(id, data) {
-  revalidatePath("/","layout");
 
   data = JSON.parse(data);
 
@@ -26,6 +25,9 @@ export async function updateDocumentAction(id, data) {
 
 
 
+  revalidatePath("/","layout");
+
+  
   return {
     success: true,
     message: "Document updated successfully",

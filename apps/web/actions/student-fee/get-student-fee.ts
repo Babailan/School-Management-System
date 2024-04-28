@@ -1,44 +1,30 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
+import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
+import _ from "lodash";
 import { Document, Filter, ObjectId } from "mongodb";
 
 export async function getStudentFeeSearchAction(
   query: string,
   page: number,
   limit: number,
-  year: string
+  filter: Filter<Document> = {}
 ) {
   const skip = (page - 1) * limit;
-  const collection = (await connectDB()).collection("student-record");
+  const collection = (await connectDB()).collection("students");
+  query = query.toLowerCase().trim();
 
-  let filter: Filter<Document> = {
-    assessment: {
-      $elemMatch: {
-        year: year,
-      },
-    },
-  };
-  if (query.length > 0) {
-    filter.$text = {
-      $search: query,
-      $caseSensitive: false,
-    };
+  _.merge(filter, { verified: true });
+
+  if (query) {
+    filter = _.merge(filter, { fullName: stringToRegexSearch(query, true) });
   }
 
-  //format the return value
   const filterCursor = collection.find(filter);
   const totalCount = await filterCursor.count();
   const totalPages = Math.ceil(totalCount / limit);
-
-  const result = await filterCursor
-    .skip(skip)
-    .limit(limit)
-    .map((doc) => {
-      doc.assessment = doc.assessment.find((assess) => assess.year === year);
-      return doc;
-    })
-    .toArray();
+  const result = await filterCursor.skip(skip).limit(limit).toArray();
 
   return JSON.parse(
     JSON.stringify({
@@ -48,10 +34,14 @@ export async function getStudentFeeSearchAction(
   );
 }
 
-export async function getStudentFeeById(id: string) {
-  const collection = (await connectDB()).collection("student-record");
+export async function getStudentFeeById(_id: string) {
+  const collection = (await connectDB()).collection("students");
 
-  const result = await collection.findOne({ _id: new ObjectId(id) });
+    const student = await collection.findOne({ _id: new ObjectId(_id), verified: true });
 
-  return JSON.parse(JSON.stringify(result));
+    if (!student) {
+      throw new Error("Student not found");
+    }
+
+    return JSON.parse(JSON.stringify(student));
 }

@@ -19,8 +19,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TypographyH3 } from "@/components/typography/h3";
+import FilterAccessControl from "./components/filter";
 
-export default function AccessControlPage() {
+export default async function AccessControlPage() {
   return (
     <div className="space-y-5">
       <div className="flex justify-between">
@@ -34,20 +35,7 @@ export default function AccessControlPage() {
           </Button>
         </Link>
       </div>
-      <div>
-        <p className="mb-1">Role</p>
-        <Select defaultValue="all">
-          <SelectTrigger>
-            <SelectValue placeholder="Select a Role"></SelectValue>
-          </SelectTrigger>
-          <SelectContent position="popper">
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="administrator">Administrator</SelectItem>
-            <SelectItem value="faculty">Faculty</SelectItem>
-            <SelectItem value="registrar">Registrar</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <FilterAccessControl />
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>

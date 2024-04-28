@@ -1,7 +1,7 @@
 "use server";
 
 import { deepLowerCase } from "@/lib/helpers";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import _ from "lodash";
 
 // add a new section in the database section collection return is like this { message : string, success : boolean }

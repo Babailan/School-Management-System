@@ -20,7 +20,7 @@ import { Edit2, Ellipsis } from "lucide-react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 
-export default async function TableVerification({ search, limit }) {
+export default async function TableVerification({ search }) {
   const data = await getVerificationSearchAction(search ?? "", 1, 10, {
     verified: false,
   });

@@ -1,7 +1,7 @@
 "use server";
 
 import { comparePassword } from "@/lib/crypto/password";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import { sealData } from "iron-session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

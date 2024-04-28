@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
 import { wait } from "@/lib/helpers/wait";
 import _ from "lodash";

@@ -1,13 +1,14 @@
 "use server";
 
-import { comparePassword } from "@/lib/crypto/password";
-import connectDB from "@/lib/helpers/connectDb";
-import { getAuth } from "@/middleware";
-import { addedDiff, diff, updatedDiff } from "deep-object-diff";
-import { getIronSession, sealData } from "iron-session";
+import { comparePassword, hashPassword } from "@/lib/crypto/password";
+import { connectDB } from "@/lib/helpers/connectDb";
+import { getAuth } from "@/lib/crypto/getAuth";
+import { addedDiff, updatedDiff } from "deep-object-diff";
+import { sealData } from "iron-session";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
 import { cookies } from "next/headers";
+import { wait } from "@/lib/helpers/wait";
 
 /**
  * Updates the theme of the user's account.
@@ -88,4 +89,30 @@ export async function updateExistingSession() {
   cookies().set("user_token", token, { expires: ttl * 1000 + Date.now() });
 
   return user;
+}
+
+export async function updateNonExistingPin(pin: string) {
+  console.log(pin);
+  const session = await getAuth();
+  await wait(5000);
+  const collection = (await connectDB()).collection("user-account");
+
+  const account = await collection.findOne({ _id: new ObjectId(session._id) });
+
+  if (!_.has(account, "pin")) {
+    await collection.updateOne(
+      { _id: new ObjectId(session._id) },
+      {
+        $set: {
+          pin: await hashPassword(pin),
+        },
+      }
+    );
+    return {
+      success: true,
+    };
+  }
+  return {
+    success: false,
+  };
 }
