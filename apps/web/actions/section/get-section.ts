@@ -1,6 +1,6 @@
 "use server";
 import { arrayOfIdToDocument } from "@/lib/helpers";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
 import _ from "lodash";
 import { Document, Filter, ObjectId } from "mongodb";

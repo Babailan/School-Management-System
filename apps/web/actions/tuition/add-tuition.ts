@@ -1,7 +1,8 @@
 "use server";
 
 import { deepLowerCase } from "@/lib/helpers";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
+import { revalidatePath } from "next/cache";
 
 export async function addTuitionAction(tuition_name, amount) {
   const tuitionCollection = (await connectDB()).collection("tuition");
@@ -16,12 +17,13 @@ export async function addTuitionAction(tuition_name, amount) {
     };
   }
 
-  const result = await tuitionCollection.insertOne(
+   await tuitionCollection.insertOne(
     deepLowerCase({
       tuition_title: tuition_name,
       amount: amount,
     })
   );
+  revalidatePath("/", "layout");
 
   return {
     success: true,

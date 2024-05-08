@@ -1,29 +1,29 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
+import { wait } from "@/lib/helpers/wait";
 import _ from "lodash";
 import { Document, Filter, ObjectId } from "mongodb";
 
-export async function GetVerificationSearchAction(
+export async function getVerificationSearchAction(
   query: string,
   page: number,
-  limit: number
+  limit: number,
+  filter: Filter<Document> = {}
 ) {
   const skip = (page - 1) * limit;
   const collection = (await connectDB()).collection("students");
+  query = query.toLowerCase().trim();
 
-  let filter: Filter<Document> = {
-    $or: [
-      {
-        fullName: {
-          $regex: stringToRegexSearch(query),
-        },
-      },
-      { referenceNumber: { $regex: stringToRegexSearch(query) } },
-    ],
-    verified: false,
-  };
+  if (query) {
+    filter = _.merge(filter, {
+      $or: [
+        { fullName: stringToRegexSearch(query, true) },
+        { referenceNumber: stringToRegexSearch(query, true) },
+      ],
+    });
+  }
 
   const filterCursor = collection.find(filter);
   const totalCount = await filterCursor.count();
@@ -45,14 +45,9 @@ export async function GetVerificationByIdAction(
 ) {
   const collection = (await connectDB()).collection("students");
 
-  const result = await collection.findOne(
-    _.merge(
-      {
-        _id: new ObjectId(id),
-      },
-      filter
-    )
-  );
+  const result = await collection.findOne({
+    _id: new ObjectId(id),
+  });
 
   return JSON.parse(JSON.stringify(result));
 }

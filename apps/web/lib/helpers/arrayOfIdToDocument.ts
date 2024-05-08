@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import connectDB from "./connectDb";
+import { connectDB } from "./connectDb";
 
 export async function arrayOfIdToDocument(
   ids: string[],

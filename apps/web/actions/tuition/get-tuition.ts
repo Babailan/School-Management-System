@@ -1,16 +1,25 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import stringToRegexSearch from "@/lib/helpers/stringToRegexSearch";
 import _ from "lodash";
-import { Filter,Document } from "mongodb";
+import { Filter,Document, ObjectId } from "mongodb";
 
-export async function getAllTuitionFee() {
-  const tuitionCollection = (await connectDB()).collection("tuition");
 
-  return JSON.parse(JSON.stringify(await tuitionCollection.find({}).toArray()));
+export async function getTuitionByIdAction(id: string) {
+  const subjectCollection = (await connectDB()).collection("tuition");
+
+  if (!ObjectId.isValid(id)) {
+    throw new Error("Invalid ID");
+  }
+
+  const result = await subjectCollection.findOne({ _id: new ObjectId(id) });
+  if (!result) {
+    throw new Error("Tuition ID not found");
+  }
+
+  return JSON.parse(JSON.stringify(result));
 }
-
 
 export async function getTuitionSearchAction(
   query: string,

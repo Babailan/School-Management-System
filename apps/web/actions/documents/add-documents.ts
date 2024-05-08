@@ -1,6 +1,7 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
+import { revalidatePath } from "next/cache";
 
 export async function addDocumentAction(document_name: string) {
   // add documents to database
@@ -20,6 +21,8 @@ export async function addDocumentAction(document_name: string) {
   await collection.insertOne({
     document_name,
   });
+
+  revalidatePath("/","layout")
 
   return { success: true, message: "Document added successfully" };
 }

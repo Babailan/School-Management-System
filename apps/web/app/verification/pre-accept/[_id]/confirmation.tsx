@@ -35,7 +35,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 const schema = z.object({
-  tuition: z.string().min(1, "Tuition is required"),
+  tuition: z.string()
+    .min(1, "Missing required field"),
   section: z
     .object(
       {
@@ -50,7 +51,7 @@ const schema = z.object({
 });
 
 export default function Confirmation({ data, currentStep, goToPrevStep }) {
-  const router = useRouter()
+  const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -72,7 +73,7 @@ export default function Confirmation({ data, currentStep, goToPrevStep }) {
               title: "Successful",
               description: "The student has been verified.",
             });
-            router.push("/verification")
+            router.push("/verification");
           }
         } catch (error) {
           toast({
@@ -183,7 +184,9 @@ export default function Confirmation({ data, currentStep, goToPrevStep }) {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={submit}>Continue</AlertDialogAction>
+                  <AlertDialogAction onClick={submit}>
+                    Continue
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

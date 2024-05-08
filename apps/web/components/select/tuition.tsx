@@ -19,7 +19,7 @@ import {
   Command,
 } from "@/components/ui/command";
 import { useQuery } from "@tanstack/react-query";
-import { getAllTuitionFee } from "@/actions/tuition/get-tuition";
+import { getTuitionSearchAction } from "@/actions/tuition/get-tuition";
 import { useState } from "react";
 import {
   Popover,
@@ -37,7 +37,7 @@ export default function SelectTuition({ onAmount }: SelectTuitionProps) {
   const [value, setValue] = useState("");
   const { data } = useQuery({
     queryKey: ["tuition-list"],
-    queryFn: async () => await getAllTuitionFee(),
+    queryFn: async () => await getTuitionSearchAction("", 1, 0),
   });
   return (
     <Popover open={open} onOpenChange={setOpen}>

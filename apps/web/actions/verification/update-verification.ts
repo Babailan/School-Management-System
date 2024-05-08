@@ -1,10 +1,11 @@
 "use server";
 import { deepLowerCase } from "@/lib/helpers";
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import _ from "lodash";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 
+// update information of the student but will not verify
 export async function updateVerificationInfomationAction(
   data: Record<string, any>,
   id: string
@@ -12,7 +13,6 @@ export async function updateVerificationInfomationAction(
   data = _.omit(data, ["_id"]);
   const verificationCollection = (await connectDB()).collection("students");
 
-  //get the current information
   const info = await verificationCollection.findOne({ _id: new ObjectId(id) });
 
   if (!info) throw new Error("No _id found in the database");
@@ -35,7 +35,6 @@ export async function updateVerificationInfomationAction(
     }
   );
 
-  revalidatePath("/", "layout");
 
   if (result.acknowledged) {
     return {
@@ -50,7 +49,8 @@ export async function updateVerificationInfomationAction(
   }
 }
 
-// update the student into verified student
+
+// make the student verified and insert him into specific section
 export async function updateVerifiedStudent(form, _id) {
   const db = await connectDB();
   const studentsCollection = db.collection<{
@@ -59,26 +59,23 @@ export async function updateVerifiedStudent(form, _id) {
   }>("students");
   const sectionCollection = db.collection("section");
 
-
-  // add to the students collection
   await studentsCollection.updateOne(
     { _id: new ObjectId(_id) },
     {
       $set: {
         verified: true,
       },
-      $push: {
+      $addToSet: {
         assessment: {
+          _id: new ObjectId(),
           issued_date: new Date(),
-          title: "Tuition Fee",
-          year: new Date().getFullYear().toString(),
-          amount: form.tuition,
+          amount: Number(form.tuition),
+          type: "tuition",
         },
       },
     }
   );
 
-  //add to the section
   await sectionCollection.updateOne(
     { _id: new ObjectId(form.section._id) },
     {

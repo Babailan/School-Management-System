@@ -1,6 +1,6 @@
 "use server";
 
-import connectDB from "@/lib/helpers/connectDb";
+import { connectDB } from "@/lib/helpers/connectDb";
 import { ObjectId } from "mongodb";
 
 /**

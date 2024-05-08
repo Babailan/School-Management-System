@@ -1,9 +1,7 @@
 import React from "react";
 import CredientialLogin from "./CredentialLogin";
-import { Button } from "@/components/ui/button";
 import { Command, LucideFacebook } from "lucide-react";
 import { TypographyH3 } from "@/components/typography/h3";
-import { Separator } from "@/components/ui/separator";
 import {
   Accordion,
   AccordionContent,
@@ -13,8 +11,14 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import HarvardImage from "./harvard_image.png";
+import { getAuth } from "@/lib/crypto/getAuth";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
+  const auth = await getAuth();
+  if (auth) {
+    redirect("/");
+  }
   return (
     <div className="flex *:w-full">
       <div className="hidden min-h-screen lg:block p-6 border-r space-y-5">
@@ -46,7 +50,7 @@ export default async function Page() {
           <AccordionItem value="item-2">
             <AccordionTrigger>My favorite quotes</AccordionTrigger>
             <AccordionContent>
-              I think, therefore I am. {`"`} (Latin: Cogito, ergo sum) is a
+              I think, therefore I am. (Latin: Cogito, ergo sum) is a
               philosophical statement by René Descartes
             </AccordionContent>
           </AccordionItem>
@@ -57,19 +61,6 @@ export default async function Page() {
           <TypographyH3 className="text-center">
             Log in to your account
           </TypographyH3>
-          <div className="flex justify-center items-center gap-5">
-            <div className="w-full">
-              <Separator />
-            </div>
-            <span className="whitespace-nowrap">OR CONTINUE WITH</span>
-            <div className="w-full">
-              <Separator />
-            </div>
-          </div>
-          <Button variant="secondary" className="w-full">
-            <LucideFacebook className="w-5 h-5 mr-2" />
-            Continue with facebook
-          </Button>
           <CredientialLogin />
         </div>
       </div>
