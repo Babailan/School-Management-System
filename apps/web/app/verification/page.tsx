@@ -1,6 +1,3 @@
-import Loading from "../loading";
-import Link from "next/link";
-import { TypographyH3 } from "@/components/typography/h3";
 import { Input } from "@/components/ui/input";
 import {
   Pagination,
@@ -11,7 +8,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Check, Edit2, Ellipsis } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -22,15 +18,19 @@ import {
 } from "@/components/ui/breadcrumb";
 import VerificationSearch from "./component/verification-search";
 import TableVerification from "./component/table-verification";
-import { Suspense } from "react";
+import { Button } from "@/components/ui/button";
+import { Baby } from "lucide-react";
+import Link from "next/link";
 
-export default function Page({ searchParams: { search, limit } }) {
+export default function Page() {
   return (
     <div className="space-y-5">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <BreadcrumbLink asChild>
+              <Link href="/">Home</Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -38,13 +38,11 @@ export default function Page({ searchParams: { search, limit } }) {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div>
+      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Verification</h1>
       </div>
       <VerificationSearch />
-      <Suspense fallback={<Loading disablePadding />}>
-        <TableVerification search={search}  />
-      </Suspense>
+      <TableVerification />
     </div>
   );
 }

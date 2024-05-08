@@ -3,7 +3,7 @@ export const register = async () => {
     const { connectDB } = await import("@/lib/helpers/connectDb");
     const { hashPassword } = await import("@/lib/crypto/password");
     const userCollection = await connectDB();
-    const result = userCollection
+    const result = await userCollection
       .collection("user-account")
       .findOne({ type: "root" });
     if (!result) {

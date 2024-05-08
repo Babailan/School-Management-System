@@ -70,6 +70,7 @@ export default function SettingsAccountProfileTab({ data }) {
       if (result.success) {
         toast({
           title: result.message,
+          variant:"success"
         });
       } else {
         toast({

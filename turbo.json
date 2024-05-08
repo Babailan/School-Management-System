@@ -9,10 +9,9 @@
       "cache": true,
       "persistent": true
     },
-    "start-electron": {
+    "start": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["dev"]
+      "persistent": true
     }
   }
 }

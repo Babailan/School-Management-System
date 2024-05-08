@@ -1,13 +1,6 @@
 import { getTuitionSearchAction } from "@/actions/tuition/get-tuition";
 import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Ellipsis, Pencil, Plus, Trash } from "lucide-react";
 import numeral from "numeral";
 import { Button } from "@/components/ui/button";
@@ -19,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import DeleteTuition from "./components/delete-tuition";
+import TuitionEllipsis from "./components/delete-tuition";
 
 export default async function Page() {
   const data = await getTuitionSearchAction("", 1, 0);
@@ -51,25 +46,7 @@ export default async function Page() {
                 </TableCell>
                 <TableCell>₱{numeral(tuition.amount).format("0,")}</TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Ellipsis className="w-4 h-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="m-4">
-                      <DropdownMenuLabel>Action</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <Link href={"/tuition/edit/" + tuition._id}>
-                        <DropdownMenuItem>
-                          <Pencil className="w-4 h-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                      </Link>
-                      <DropdownMenuItem className="text-destructive">
-                        <Trash className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <TuitionEllipsis tuition={tuition} />
                 </TableCell>
               </TableRow>
             );

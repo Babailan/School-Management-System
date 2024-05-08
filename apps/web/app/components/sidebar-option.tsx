@@ -16,13 +16,14 @@ export default function SidebarOption({ option }) {
       <Link
         href={option.href}
         className={cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2  transition-all hover:text-primary",
-          match ? "bg-muted text-primary" : "text-muted-foreground"
+          "flex items-center justify-between gap-3 rounded-lg px-3 py-2  transition-all",
+          match ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-primary"
         )}
         key={idx}
       >
-        {option.icon}
-        <span>{option.title}</span>
+        
+        <span className="flex items-center justify-center gap-2 h-full">{option.icon} {option.title}</span>
+        <span>{option?.modals}</span>
       </Link>
     );
   });

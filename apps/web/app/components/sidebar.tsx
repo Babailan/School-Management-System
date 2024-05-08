@@ -14,8 +14,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { getSidebarModals } from "@/actions/sidebar/get-sidebar";
 
 export default async function Sidebar({ user }) {
+  const modals = await getSidebarModals();
+
   const userControlOption = [
     {
       title: "Access Control",
@@ -39,6 +42,7 @@ export default async function Sidebar({ user }) {
       href: "/verification",
       location: [],
       icon: <BadgeHelp size={16} />,
+      modals: modals.students_not_verified
     },
   ];
   const student_account = [
@@ -99,7 +103,9 @@ export default async function Sidebar({ user }) {
         <nav className="grid items-start px-2 text-sm font-medium lg:px-4 gap-2">
           <div>
             {user.roles.map((role) => (
-              <Badge key={role} className="capitalize" variant="secondary">{role}</Badge>
+              <Badge key={role} className="capitalize" variant="secondary">
+                {role}
+              </Badge>
             ))}
           </div>
           {customIntersection(user.roles, ["faculty"]) && (

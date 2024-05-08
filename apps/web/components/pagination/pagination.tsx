@@ -1,57 +1,56 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
-import { Box, Button, Flex, Text } from "@radix-ui/themes";
-import React, { useRef, useState } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useSearchParams } from "next/navigation";
+import { Button } from "../ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-type PaginationProps = {
-  maxPage: number;
-  page: number;
-  setPage: React.Dispatch<any>;
-};
-
-const Pagination: React.FC<PaginationProps> = ({ maxPage, page, setPage }) => {
-  const nextButton = () => {
-    const nextPage = page + 1;
-    if (nextPage <= maxPage) {
-      setPage(nextPage);
+export function NormalPagination({ totalPage }) {
+  const params = useSearchParams();
+  const previous = () => {
+    const currentPage = Number(params.get("page")) || 1;
+    if (currentPage > 1) {
+      const t = new URLSearchParams(params.toString());
+      t.set("page", (currentPage - 1).toString());
+      window.history.pushState(null, "", "?" + t.toString());
     }
   };
-
-  const previousButton = () => {
-    const prevPage = page - 1;
-    if (prevPage >= 1) {
-      setPage(prevPage);
+  const next = () => {
+    const currentPage = Number(params.get("page")) || 1; // Get current page
+    if (currentPage < totalPage) {
+      const t = new URLSearchParams(params.toString());
+      t.set("page", (currentPage + 1).toString()); // Increase page number
+      window.history.pushState(null, "", "?" + t.toString());
     }
   };
-
   return (
-    <Flex align={"center"} justify={"between"}>
-      <Box>
-        <Button
-          variant="outline"
-          className="hover:cursor-pointer"
-          onClick={previousButton}
-        >
-          <ArrowLeftIcon />
-          Previous
-        </Button>
-      </Box>
-      <Box>
-        <Text size={"2"}>
-          Page {page} of {maxPage}
-        </Text>
-      </Box>
-      <Box>
-        <Button
-          variant="outline"
-          className="hover:cursor-pointer"
-          onClick={nextButton}
-        >
-          Next
-          <ArrowRightIcon />
-        </Button>
-      </Box>
-    </Flex>
-  );
-};
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <Button variant="outline" className="gap-2" onClick={previous}>
+            <ChevronLeft size={16} />
+            Previous
+          </Button>
+        </PaginationItem>
 
-export default Pagination;
+        <PaginationItem>
+          <PaginationLink href="#" >
+            {params.get("page") || 1}
+          </PaginationLink>
+        </PaginationItem>
+
+        <PaginationItem>
+          <Button variant="outline" className="gap-2" onClick={next}>
+            Next <ChevronRight size={16} />
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+}

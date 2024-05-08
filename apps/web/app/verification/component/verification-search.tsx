@@ -2,27 +2,23 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 export default function VerificationSearch() {
-  const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
+  const searchParams = useSearchParams();
 
   const handleSearch = (e) => {
     if (e.code === "Enter") {
       const queryParams = new URLSearchParams();
-      queryParams.set("search", searchValue.trim());
-      const queryString = queryParams.toString();
-      const newUrl = `/verification${queryString ? `?${queryString}` : ""}`;
-      router.replace(newUrl)
+      queryParams.set("search", e.target.value.trim());
+      window.history.pushState(null, "", "?" + queryParams.toString());
     }
   };
 
   return (
     <Input
       placeholder="Search for students / reference number"
-      value={searchValue}
-      onChange={(e) => setSearchValue(e.target.value)}
+      defaultValue={searchParams.get("search") || ""}
       onKeyUp={handleSearch}
     />
   );

@@ -1,33 +1,13 @@
 "use client";
 
-import { z } from "zod";
-import React from "react";
-import { useStep } from "usehooks-ts";
-import _ from "lodash";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import React from "react";
+import { useStep } from "usehooks-ts";
 import Confirmation from "./confirmation";
 import InformationVerificationPage from "./information_page";
 
-const schema = z.object({
-  lrn: z.string().min(1, "LRN is required"),
-  firstName: z.string().min(1, "First Name is required"),
-  lastName: z.string().min(1, "Last Name is required"),
-  middleName: z.string().min(1, "Middle Name is required"),
-  address: z.string().min(1, "Address is required"),
-  email: z
-    .string()
-    .email("Please enter a valid email")
-    .min(1, "Email is required"),
-  phone: z.string().min(1, "Phone Number is required"),
-  guardian: z.string().min(1, "Guardian Name is required"),
-  strand: z.string().min(1, "Strand is required"),
-  year: z.string().min(1, "Year is required"),
-  gradeLevel: z.string().min(1, "Grade Level is required"),
-  birthday: z.string().min(1, "Birthday is required"),
-  documents: z.array(z.string()),
-  sex: z.enum(["male", "female"]),
-});
+
 
 const steps = [
   {

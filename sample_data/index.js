@@ -52,12 +52,12 @@ function addStudent() {
     .split("T")[0]; // format: YYYY-MM-DD
   const birthDate = new Date(birthday);
   const strand = faker.helpers.arrayElement([
-    "STEM",
-    "ABM",
-    "ICT",
-    "HUMSS",
-    "GAS",
-    "HE",
+    "stem",
+    "abm",
+    "ict",
+    "humss",
+    "gas",
+    "he",
   ]);
   const year = faker.date
     .between({
@@ -95,7 +95,7 @@ function addStudent() {
   return deepLowerCase(student);
 }
 
-for (let i = 0; i < 300; i++) {
+for (let i = 0; i < 30; i++) {
   students.push(addStudent());
 }
 

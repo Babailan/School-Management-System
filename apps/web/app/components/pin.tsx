@@ -70,7 +70,7 @@ export default function CheckPin({ pin }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Enter your 6 PIN</AlertDialogTitle>
             <AlertDialogDescription>
-              This will create new user account.
+              This will create a pin for this account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <Form {...form}>

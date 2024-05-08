@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "electron": "turbo run start-electron",
-    "type-check": "turbo run type-check"
+    "start": "turbo run start"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +16,6 @@
     "sample_data"
   ],
   "dependencies": {
-    "turbo": "^1.12.4"
+    "turbo": "^1.13.3"
   }
 }

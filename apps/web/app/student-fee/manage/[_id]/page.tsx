@@ -6,7 +6,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CircleUser, Ellipsis, HandCoins, Trash, User } from "lucide-react";
+import {
+  CircleUser,
+  Ellipsis,
+  HandCoins,
+  Receipt,
+  Trash,
+  User,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,18 +25,23 @@ import {
 } from "@/components/ui/table";
 import moment from "moment-timezone";
 import numeral from "numeral";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import ActionsStudentFees from "./component/actions";
+import { flatMap } from "lodash";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function Page({ params: { _id } }) {
   const data = await getStudentFeeById(_id);
+  const history = flatMap(data.assessment, "history");
   return (
     <div className="space-y-5">
       <div>
@@ -59,6 +71,50 @@ export default async function Page({ params: { _id } }) {
           </div>
         </CardContent>
       </Card>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="gap-2" size="sm">
+            <Receipt size={16} />
+            Payment History
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Payment History</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-60">
+            <Table>
+              <TableCaption>A list of your payment.</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {history.map((payment, key) => {
+                  if (payment == undefined) {
+                    return null;
+                  }
+                  return (
+                    <TableRow key={key}>
+                      <TableCell>
+                        {moment(payment.issue_date).format(
+                          "MMMM Do YYYY, h:mm:ss A"
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        ₱ {numeral(payment.amount).format("0,")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
@@ -83,7 +139,7 @@ export default async function Page({ params: { _id } }) {
                   {moment(assessment.issue_date).format("MMMM, Do YYYY")}
                 </TableCell>
                 <TableCell className="text-right">
-                  <ActionsStudentFees assessment={assessment} />
+                  <ActionsStudentFees _id={_id} assessment={assessment} />
                 </TableCell>
               </TableRow>
             );

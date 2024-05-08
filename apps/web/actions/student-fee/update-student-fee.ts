@@ -2,6 +2,7 @@
 
 import { connectDB } from "@/lib/helpers";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 
 export async function updateStudentFeeAmount(
   studentId: string,
@@ -18,6 +19,17 @@ export async function updateStudentFeeAmount(
       $inc: {
         "assessment.$.amount": -amount,
       },
+      $addToSet: {
+        "assessment.$.history": {
+          amount: amount,
+          issue_date: new Date(),
+        },
+      },
     }
   );
+  revalidatePath("/", "layout");
+  return {
+    success:true,
+    message:"Amount is added."
+  }
 }

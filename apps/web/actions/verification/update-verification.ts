@@ -13,7 +13,6 @@ export async function updateVerificationInfomationAction(
   data = _.omit(data, ["_id"]);
   const verificationCollection = (await connectDB()).collection("students");
 
-  //get the current information
   const info = await verificationCollection.findOne({ _id: new ObjectId(id) });
 
   if (!info) throw new Error("No _id found in the database");
@@ -36,6 +35,7 @@ export async function updateVerificationInfomationAction(
     }
   );
 
+
   if (result.acknowledged) {
     return {
       success: true,
@@ -49,6 +49,8 @@ export async function updateVerificationInfomationAction(
   }
 }
 
+
+// make the student verified and insert him into specific section
 export async function updateVerifiedStudent(form, _id) {
   const db = await connectDB();
   const studentsCollection = db.collection<{
